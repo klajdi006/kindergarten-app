@@ -1,0 +1,84 @@
+<ion-content [fullscreen]="false">
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($any($event))">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (pendingOnly()) {
+    <div class="ion-padding-horizontal ion-padding-top">
+      <ion-text color="medium">
+        <small>{{ 'admin.staff.filterPending' | translate }}</small>
+      </ion-text>
+    </div>
+  }
+
+  <div class="ion-padding-horizontal ion-padding-top">
+    <ion-chip
+      [color]="filter() === 'all' ? 'primary' : 'medium'"
+      (click)="setFilter('all')">
+      {{ 'admin.staff.filter.all' | translate }}
+    </ion-chip>
+    <ion-chip
+      [color]="filter() === 'admin' ? 'primary' : 'medium'"
+      (click)="setFilter('admin')">
+      {{ 'roles.admin' | translate }}
+    </ion-chip>
+    <ion-chip
+      [color]="filter() === 'employee' ? 'primary' : 'medium'"
+      (click)="setFilter('employee')">
+      {{ 'roles.employee' | translate }}
+    </ion-chip>
+  </div>
+
+  @if (loading()) {
+    <app-skeleton-list [count]="6" />
+  } @else if (visible().length === 0) {
+    <div class="ion-padding ion-text-center">
+      <ion-text color="medium">
+        <p>{{ 'admin.staff.empty' | translate }}</p>
+      </ion-text>
+    </div>
+  } @else {
+    <ion-list>
+      @for (s of visible(); track s.id) {
+        <ion-item-sliding>
+          <ion-item button="true" detail="true" (click)="openDetail(s)">
+            <ion-avatar
+              slot="start"
+              style="display:inline-flex;align-items:center;justify-content:center;background:var(--ion-color-primary);color:var(--ion-color-primary-contrast);font-weight:600;">
+              {{ initials(s) }}
+            </ion-avatar>
+            <ion-label>
+              <h3>{{ s.firstName }} {{ s.lastName }}</h3>
+              <p>{{ s.email }}</p>
+              @if (s.role === 'employee') {
+                <p>
+                  @if (s.allDepartments) {
+                    <ion-text color="medium">{{ 'admin.staff.fields.allDepartments' | translate }}</ion-text>
+                  } @else {
+                    <ion-text color="medium">
+                      {{ s.departmentIds.length }} {{ 'admin.staff.deptCount' | translate }}
+                    </ion-text>
+                  }
+                </p>
+              }
+            </ion-label>
+            <ion-badge slot="end" [color]="s.role === 'admin' ? 'primary' : 'success'">
+              {{ 'roles.' + s.role | translate }}
+            </ion-badge>
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="confirmDelete(s)">
+              <ion-icon slot="icon-only" [icon]="trashOutline" aria-hidden="true"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      }
+    </ion-list>
+  }
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="openCreate()">
+      <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

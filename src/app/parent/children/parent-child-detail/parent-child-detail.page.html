@@ -1,0 +1,253 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="listUrl()"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      @if (child(); as c) {
+        {{ c.firstName }} {{ c.lastName }}
+      } @else {
+        {{ 'parent.children.title' | translate }}
+      }
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button
+        (click)="openHistory()"
+        [attr.aria-label]="'parent.children.detail.history' | translate">
+        <ion-icon slot="icon-only" [icon]="timeOutline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($any($event))">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading()) {
+    <app-skeleton-list [count]="4" [avatar]="false" />
+  } @else if (child(); as c) {
+    <ion-list-header>
+      <ion-label>{{ 'parent.children.detail.profile' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list inset="true">
+      <ion-item>
+        <ion-icon slot="start" [icon]="happyOutline" color="primary" aria-hidden="true"></ion-icon>
+        <ion-label>
+          <h3>{{ c.firstName }} {{ c.lastName }}</h3>
+          <p>
+            @if (childAge() !== null) {
+              {{ 'parent.children.detail.years' | translate: { years: childAge() } }} ·
+            }
+            {{ 'parent.children.detail.born' | translate }}: {{ c.birthDate | dateDmy }}
+          </p>
+        </ion-label>
+      </ion-item>
+      @if (departmentName(); as dn) {
+        <ion-item lines="none">
+          <ion-icon slot="start" [icon]="businessOutline" color="medium" aria-hidden="true"></ion-icon>
+          <ion-label>{{ dn }}</ion-label>
+        </ion-item>
+      }
+    </ion-list>
+
+    <ion-list-header>
+      <ion-label>{{ 'parent.children.detail.today' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list inset="true">
+      <ion-item lines="none">
+        <ion-icon
+          slot="start"
+          [icon]="bandageOutline"
+          [color]="isSickToday() ? 'danger' : 'medium'"
+          aria-hidden="true">
+        </ion-icon>
+        <ion-label>
+          <h3>{{ 'parent.children.detail.sickToday' | translate }}</h3>
+          <p>{{ todayStr() | dateDmy }}</p>
+        </ion-label>
+        <ion-toggle
+          slot="end"
+          [checked]="isSickToday()"
+          (ionChange)="toggleSickToday($any($event))">
+        </ion-toggle>
+      </ion-item>
+    </ion-list>
+
+    <ion-list-header>
+      <ion-label>{{ 'parent.children.detail.weeklySchedule' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list inset="true">
+      @for (day of weekDays; track day) {
+        @let kgDay = operatingHours()[day];
+        @let plan = scheduleDraft()[day];
+        @if (!kgDay.open) {
+          <ion-item lines="full">
+            <ion-icon slot="start" [icon]="timeOutline" color="medium" aria-hidden="true"></ion-icon>
+            <ion-label>
+              <h3>{{ 'days.' + day | translate }}</h3>
+              <p>{{ 'parent.children.detail.schedule.closed' | translate }}</p>
+            </ion-label>
+          </ion-item>
+        } @else {
+          <ion-item lines="full">
+            <ion-icon slot="start" [icon]="timeOutline" color="primary" aria-hidden="true"></ion-icon>
+            <ion-label>
+              <h3>{{ 'days.' + day | translate }}</h3>
+              <p>
+                {{ 'parent.children.detail.schedule.kgHours' | translate }}
+                {{ kgDay.from }} – {{ kgDay.to }}
+              </p>
+            </ion-label>
+            <ion-toggle
+              slot="end"
+              [checked]="plan.attending"
+              (ionChange)="toggleAttending(day, $any($event))">
+            </ion-toggle>
+          </ion-item>
+          @if (plan.attending) {
+            <ion-item>
+              <ion-icon slot="start" [icon]="hourglassOutline" color="medium" aria-hidden="true"></ion-icon>
+              <ion-label>{{ 'parent.children.detail.schedule.arrival' | translate }}</ion-label>
+              <ion-datetime-button
+                slot="end"
+                [datetime]="'sch-' + day + '-arrival'">
+              </ion-datetime-button>
+            </ion-item>
+            <ion-item>
+              <ion-icon slot="start" [icon]="hourglassOutline" color="medium" aria-hidden="true"></ion-icon>
+              <ion-label>{{ 'parent.children.detail.schedule.departure' | translate }}</ion-label>
+              <ion-datetime-button
+                slot="end"
+                [datetime]="'sch-' + day + '-departure'">
+              </ion-datetime-button>
+            </ion-item>
+          }
+        }
+      }
+      <ion-item
+        button="true"
+        detail="false"
+        lines="none"
+        [disabled]="!scheduleDirty()"
+        (click)="saveSchedule()">
+        <ion-label color="primary">{{ 'common.save' | translate }}</ion-label>
+      </ion-item>
+    </ion-list>
+
+    <ion-list-header>
+      <ion-label>{{ 'parent.children.detail.planHoliday' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list inset="true">
+      <ion-item>
+        <ion-icon slot="start" [icon]="calendarOutline" color="medium" aria-hidden="true"></ion-icon>
+        <ion-label>{{ 'parent.children.detail.from' | translate }}</ion-label>
+        <ion-datetime-button slot="end" datetime="holiday-start"></ion-datetime-button>
+      </ion-item>
+      <ion-item>
+        <ion-icon slot="start" [icon]="calendarOutline" color="medium" aria-hidden="true"></ion-icon>
+        <ion-label>{{ 'parent.children.detail.to' | translate }}</ion-label>
+        <ion-datetime-button slot="end" datetime="holiday-end"></ion-datetime-button>
+      </ion-item>
+      <ion-item
+        button="true"
+        detail="false"
+        lines="none"
+        [disabled]="holidayForm.invalid"
+        (click)="addHoliday()">
+        <ion-icon slot="start" name="add-outline" color="primary" aria-hidden="true"></ion-icon>
+        <ion-label color="primary">{{ 'parent.children.detail.addHoliday' | translate }}</ion-label>
+      </ion-item>
+    </ion-list>
+
+    @if (upcomingHolidays().length > 0) {
+      <ion-list-header>
+        <ion-label>{{ 'parent.children.detail.upcomingHolidays' | translate }}</ion-label>
+      </ion-list-header>
+      <ion-list inset="true">
+        @for (h of upcomingHolidays(); track h.id) {
+          <ion-item lines="full">
+            <ion-icon
+              slot="start"
+              [icon]="sunnyOutline"
+              color="warning"
+              aria-hidden="true">
+            </ion-icon>
+            <ion-label>
+              <h3>{{ h.startDate | dateDmy }} → {{ h.endDate | dateDmy }}</h3>
+            </ion-label>
+            <ion-button
+              slot="end"
+              fill="clear"
+              color="danger"
+              size="small"
+              (click)="removeAbsence(h)"
+              [attr.aria-label]="'common.delete' | translate">
+              <ion-icon slot="icon-only" [icon]="trashOutline"></ion-icon>
+            </ion-button>
+          </ion-item>
+        }
+      </ion-list>
+    }
+  } @else {
+    <div class="ion-padding ion-text-center">
+      <ion-text color="medium">
+        <p>{{ 'parent.children.notFound' | translate }}</p>
+      </ion-text>
+    </div>
+  }
+
+  @for (day of weekDays; track day) {
+    @let kgDay = operatingHours()[day];
+    @let plan = scheduleDraft()[day];
+    @if (kgDay.open && plan.attending) {
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+            [id]="'sch-' + day + '-arrival'"
+            presentation="time"
+            minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
+            [value]="plan.arrival"
+            (ionChange)="onScheduleTimeChange(day, 'arrival', $any($event))">
+          </ion-datetime>
+        </ng-template>
+      </ion-modal>
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+            [id]="'sch-' + day + '-departure'"
+            presentation="time"
+            minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
+            [value]="plan.departure"
+            (ionChange)="onScheduleTimeChange(day, 'departure', $any($event))">
+          </ion-datetime>
+        </ng-template>
+      </ion-modal>
+    }
+  }
+</ion-content>
+
+<ion-modal [keepContentsMounted]="true">
+  <ng-template>
+    <ion-datetime
+      id="holiday-start"
+      presentation="date"
+      [min]="todayStr()"
+      [value]="holidayForm.controls.startDate.value || null"
+      (ionChange)="onHolidayStartChange($any($event))">
+    </ion-datetime>
+  </ng-template>
+</ion-modal>
+
+<ion-modal [keepContentsMounted]="true">
+  <ng-template>
+    <ion-datetime
+      id="holiday-end"
+      presentation="date"
+      [min]="todayStr()"
+      [value]="holidayForm.controls.endDate.value || null"
+      (ionChange)="onHolidayEndChange($any($event))">
+    </ion-datetime>
+  </ng-template>
+</ion-modal>

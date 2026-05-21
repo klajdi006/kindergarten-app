@@ -1,0 +1,147 @@
+<app-tab-header title="admin.home.title"></app-tab-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($any($event))">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="ion-padding">
+    <ion-text>
+      <h2 class="ion-no-margin">
+        {{ 'admin.home.greeting' | translate: { name: auth.currentUser()?.displayName || ('admin.home.fallbackName' | translate) } }}
+      </h2>
+    </ion-text>
+  </div>
+
+  <!-- Today snapshot -->
+  <div class="ion-padding-horizontal" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+    <ion-card style="margin:0;">
+      <ion-card-content style="padding:12px;">
+        <div style="font-size:0.75rem;color:var(--ion-color-medium);">
+          {{ 'admin.home.stats.total' | translate }}
+        </div>
+        <div style="font-size:1.5rem;font-weight:600;">{{ stats().total }}</div>
+      </ion-card-content>
+    </ion-card>
+    <ion-card style="margin:0;">
+      <ion-card-content style="padding:12px;">
+        <div style="font-size:0.75rem;color:var(--ion-color-medium);">
+          {{ 'admin.home.stats.present' | translate }}
+        </div>
+        <div style="font-size:1.5rem;font-weight:600;color:var(--ion-color-success);">
+          {{ stats().present }}
+        </div>
+      </ion-card-content>
+    </ion-card>
+    <ion-card style="margin:0;">
+      <ion-card-content style="padding:12px;">
+        <div style="font-size:0.75rem;color:var(--ion-color-medium);">
+          {{ 'admin.home.stats.sick' | translate }}
+        </div>
+        <div style="font-size:1.5rem;font-weight:600;color:var(--ion-color-danger);">
+          {{ stats().sick }}
+        </div>
+      </ion-card-content>
+    </ion-card>
+    <ion-card style="margin:0;">
+      <ion-card-content style="padding:12px;">
+        <div style="font-size:0.75rem;color:var(--ion-color-medium);">
+          {{ 'admin.home.stats.holiday' | translate }}
+        </div>
+        <div style="font-size:1.5rem;font-weight:600;color:var(--ion-color-warning);">
+          {{ stats().holiday }}
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Needs attention -->
+  @if (hasAttention()) {
+    <ion-list-header>
+      <ion-label>{{ 'admin.home.attention' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list>
+      @if (pendingParents() > 0) {
+        <ion-item button="true" detail="true" (click)="openPendingParents()">
+          <ion-icon slot="start" [icon]="mailOutline" color="warning" aria-hidden="true"></ion-icon>
+          <ion-label>{{ 'admin.home.pendingParents' | translate }}</ion-label>
+          <ion-badge slot="end" color="warning">{{ pendingParents() }}</ion-badge>
+        </ion-item>
+      }
+      @if (pendingStaff() > 0) {
+        <ion-item button="true" detail="true" (click)="openPendingStaff()">
+          <ion-icon slot="start" [icon]="mailOutline" color="warning" aria-hidden="true"></ion-icon>
+          <ion-label>{{ 'admin.home.pendingStaff' | translate }}</ion-label>
+          <ion-badge slot="end" color="warning">{{ pendingStaff() }}</ion-badge>
+        </ion-item>
+      }
+      @if (unassignedChildren() > 0) {
+        <ion-item button="true" detail="true" (click)="openUnassignedChildren()">
+          <ion-icon slot="start" [icon]="alertCircleOutline" color="danger" aria-hidden="true"></ion-icon>
+          <ion-label>{{ 'admin.home.unassignedChildren' | translate }}</ion-label>
+          <ion-badge slot="end" color="danger">{{ unassignedChildren() }}</ion-badge>
+        </ion-item>
+      }
+    </ion-list>
+  }
+
+  <!-- Departments overview -->
+  @if (departmentRows().length > 0) {
+    <ion-list-header>
+      <ion-label>{{ 'admin.home.departments' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list>
+      @for (row of departmentRows(); track row.dept.id) {
+        <ion-item>
+          <ion-icon slot="start" [icon]="businessOutline" color="tertiary" aria-hidden="true"></ion-icon>
+          <ion-label>
+            <h3>{{ row.dept.name }}</h3>
+            <p>{{ 'admin.departments.ageRange' | translate: { min: row.dept.ageMin, max: row.dept.ageMax } }}</p>
+          </ion-label>
+          <ion-badge slot="end" color="medium">{{ row.count }}</ion-badge>
+        </ion-item>
+      }
+    </ion-list>
+  }
+
+  <!-- Upcoming birthdays -->
+  @if (upcomingBirthdays().length > 0) {
+    <ion-list-header>
+      <ion-label>{{ 'admin.home.upcomingBirthdays' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list>
+      @for (c of upcomingBirthdays(); track c.id) {
+        <ion-item>
+          <ion-icon slot="start" [icon]="giftOutline" color="tertiary" aria-hidden="true"></ion-icon>
+          <ion-label>
+            <h3>{{ c.firstName }} {{ c.lastName }}</h3>
+            <p>
+              {{ c.birthDate | dateDmy }}
+              @if (departmentName(c.departmentId); as dn) {
+                <ion-note color="medium"> · {{ dn }}</ion-note>
+              }
+            </p>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+
+  <!-- Recent posts -->
+  @if (recentPosts().length > 0) {
+    <ion-list-header>
+      <ion-label>{{ 'admin.home.recentPosts' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list>
+      @for (p of recentPosts(); track p.id) {
+        <ion-item button="true" detail="true" [routerLink]="['/admin/content/posts']">
+          <ion-icon slot="start" [icon]="megaphoneOutline" color="primary" aria-hidden="true"></ion-icon>
+          <ion-label>
+            <h3>{{ p.title }}</h3>
+            <p>{{ p.authorName }}</p>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+</ion-content>

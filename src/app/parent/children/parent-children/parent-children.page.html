@@ -1,0 +1,49 @@
+<app-tab-header title="parent.children.title"></app-tab-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($any($event))">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading()) {
+    <app-skeleton-list [count]="3" [avatar]="false" />
+  } @else if (myChildren().length === 0) {
+    <div class="ion-padding ion-text-center">
+      <ion-text color="medium">
+        <p>{{ 'parent.children.empty' | translate }}</p>
+      </ion-text>
+    </div>
+  } @else {
+    @for (child of myChildren(); track child.id) {
+      <ion-card>
+        <ion-item
+          button="true"
+          detail="true"
+          lines="full"
+          [routerLink]="['/parent/children', child.id]">
+          <ion-icon slot="start" [icon]="happyOutline" color="primary" aria-hidden="true"></ion-icon>
+          <ion-label>
+            <h2>{{ child.firstName }} {{ child.lastName }}</h2>
+            @if (departmentName(child); as dn) {
+              <p>{{ dn }}</p>
+            }
+          </ion-label>
+        </ion-item>
+        <ion-item lines="none">
+          <ion-icon
+            slot="start"
+            [icon]="bandageOutline"
+            [color]="isSickToday(child.id) ? 'danger' : 'medium'"
+            aria-hidden="true">
+          </ion-icon>
+          <ion-label>{{ 'parent.children.detail.sickToday' | translate }}</ion-label>
+          <ion-toggle
+            slot="end"
+            [checked]="isSickToday(child.id)"
+            (ionChange)="toggleSickToday(child, $any($event))">
+          </ion-toggle>
+        </ion-item>
+      </ion-card>
+    }
+  }
+</ion-content>

@@ -1,0 +1,162 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{ 'settings.title' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="ion-text-center ion-padding-top">
+    <div
+      style="width:96px;height:96px;border-radius:50%;background:var(--ion-color-primary);color:var(--ion-color-primary-contrast);display:inline-flex;align-items:center;justify-content:center;font-size:2.25rem;font-weight:600;margin:0 auto;">
+      {{ initials() }}
+    </div>
+    <h2 class="ion-no-margin ion-padding-top">
+      {{ auth.currentUser()?.displayName || auth.currentUser()?.email }}
+    </h2>
+    @if (auth.role(); as role) {
+      <ion-text color="medium">
+        <p>{{ 'roles.' + role | translate }}</p>
+      </ion-text>
+    }
+  </div>
+
+  <ion-list-header>
+    <ion-label>{{ 'settings.sections.profile' | translate }}</ion-label>
+  </ion-list-header>
+  <ion-list inset="true">
+    <form [formGroup]="form" (ngSubmit)="saveProfile()">
+      <ion-item>
+        <ion-icon slot="start" [icon]="personOutline" color="medium" aria-hidden="true"></ion-icon>
+        <ion-input
+          [label]="'settings.fields.name' | translate"
+          labelPlacement="stacked"
+          formControlName="displayName">
+        </ion-input>
+      </ion-item>
+      @if (form.controls.displayName.touched && form.controls.displayName.invalid) {
+        <ion-item lines="none">
+          <ion-note color="danger">{{ 'common.required' | translate }}</ion-note>
+        </ion-item>
+      }
+      <ion-item lines="none">
+        <ion-icon slot="start" [icon]="mailOutline" color="medium" aria-hidden="true"></ion-icon>
+        <ion-label>
+          <p>{{ 'settings.fields.email' | translate }}</p>
+          <ion-text color="medium">{{ auth.currentUser()?.email }}</ion-text>
+        </ion-label>
+      </ion-item>
+      @if (errorMessage(); as msg) {
+        <ion-item lines="none">
+          <ion-note color="danger">{{ msg | translate }}</ion-note>
+        </ion-item>
+      }
+      <ion-item
+        button="true"
+        detail="false"
+        lines="none"
+        [disabled]="form.pristine || isLoading()"
+        (click)="saveProfile()">
+        @if (isLoading()) {
+          <ion-spinner slot="start" name="dots"></ion-spinner>
+        }
+        <ion-label color="primary">{{ 'common.save' | translate }}</ion-label>
+      </ion-item>
+    </form>
+  </ion-list>
+
+  @if (auth.isAdmin()) {
+    <ion-list-header>
+      <ion-label>{{ 'settings.sections.kindergarten' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list inset="true">
+      <form [formGroup]="kgForm" (ngSubmit)="saveKindergarten()">
+        <ion-item>
+          <ion-icon slot="start" [icon]="businessOutline" color="medium" aria-hidden="true"></ion-icon>
+          <ion-input
+            [label]="'settings.fields.kindergartenName' | translate"
+            labelPlacement="stacked"
+            formControlName="name">
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-icon slot="start" [icon]="locationOutline" color="medium" aria-hidden="true"></ion-icon>
+          <ion-textarea
+            [label]="'settings.fields.address' | translate"
+            labelPlacement="stacked"
+            autoGrow="true"
+            rows="2"
+            formControlName="address">
+          </ion-textarea>
+        </ion-item>
+        <ion-item
+          button="true"
+          detail="false"
+          lines="none"
+          [disabled]="kgForm.pristine"
+          (click)="saveKindergarten()">
+          <ion-label color="primary">{{ 'common.save' | translate }}</ion-label>
+        </ion-item>
+      </form>
+    </ion-list>
+
+    <ion-list-header>
+      <ion-label>{{ 'settings.sections.operatingHours' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list inset="true">
+      <ion-item button="true" detail="true" (click)="openOperatingHours()">
+        <ion-icon slot="start" [icon]="timeOutline" color="primary" aria-hidden="true"></ion-icon>
+        <ion-label>
+          <h3>{{ 'settings.operatingHours.title' | translate }}</h3>
+          <p>{{ 'settings.operatingHours.openDays' | translate: { count: openDaysCount() } }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  }
+
+  <ion-list-header>
+    <ion-label>{{ 'settings.sections.preferences' | translate }}</ion-label>
+  </ion-list-header>
+  <ion-list inset="true">
+    <ion-item>
+      <ion-icon slot="start" [icon]="languageOutline" color="primary" aria-hidden="true"></ion-icon>
+      <ion-select
+        [label]="'common.language' | translate"
+        labelPlacement="start"
+        interface="action-sheet"
+        [value]="lang.current()"
+        (ionChange)="onLanguageChange($any($event))">
+        <ion-select-option value="en">English</ion-select-option>
+        <ion-select-option value="al">Shqip</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-icon slot="start" [icon]="colorPaletteOutline" color="primary" aria-hidden="true"></ion-icon>
+      <ion-select
+        [label]="'common.theme' | translate"
+        labelPlacement="start"
+        interface="action-sheet"
+        [value]="theme.preference()"
+        (ionChange)="onThemeChange($any($event))">
+        <ion-select-option value="system">
+          {{ 'settings.theme.system' | translate }}
+        </ion-select-option>
+        <ion-select-option value="light">
+          {{ 'settings.theme.light' | translate }}
+        </ion-select-option>
+        <ion-select-option value="dark">
+          {{ 'settings.theme.dark' | translate }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
+
+  <ion-list-header>
+    <ion-label>{{ 'settings.sections.account' | translate }}</ion-label>
+  </ion-list-header>
+  <ion-list inset="true">
+    <ion-item button="true" detail="false" lines="none" (click)="signOut()">
+      <ion-icon slot="start" [icon]="logOutOutline" color="danger"></ion-icon>
+      <ion-label color="danger">{{ 'common.signOut' | translate }}</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

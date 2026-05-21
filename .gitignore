@@ -68,3 +68,8 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Firebase service account credentials (private keys — never commit)
+*-firebase-adminsdk-*.json
+*-sa.json
+service-account.json

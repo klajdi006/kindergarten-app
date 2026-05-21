@@ -1,0 +1,17 @@
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div
+    class="ion-text-center"
+    style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:1rem;">
+    @if (!stuck()) {
+      <ion-spinner name="dots"></ion-spinner>
+    } @else {
+      <ion-text color="medium">
+        <h3>{{ 'root.stuck.title' | translate }}</h3>
+        <p>{{ 'root.stuck.message' | translate }}</p>
+      </ion-text>
+      <ion-button fill="outline" (click)="signOut()">
+        {{ 'common.signOut' | translate }}
+      </ion-button>
+    }
+  </div>
+</ion-content>

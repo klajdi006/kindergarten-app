@@ -1,0 +1,440 @@
+{
+  "app": {
+    "name": "E-Kindergarten"
+  },
+  "login": {
+    "welcome": "Welcome back",
+    "fields": {
+      "email": "Email",
+      "password": "Password"
+    },
+    "submit": "Sign in",
+    "validation": {
+      "invalidEmail": "Enter a valid email address.",
+      "passwordMin": "Password must be at least 6 characters."
+    },
+    "noAccount": "Don't have an admin account?",
+    "signUpLink": "Sign up",
+    "parentInvited": "Invited as a parent?",
+    "claimLink": "Claim your invite",
+    "footer": "Parents — watch for your <strong>invitation email</strong> from your kindergarten."
+  },
+  "signup": {
+    "title": "Create an admin account",
+    "subtitle": "Register your kindergarten",
+    "fields": {
+      "fullName": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "kindergartenName": "Kindergarten name",
+      "address": "Kindergarten address"
+    },
+    "submit": "Create account",
+    "validation": {
+      "nameRequired": "Please enter your name.",
+      "invalidEmail": "Enter a valid email address.",
+      "passwordMin": "Password must be at least 6 characters.",
+      "kindergartenNameRequired": "Please enter the kindergarten name.",
+      "addressRequired": "Please enter the kindergarten address."
+    },
+    "haveAccount": "Already have an account?",
+    "signInLink": "Sign in"
+  },
+  "claim": {
+    "title": "Claim your invite",
+    "subtitle": "Use the email your kindergarten registered for you",
+    "linkSubtitle": "Set a password for {{ email }}",
+    "fields": {
+      "email": "Email",
+      "password": "Choose a password"
+    },
+    "submit": "Claim and sign in",
+    "backToLogin": "Back to sign in",
+    "errors": {
+      "noInvite": "No invitation found for that email. Ask your kindergarten admin to add you first."
+    }
+  },
+  "auth": {
+    "errors": {
+      "invalidEmail": "That email address looks invalid.",
+      "wrongCredentials": "Incorrect email or password.",
+      "emailInUse": "An account with that email already exists.",
+      "weakPassword": "Password must be at least 6 characters.",
+      "network": "Network error. Check your connection.",
+      "invalidLink": "This invite link is invalid or has already been used. Ask your kindergarten admin to send a new one.",
+      "linkSignInDisabled": "Email-link sign-in isn't enabled for this project. Ask the admin to turn it on in Firebase Console → Authentication → Sign-in method.",
+      "recentLoginRequired": "Your session expired. Please open the invite link again from your email.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "common": {
+    "signOut": "Sign out",
+    "language": "Language",
+    "theme": "Theme",
+    "comingSoon": "Coming soon.",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "required": "Required.",
+    "selectDate": "Select",
+    "confirmDeleteTitle": "Delete?",
+    "confirmDeleteMessage": "Are you sure you want to delete {{ name }}?"
+  },
+  "days": {
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
+  },
+  "admin": {
+    "tabs": {
+      "home": "Home",
+      "people": "Members",
+      "content": "Content",
+      "settings": "Settings",
+      "parents": "Parents",
+      "children": "Children",
+      "departments": "Departments",
+      "albums": "Albums",
+      "posts": "Posts",
+      "staff": "Staff"
+    },
+    "people": { "title": "Members" },
+    "content": { "title": "Content" },
+    "posts": {
+      "title": "Posts",
+      "empty": "No posts yet. Tap + to write your first announcement.",
+      "emptyMine": "You haven't written any posts yet.",
+      "tabs": {
+        "feed": "Feed",
+        "mine": "Mine"
+      },
+      "add": "New post",
+      "edit": "Edit post",
+      "imagesHint": "Image attachments coming soon.",
+      "allDepartments": "All departments",
+      "fields": {
+        "title": "Title",
+        "description": "Description",
+        "audience": "Visible to"
+      },
+      "detail": {
+        "title": "Post",
+        "updated": "edited",
+        "danger": "Danger zone",
+        "delete": "Delete post"
+      }
+    },
+    "albums": {
+      "title": "Albums",
+      "empty": "No albums yet. Create one to start adding photos.",
+      "emptyPhotos": "No photos in this album yet.",
+      "photosDisabled": "Photo upload will be enabled once Firebase Storage is set up.",
+      "add": "New album",
+      "edit": "Edit album",
+      "addPhotos": "Add photos",
+      "namePlaceholder": "e.g. Daycare, May 2026",
+      "photoCount": "{{ count }} photos",
+      "confirmDeletePhoto": "Delete this photo? This can't be undone.",
+      "fields": {
+        "name": "Album name",
+        "department": "Department"
+      }
+    },
+    "home": {
+      "title": "Dashboard",
+      "greeting": "Hello, {{ name }}",
+      "fallbackName": "admin",
+      "stats": {
+        "total": "Enrolled",
+        "present": "Present",
+        "sick": "Sick",
+        "holiday": "Holiday",
+        "parents": "Parents",
+        "parentsHint": "Total registered parents",
+        "children": "Children",
+        "childrenHint": "Enrolled children",
+        "departments": "Departments",
+        "departmentsHint": "Age groups defined"
+      },
+      "attention": "Needs attention",
+      "pendingParents": "Pending parent invites",
+      "pendingStaff": "Pending staff invites",
+      "unassignedChildren": "Children without a parent",
+      "departments": "Departments",
+      "upcomingBirthdays": "Birthdays this week",
+      "recentPosts": "Recent posts"
+    },
+    "parents": {
+      "title": "Parents",
+      "heading": "Manage parents",
+      "empty": "No parents yet. Add one to get started.",
+      "add": "Add parent",
+      "edit": "Edit parent",
+      "fields": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "email": "Email",
+        "phone": "Phone",
+        "child": "Child"
+      },
+      "noChildren": "No children assigned.",
+      "assignChild": "Assign child",
+      "assignChildren": "Assign children",
+      "assign": "Assign",
+      "assignWithCount": "Assign ({{ count }})",
+      "searchChildrenPlaceholder": "Search children",
+      "noChildrenMatch": "No children match your search.",
+      "noAvailableChildren": "All children are already assigned to this parent. Add more children first.",
+      "claimed": "Account claimed",
+      "pending": "Awaiting claim",
+      "filterPending": "Showing pending invites only.",
+      "inviteHint": "Share this email with the parent. They will use it on the Claim invite page to set their password.",
+      "detail": {
+        "title": "Parent",
+        "profile": "Profile",
+        "children": "Children",
+        "invite": "Invitation",
+        "sendInvite": "Send invitation email",
+        "inviteSent": "Invitation sent to {{ email }}",
+        "danger": "Danger zone",
+        "delete": "Delete parent",
+        "years": "{{ years }} y"
+      }
+    },
+    "children": {
+      "title": "Children",
+      "heading": "Manage children",
+      "empty": "No children yet. Add one to get started.",
+      "add": "Add child",
+      "edit": "Edit child",
+      "unassigned": "Unassigned",
+      "filterUnassigned": "Showing children without a department.",
+      "born": "Born",
+      "noParents": "No parents linked.",
+      "assignParents": "Assign parent",
+      "assign": "Assign",
+      "assignWithCount": "Assign ({{ count }})",
+      "searchParentsPlaceholder": "Search parents",
+      "noParentsMatch": "No parents match your search.",
+      "noAvailableParents": "No parents available to assign. Add a parent first.",
+      "fields": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "birthDate": "Birth date",
+        "department": "Department"
+      },
+      "detail": {
+        "title": "Child",
+        "profile": "Profile",
+        "parents": "Parents",
+        "delete": "Delete child"
+      }
+    },
+    "departments": {
+      "title": "Departments",
+      "heading": "Manage departments",
+      "empty": "No departments yet. Try daycare (0–3), kindergarten (3–5), preschool (5–6).",
+      "add": "Add department",
+      "edit": "Edit department",
+      "ageRange": "Ages {{ min }}–{{ max }}",
+      "fields": {
+        "name": "Name",
+        "ageMin": "Minimum age",
+        "ageMax": "Maximum age"
+      }
+    },
+    "staff": {
+      "title": "Staff",
+      "heading": "Manage staff",
+      "empty": "No staff yet. Invite a teacher to get started.",
+      "add": "Add staff",
+      "claimed": "Account claimed",
+      "pending": "Awaiting claim",
+      "filterPending": "Showing pending invites only.",
+      "inviteHint": "Send an invitation email so the staff member can claim their account and set a password.",
+      "deptCount": "departments",
+      "noDepartments": "No departments yet. Create one first.",
+      "fields": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "email": "Email",
+        "phone": "Phone",
+        "role": "Role",
+        "departments": "Departments",
+        "allDepartments": "All departments"
+      },
+      "filter": {
+        "all": "All"
+      },
+      "detail": {
+        "title": "Staff member",
+        "profile": "Profile",
+        "invite": "Invitation",
+        "sendInvite": "Send invitation email",
+        "inviteSent": "Invitation sent to {{ email }}",
+        "danger": "Danger zone",
+        "delete": "Remove staff member"
+      }
+    }
+  },
+  "parent": {
+    "tabs": {
+      "posts": "Posts",
+      "children": "Children",
+      "settings": "Settings"
+    },
+    "posts": {
+      "title": "Posts",
+      "empty": "No posts yet from your kindergarten.",
+      "filter": {
+        "label": "Filter",
+        "all": "All"
+      }
+    },
+    "children": {
+      "title": "My children",
+      "heading": "Your children",
+      "empty": "No children linked to your profile yet.",
+      "notFound": "Child not found.",
+      "detail": {
+        "profile": "Profile",
+        "today": "Today",
+        "sickToday": "Sick today",
+        "planHoliday": "Plan a holiday",
+        "upcomingHolidays": "Upcoming holidays",
+        "history": "History",
+        "from": "From",
+        "to": "To",
+        "addHoliday": "Add holiday",
+        "years": "{{ years }} years",
+        "born": "Born",
+        "weeklySchedule": "Weekly schedule",
+        "scheduleSaved": "Schedule saved.",
+        "schedule": {
+          "closed": "Kindergarten closed",
+          "kgHours": "Open",
+          "arrival": "Arrival",
+          "departure": "Departure"
+        },
+        "errors": {
+          "endBeforeStart": "The end date can't be before the start date.",
+          "startInPast": "The start date can't be in the past."
+        }
+      }
+    },
+    "absence": {
+      "heading": "Sick days & holidays",
+      "empty": "No absences registered.",
+      "add": "Register absence",
+      "types": {
+        "sick": "Sick",
+        "holiday": "Holiday"
+      },
+      "startDate": "Start date",
+      "endDate": "End date",
+      "note": "Note (optional)",
+      "confirmDelete": "Remove this absence?"
+    }
+  },
+  "messages": {
+    "title": "Messages",
+    "empty": "No conversations yet. Tap + to start one.",
+    "new": "New chat",
+    "newGroup": "New group",
+    "newGroupHint": "Message multiple people at once",
+    "addParticipants": "Add participants",
+    "create": "Create",
+    "start": "Start",
+    "placeholder": "Type a message…",
+    "send": "Send",
+    "sendFailed": "Couldn't send. Tap send to try again.",
+    "searchPlaceholder": "Search people",
+    "directory": "People",
+    "selected": "Selected",
+    "noPeople": "No one to message yet.",
+    "noMessages": "No messages yet.",
+    "groupTitle": "Group title",
+    "groupTitlePlaceholder": "Optional"
+  },
+  "employee": {
+    "tabs": {
+      "home": "Home",
+      "posts": "Posts",
+      "settings": "Settings"
+    },
+    "home": {
+      "title": "Today",
+      "greeting": "Hello, {{ name }}",
+      "fallbackName": "teacher",
+      "sickToday": "Sick today",
+      "holidayToday": "On holiday today",
+      "noneToday": "None today.",
+      "children": "Children",
+      "noChildren": "No children in your departments yet.",
+      "allDepartmentsScope": "Access to all departments",
+      "stats": {
+        "expected": "Expected",
+        "present": "Present",
+        "sick": "Sick",
+        "holiday": "Holiday"
+      },
+      "todayRoster": "Today's roster",
+      "noOneToday": "No children scheduled for today.",
+      "upcomingBirthdays": "Birthdays this week",
+      "recentPosts": "Recent posts"
+    }
+  },
+  "roles": {
+    "admin": "admin",
+    "parent": "parent",
+    "employee": "employee"
+  },
+  "root": {
+    "stuck": {
+      "title": "We couldn't load your profile",
+      "message": "Sign out and try again, or contact your kindergarten admin."
+    }
+  },
+  "pwa": {
+    "update": {
+      "title": "Update available",
+      "message": "A new version of the app is ready. Reload to update?",
+      "confirm": "Update",
+      "cancel": "Later"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "sections": {
+      "profile": "Profile",
+      "kindergarten": "Kindergarten",
+      "operatingHours": "Operating hours",
+      "preferences": "Preferences",
+      "account": "Account"
+    },
+    "fields": {
+      "name": "Name",
+      "kindergartenName": "Kindergarten name",
+      "address": "Kindergarten address",
+      "email": "Email"
+    },
+    "operatingHours": {
+      "title": "Operating hours",
+      "openDays": "Open {{ count }} days a week",
+      "from": "From",
+      "to": "To",
+      "closed": "Closed"
+    },
+    "theme": {
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    }
+  }
+}

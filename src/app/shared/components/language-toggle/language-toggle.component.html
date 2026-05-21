@@ -1,0 +1,7 @@
+<ion-button
+  fill="clear"
+  size="small"
+  [attr.aria-label]="'common.language' | translate"
+  (click)="lang.toggle()">
+  {{ lang.currentOption().short }}
+</ion-button>

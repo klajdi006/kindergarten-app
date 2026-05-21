@@ -1,0 +1,84 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'admin.posts.detail.title' | translate }}</ion-title>
+    @if (canEdit) {
+      <ion-buttons slot="end">
+        <ion-button
+          strong="true"
+          [disabled]="form.pristine || form.invalid || saving()"
+          (click)="save()">
+          {{ 'common.save' | translate }}
+        </ion-button>
+      </ion-buttons>
+    }
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <div class="ion-padding-top ion-text-center">
+    <ion-text color="medium">
+      <p>
+        <small>
+          {{ post.createdAt | dateDmy }}
+          @if (post.authorName) {
+            · {{ post.authorName }}
+          }
+          @if (post.updatedAt && post.updatedAt !== post.createdAt) {
+            · {{ 'admin.posts.detail.updated' | translate }}
+            {{ post.updatedAt | dateDmy }}
+          }
+        </small>
+      </p>
+    </ion-text>
+  </div>
+
+  <ion-list [formGroup]="form" inset="true">
+    <ion-item>
+      <ion-input
+        [label]="'admin.posts.fields.title' | translate"
+        labelPlacement="stacked"
+        formControlName="title">
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-textarea
+        [label]="'admin.posts.fields.description' | translate"
+        labelPlacement="stacked"
+        autoGrow="true"
+        rows="8"
+        formControlName="description">
+      </ion-textarea>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-icon slot="start" [icon]="globeOutline" color="medium" aria-hidden="true"></ion-icon>
+      <ion-select
+        [label]="'admin.posts.fields.audience' | translate"
+        labelPlacement="stacked"
+        interface="popover"
+        formControlName="departmentId">
+        <ion-select-option value="">
+          {{ 'admin.posts.allDepartments' | translate }}
+        </ion-select-option>
+        @for (dept of departments; track dept.id) {
+          <ion-select-option [value]="dept.id">{{ dept.name }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+  </ion-list>
+
+  @if (canEdit) {
+    <ion-list-header>
+      <ion-label>{{ 'admin.posts.detail.danger' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list inset="true">
+      <ion-item button="true" detail="false" lines="none" (click)="requestDelete()">
+        <ion-icon slot="start" [icon]="trashOutline" color="danger" aria-hidden="true"></ion-icon>
+        <ion-label color="danger">{{ 'admin.posts.detail.delete' | translate }}</ion-label>
+      </ion-item>
+    </ion-list>
+  }
+</ion-content>

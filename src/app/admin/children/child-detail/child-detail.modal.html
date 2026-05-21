@@ -1,0 +1,132 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'admin.children.detail.title' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button
+        strong="true"
+        [disabled]="form.pristine || form.invalid || saving()"
+        (click)="save()">
+        {{ 'common.save' | translate }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  @if (child(); as c) {
+    <div class="ion-text-center ion-padding-top">
+      <div
+        style="width:96px;height:96px;border-radius:50%;background:var(--ion-color-success);color:var(--ion-color-success-contrast);display:inline-flex;align-items:center;justify-content:center;font-size:2.25rem;font-weight:600;margin:0 auto;">
+        {{ initials(c) }}
+      </div>
+      <h2 class="ion-no-margin ion-padding-top">{{ c.firstName }} {{ c.lastName }}</h2>
+      @if (childAge(c); as a) {
+        <ion-text color="medium">
+          <p><small>{{ 'admin.parents.detail.years' | translate: { years: a } }}</small></p>
+        </ion-text>
+      }
+    </div>
+
+    <ion-list-header>
+      <ion-label>{{ 'admin.children.detail.profile' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list [formGroup]="form" inset="true">
+      <ion-item>
+        <ion-input
+          [label]="'admin.children.fields.firstName' | translate"
+          labelPlacement="stacked"
+          formControlName="firstName">
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          [label]="'admin.children.fields.lastName' | translate"
+          labelPlacement="stacked"
+          formControlName="lastName">
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>{{ 'admin.children.fields.birthDate' | translate }}</ion-label>
+        <ion-datetime-button slot="end" datetime="child-detail-birthDate"></ion-datetime-button>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-select
+          [label]="'admin.children.fields.department' | translate"
+          labelPlacement="floating"
+          interface="popover"
+          formControlName="departmentId">
+          <ion-select-option value="">
+            {{ 'admin.children.unassigned' | translate }}
+          </ion-select-option>
+          @for (dept of departments.all(); track dept.id) {
+            <ion-select-option [value]="dept.id">{{ dept.name }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+    </ion-list>
+
+    <ion-list-header>
+      <ion-label>{{ 'admin.children.detail.parents' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list inset="true">
+      @for (parent of linkedParents(); track parent.id) {
+        <ion-item>
+          <ion-avatar
+            slot="start"
+            style="background:var(--ion-color-primary);color:var(--ion-color-primary-contrast);display:inline-flex;align-items:center;justify-content:center;font-weight:600;">
+            {{ initials(parent) }}
+          </ion-avatar>
+          <ion-label>
+            <h3>{{ parent.firstName }} {{ parent.lastName }}</h3>
+            <p>{{ parent.email }}</p>
+          </ion-label>
+          <ion-button
+            slot="end"
+            fill="clear"
+            color="medium"
+            size="small"
+            (click)="unlink(parent.id)"
+            [attr.aria-label]="'common.delete' | translate">
+            <ion-icon slot="icon-only" [icon]="closeCircleOutline"></ion-icon>
+          </ion-button>
+        </ion-item>
+      } @empty {
+        <ion-item lines="none">
+          <ion-text color="medium">
+            <p><small>{{ 'admin.children.noParents' | translate }}</small></p>
+          </ion-text>
+        </ion-item>
+      }
+      <ion-item button="true" detail="false" lines="none" (click)="openAssign()">
+        <ion-icon slot="start" [icon]="personAddOutline" color="primary" aria-hidden="true"></ion-icon>
+        <ion-label color="primary">{{ 'admin.children.assignParents' | translate }}</ion-label>
+      </ion-item>
+    </ion-list>
+
+    <ion-list-header>
+      <ion-label>{{ 'admin.parents.detail.danger' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list inset="true">
+      <ion-item button="true" detail="false" lines="none" (click)="confirmDelete()">
+        <ion-icon slot="start" [icon]="trashOutline" color="danger" aria-hidden="true"></ion-icon>
+        <ion-label color="danger">{{ 'admin.children.detail.delete' | translate }}</ion-label>
+      </ion-item>
+    </ion-list>
+  }
+</ion-content>
+
+<ion-modal [keepContentsMounted]="true">
+  <ng-template>
+    <ion-datetime
+      id="child-detail-birthDate"
+      presentation="date"
+      [max]="todayIso"
+      [value]="form.controls.birthDate.value || null"
+      (ionChange)="onBirthDateChange($any($event))">
+    </ion-datetime>
+  </ng-template>
+</ion-modal>

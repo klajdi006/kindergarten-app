@@ -1,0 +1,67 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()" [attr.aria-label]="'common.cancel' | translate">
+        <ion-icon slot="icon-only" name="close-outline" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'admin.children.assignParents' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button
+        strong="true"
+        [disabled]="selectedCount() === 0"
+        (click)="confirm()">
+        @if (selectedCount() > 0) {
+          {{ 'admin.children.assignWithCount' | translate: { count: selectedCount() } }}
+        } @else {
+          {{ 'admin.children.assign' | translate }}
+        }
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar
+      [value]="search()"
+      (ionInput)="onSearch($any($event))"
+      [placeholder]="'admin.children.searchParentsPlaceholder' | translate">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (filtered().length === 0) {
+    <div class="ion-padding ion-text-center">
+      <ion-text color="medium">
+        <p>
+          @if (search().trim()) {
+            {{ 'admin.children.noParentsMatch' | translate }}
+          } @else {
+            {{ 'admin.children.noAvailableParents' | translate }}
+          }
+        </p>
+      </ion-text>
+    </div>
+  } @else {
+    <ion-list>
+      @for (parent of filtered(); track parent.id) {
+        <ion-item button="true" detail="false" (click)="toggle(parent.id)">
+          <ion-icon
+            slot="start"
+            [icon]="isSelected(parent.id) ? checkmarkCircle : ellipseOutline"
+            [color]="isSelected(parent.id) ? 'primary' : 'medium'"
+            aria-hidden="true">
+          </ion-icon>
+          <ion-avatar
+            slot="start"
+            style="background:var(--ion-color-primary);color:var(--ion-color-primary-contrast);display:inline-flex;align-items:center;justify-content:center;font-weight:600;">
+            {{ initials(parent) }}
+          </ion-avatar>
+          <ion-label>
+            <h3>{{ parent.firstName }} {{ parent.lastName }}</h3>
+            <p>{{ parent.email }}</p>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+</ion-content>

@@ -1,0 +1,19 @@
+<ion-list>
+  @for (i of rows(); track i) {
+    <ion-item lines="full">
+      @if (avatar()) {
+        <ion-avatar slot="start">
+          <ion-skeleton-text [animated]="true" style="width: 100%; height: 100%;"></ion-skeleton-text>
+        </ion-avatar>
+      }
+      <ion-label>
+        @for (l of lineRows(); track l) {
+          <ion-skeleton-text
+            [animated]="true"
+            [style.width]="l === 0 ? '60%' : '40%'"
+            style="height: 0.9rem;"></ion-skeleton-text>
+        }
+      </ion-label>
+    </ion-item>
+  }
+</ion-list>

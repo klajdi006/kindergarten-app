@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()" [attr.aria-label]="'common.cancel' | translate">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'admin.home.pendingParents' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  @if (pending().length === 0) {
+    <div class="ion-padding ion-text-center">
+      <ion-text color="medium">
+        <p>{{ 'admin.parents.empty' | translate }}</p>
+      </ion-text>
+    </div>
+  } @else {
+    <ion-list>
+      @for (parent of pending(); track parent.id) {
+        <ion-item button="true" (click)="openDetail(parent)">
+          <ion-avatar
+            slot="start"
+            style="background:var(--ion-color-primary);color:var(--ion-color-primary-contrast);display:inline-flex;align-items:center;justify-content:center;font-weight:600;">
+            {{ initials(parent) }}
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ parent.firstName }} {{ parent.lastName }}</h2>
+            <p>{{ parent.email }}</p>
+            <ion-text color="medium">
+              <small>{{ 'admin.parents.pending' | translate }}</small>
+            </ion-text>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+</ion-content>

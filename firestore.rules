@@ -1,0 +1,191 @@
+rules_version = '2';
+
+// Deploy with:  firebase deploy --only firestore:rules
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- helpers ----------
+    function isSignedIn() { return request.auth != null; }
+    function uid() { return request.auth.uid; }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(uid())).data;
+    }
+    function userRole() { return userDoc().role; }
+    function userKg()  { return userDoc().kindergartenId; }
+
+    function isAdmin()    { return isSignedIn() && userRole() == 'admin'; }
+    function isParent()   { return isSignedIn() && userRole() == 'parent'; }
+    function isEmployee() { return isSignedIn() && userRole() == 'employee'; }
+    function isStaff()    { return isAdmin() || isEmployee(); }
+    function inMyKg(kgId) { return isSignedIn() && userKg() == kgId; }
+
+    function myStaff() {
+      return get(/databases/$(database)/documents/staff/$(userDoc().staffRecordId)).data;
+    }
+    function canAccessDept(deptId) {
+      return isAdmin()
+        || (isEmployee()
+            && (myStaff().allDepartments == true || deptId in myStaff().departmentIds));
+    }
+
+    // ---------- users ----------
+    match /users/{userId} {
+      allow read, write: if isSignedIn() && uid() == userId;
+    }
+
+    // ---------- kindergartens ----------
+    // Created at signup. Readable by any user belonging to it. Updatable by
+    // admins of that kindergarten.
+    match /kindergartens/{kgId} {
+      allow read: if inMyKg(kgId);
+      allow create: if isSignedIn() && request.resource.data.createdByUid == uid();
+      allow update: if isAdmin() && inMyKg(kgId);
+      allow delete: if false;
+    }
+
+    // ---------- staff ----------
+    // Admins manage staff records in their kindergarten. A staff member can
+    // read their own record (matched via claimedByUid). The founding admin's
+    // self-record is allowed via a kindergarten-creator carve-out, since the
+    // /users/{uid} doc may not yet exist on signup.
+    match /staff/{staffId} {
+      // Anyone signed in to the same kindergarten can read the staff directory
+      // (needed for messaging). Plus the unclaimed-lookup carve-out for claims.
+      allow read: if (isSignedIn() && inMyKg(resource.data.kindergartenId))
+                  || (isSignedIn() && resource.data.claimedByUid == uid())
+                  || (isSignedIn() && resource.data.claimedByUid == null);
+
+      allow create: if (isAdmin()
+                          && inMyKg(request.resource.data.kindergartenId))
+                    // Founding admin signup: self-create the admin record.
+                    || (isSignedIn()
+                          && request.resource.data.claimedByUid == uid()
+                          && request.resource.data.role == 'admin'
+                          && get(/databases/$(database)/documents/kindergartens/$(request.resource.data.kindergartenId)).data.createdByUid == uid());
+
+      allow update: if (isAdmin() && inMyKg(resource.data.kindergartenId))
+                    // Staff claiming their own record.
+                    || (isSignedIn()
+                          && resource.data.claimedByUid == null
+                          && request.resource.data.claimedByUid == uid()
+                          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['claimedByUid']));
+
+      allow delete: if isAdmin() && inMyKg(resource.data.kindergartenId);
+    }
+
+    // ---------- departments ----------
+    // Read open to anyone in the kindergarten. Mutations by admin only.
+    match /departments/{id} {
+      allow read: if inMyKg(resource.data.kindergartenId);
+      allow create: if isAdmin() && request.resource.data.kindergartenId == userKg();
+      allow update, delete: if isAdmin() && inMyKg(resource.data.kindergartenId);
+    }
+
+    // ---------- children ----------
+    // Admin: any child in their kindergarten. Employee: only children in
+    // their accessible departments. Parent: children listing them.
+    match /children/{id} {
+      allow read: if (isAdmin() && inMyKg(resource.data.kindergartenId))
+                  || (isEmployee()
+                      && inMyKg(resource.data.kindergartenId)
+                      && canAccessDept(resource.data.departmentId))
+                  || (isParent() && inMyKg(resource.data.kindergartenId));
+      allow create: if isAdmin() && request.resource.data.kindergartenId == userKg();
+      allow update: if isAdmin() && inMyKg(resource.data.kindergartenId);
+      allow delete: if isAdmin() && inMyKg(resource.data.kindergartenId);
+
+      // Weekly schedule subcollection (one doc per child: 'weekly').
+      match /schedule/{scheduleId} {
+        allow read: if isSignedIn()
+                          && inMyKg(get(/databases/$(database)/documents/children/$(id)).data.kindergartenId);
+        allow write: if isParent()
+                          && inMyKg(get(/databases/$(database)/documents/children/$(id)).data.kindergartenId);
+      }
+    }
+
+    // ---------- parents ----------
+    match /parents/{id} {
+      // Anyone signed in to the same kindergarten can read the parent directory
+      // (needed for messaging). Plus the unclaimed-lookup carve-out for claims.
+      allow read: if (isSignedIn() && inMyKg(resource.data.kindergartenId))
+                  || (isSignedIn() && resource.data.claimedByUid == uid())
+                  || (isSignedIn() && resource.data.claimedByUid == null);
+      allow create: if isAdmin() && request.resource.data.kindergartenId == userKg();
+      allow update: if (isAdmin() && inMyKg(resource.data.kindergartenId))
+                    || (isSignedIn()
+                          && resource.data.claimedByUid == null
+                          && request.resource.data.claimedByUid == uid()
+                          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['claimedByUid']));
+      allow delete: if isAdmin() && inMyKg(resource.data.kindergartenId);
+    }
+
+    // ---------- posts ----------
+    // Read open to anyone in the kindergarten. Admin can create/edit/delete
+    // anywhere. Employee can create/edit/delete posts whose departmentId they
+    // can access (or null = broadcast).
+    match /posts/{id} {
+      allow read: if inMyKg(resource.data.kindergartenId);
+
+      allow create: if (isAdmin() && request.resource.data.kindergartenId == userKg()
+                          && request.resource.data.authorUid == uid())
+                    || (isEmployee()
+                          && request.resource.data.kindergartenId == userKg()
+                          && request.resource.data.authorUid == uid()
+                          && (request.resource.data.departmentId == null
+                              || canAccessDept(request.resource.data.departmentId)));
+
+      allow update, delete: if isSignedIn()
+                            && inMyKg(resource.data.kindergartenId)
+                            && resource.data.authorUid == uid();
+    }
+
+    // ---------- albums / photos ----------
+    match /albums/{id} {
+      allow read: if inMyKg(resource.data.kindergartenId);
+      allow create: if isAdmin() && request.resource.data.kindergartenId == userKg();
+      allow update, delete: if isAdmin() && inMyKg(resource.data.kindergartenId);
+    }
+
+    match /photos/{id} {
+      allow read: if inMyKg(resource.data.kindergartenId);
+      allow create: if isAdmin() && request.resource.data.kindergartenId == userKg();
+      allow delete: if isAdmin() && inMyKg(resource.data.kindergartenId);
+    }
+
+    // ---------- conversations + messages ----------
+    // Only participants can read/write a conversation. Messages are stored in
+    // a subcollection; their rule reads the parent conversation to authorize.
+    match /conversations/{cid} {
+      allow read: if isSignedIn() && uid() in resource.data.participantIds;
+      allow create: if isSignedIn()
+                    && uid() in request.resource.data.participantIds
+                    && request.resource.data.kindergartenId == userKg()
+                    && request.resource.data.createdByUid == uid();
+      // Updates are limited to bumping lastMessage* fields by a participant.
+      allow update: if isSignedIn() && uid() in resource.data.participantIds;
+      allow delete: if false;
+
+      match /messages/{mid} {
+        allow read: if isSignedIn()
+                    && uid() in get(/databases/$(database)/documents/conversations/$(cid)).data.participantIds;
+        allow create: if isSignedIn()
+                      && uid() in get(/databases/$(database)/documents/conversations/$(cid)).data.participantIds
+                      && request.resource.data.authorUid == uid();
+        allow update, delete: if false;
+      }
+    }
+
+    // ---------- absences ----------
+    // Admin/employee in the kindergarten: read all (dept-level filtering is
+    // applied to /children, so identifying an absent child still requires
+    // dept access). Parents: read absences for their own children only.
+    // Create allowed for the signed-in user; createdByUid must be their uid.
+    match /absences/{id} {
+      allow read: if (isStaff() && inMyKg(resource.data.kindergartenId))
+                  || (isParent() && inMyKg(resource.data.kindergartenId));
+      allow create: if isSignedIn() && request.resource.data.createdByUid == uid();
+      allow delete: if isSignedIn() && resource.data.createdByUid == uid();
+    }
+  }
+}

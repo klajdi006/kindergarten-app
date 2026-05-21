@@ -1,2 +1,78 @@
-// For information on how to create your own theme, please refer to:
-// https://ionicframework.com/docs/theming/
+// Theme tokens for the kindergarten app.
+// Color palette generated with Ionic's color generator (yellow → orange feel).
+// https://ionicframework.com/docs/theming/color-generator
+
+:root {
+  /* ----- Primary: warm orange ----- */
+  --ion-color-primary: #ff9f1c;
+  --ion-color-primary-rgb: 255, 159, 28;
+  --ion-color-primary-contrast: #000000;
+  --ion-color-primary-contrast-rgb: 0, 0, 0;
+  --ion-color-primary-shade: #e08c19;
+  --ion-color-primary-tint: #ffa933;
+
+  /* ----- Secondary: deeper orange-red ----- */
+  --ion-color-secondary: #ff6f3c;
+  --ion-color-secondary-rgb: 255, 111, 60;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #e06235;
+  --ion-color-secondary-tint: #ff7d50;
+
+  /* ----- Tertiary: bright yellow ----- */
+  --ion-color-tertiary: #fbc02d;
+  --ion-color-tertiary-rgb: 251, 192, 45;
+  --ion-color-tertiary-contrast: #000000;
+  --ion-color-tertiary-contrast-rgb: 0, 0, 0;
+  --ion-color-tertiary-shade: #dda928;
+  --ion-color-tertiary-tint: #fbc642;
+
+  /* Keep semantic colors for badges / states */
+  --ion-color-success: #2dd36f;
+  --ion-color-success-rgb: 45, 211, 111;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #28ba62;
+  --ion-color-success-tint: #42d77d;
+
+  --ion-color-warning: #ffc409;
+  --ion-color-warning-rgb: 255, 196, 9;
+  --ion-color-warning-contrast: #000000;
+  --ion-color-warning-contrast-rgb: 0, 0, 0;
+  --ion-color-warning-shade: #e0ac08;
+  --ion-color-warning-tint: #ffca22;
+
+  --ion-color-danger: #eb445a;
+  --ion-color-danger-rgb: 235, 68, 90;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #cf3c4f;
+  --ion-color-danger-tint: #ed576b;
+}
+
+/*
+ * Dark-mode overrides. Slightly softer/brighter so the orange reads well on
+ * dark backgrounds without burning.
+ */
+.ion-palette-dark {
+  --ion-color-primary: #ffb14a;
+  --ion-color-primary-rgb: 255, 177, 74;
+  --ion-color-primary-contrast: #000000;
+  --ion-color-primary-contrast-rgb: 0, 0, 0;
+  --ion-color-primary-shade: #e09c41;
+  --ion-color-primary-tint: #ffb95c;
+
+  --ion-color-secondary: #ff8a5c;
+  --ion-color-secondary-rgb: 255, 138, 92;
+  --ion-color-secondary-contrast: #000000;
+  --ion-color-secondary-contrast-rgb: 0, 0, 0;
+  --ion-color-secondary-shade: #e07951;
+  --ion-color-secondary-tint: #ff966c;
+
+  --ion-color-tertiary: #ffd75a;
+  --ion-color-tertiary-rgb: 255, 215, 90;
+  --ion-color-tertiary-contrast: #000000;
+  --ion-color-tertiary-contrast-rgb: 0, 0, 0;
+  --ion-color-tertiary-shade: #e0bd4f;
+  --ion-color-tertiary-tint: #ffdc6b;
+}

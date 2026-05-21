@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()" [attr.aria-label]="'common.cancel' | translate">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'admin.home.pendingStaff' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  @if (pending().length === 0) {
+    <div class="ion-padding ion-text-center">
+      <ion-text color="medium">
+        <p>{{ 'admin.staff.empty' | translate }}</p>
+      </ion-text>
+    </div>
+  } @else {
+    <ion-list>
+      @for (record of pending(); track record.id) {
+        <ion-item button="true" (click)="openDetail(record)">
+          <ion-avatar
+            slot="start"
+            style="background:var(--ion-color-primary);color:var(--ion-color-primary-contrast);display:inline-flex;align-items:center;justify-content:center;font-weight:600;">
+            {{ initials(record) }}
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ record.firstName }} {{ record.lastName }}</h2>
+            <p>{{ record.email }}</p>
+            <ion-text color="medium">
+              <small>{{ 'admin.staff.pending' | translate }}</small>
+            </ion-text>
+          </ion-label>
+          <ion-badge slot="end" color="medium">{{ 'roles.' + record.role | translate }}</ion-badge>
+        </ion-item>
+      }
+    </ion-list>
+  }
+</ion-content>

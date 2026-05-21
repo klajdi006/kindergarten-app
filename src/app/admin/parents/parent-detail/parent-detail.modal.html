@@ -1,0 +1,152 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'admin.parents.detail.title' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button
+        strong="true"
+        [disabled]="form.pristine || form.invalid || saving()"
+        (click)="save()">
+        {{ 'common.save' | translate }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  @if (parent(); as p) {
+    <div class="ion-text-center ion-padding-top">
+      <div
+        style="width:96px;height:96px;border-radius:50%;background:var(--ion-color-primary);color:var(--ion-color-primary-contrast);display:inline-flex;align-items:center;justify-content:center;font-size:2.25rem;font-weight:600;margin:0 auto;">
+        {{ initials(p) }}
+      </div>
+      <h2 class="ion-no-margin ion-padding-top">{{ p.firstName }} {{ p.lastName }}</h2>
+      @if (p.claimedByUid) {
+        <ion-text color="success">
+          <p><small>✓ {{ 'admin.parents.claimed' | translate }}</small></p>
+        </ion-text>
+      } @else {
+        <ion-text color="medium">
+          <p><small>{{ 'admin.parents.pending' | translate }}</small></p>
+        </ion-text>
+      }
+    </div>
+
+    <ion-list-header>
+      <ion-label>{{ 'admin.parents.detail.profile' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list [formGroup]="form" inset="true">
+      <ion-item>
+        <ion-input
+          [label]="'admin.parents.fields.firstName' | translate"
+          labelPlacement="stacked"
+          formControlName="firstName">
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          [label]="'admin.parents.fields.lastName' | translate"
+          labelPlacement="stacked"
+          formControlName="lastName">
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-icon slot="start" [icon]="mailOutline" color="medium" aria-hidden="true"></ion-icon>
+        <ion-input
+          type="email"
+          autocomplete="email"
+          [label]="'admin.parents.fields.email' | translate"
+          labelPlacement="stacked"
+          formControlName="email">
+        </ion-input>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-icon slot="start" [icon]="callOutline" color="medium" aria-hidden="true"></ion-icon>
+        <ion-input
+          type="tel"
+          inputmode="tel"
+          [label]="'admin.parents.fields.phone' | translate"
+          labelPlacement="stacked"
+          formControlName="phone">
+        </ion-input>
+      </ion-item>
+    </ion-list>
+
+    <ion-list-header>
+      <ion-label>{{ 'admin.parents.detail.children' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list inset="true">
+      @for (child of assignedChildren(); track child.id) {
+        <ion-item>
+          <ion-avatar
+            slot="start"
+            style="background:var(--ion-color-success);color:var(--ion-color-success-contrast);display:inline-flex;align-items:center;justify-content:center;font-weight:600;">
+            {{ initials(child) }}
+          </ion-avatar>
+          <ion-label>
+            <h3>{{ child.firstName }} {{ child.lastName }}</h3>
+            <p>
+              @if (childAge(child); as a) {
+                {{ 'admin.parents.detail.years' | translate: { years: a } }}
+              }
+              @if (child.birthDate) {
+                · {{ child.birthDate | dateDmy }}
+              }
+            </p>
+          </ion-label>
+          <ion-button
+            slot="end"
+            fill="clear"
+            color="medium"
+            size="small"
+            (click)="unassign(child.id)"
+            [attr.aria-label]="'common.delete' | translate">
+            <ion-icon slot="icon-only" [icon]="closeCircleOutline"></ion-icon>
+          </ion-button>
+        </ion-item>
+      } @empty {
+        <ion-item lines="none">
+          <ion-text color="medium">
+            <p><small>{{ 'admin.parents.noChildren' | translate }}</small></p>
+          </ion-text>
+        </ion-item>
+      }
+      <ion-item button="true" detail="false" lines="none" (click)="openAssign()">
+        <ion-icon slot="start" [icon]="personAddOutline" color="primary" aria-hidden="true"></ion-icon>
+        <ion-label color="primary">{{ 'admin.parents.assignChildren' | translate }}</ion-label>
+      </ion-item>
+    </ion-list>
+
+    @if (!p.claimedByUid) {
+      <ion-list-header>
+        <ion-label>{{ 'admin.parents.detail.invite' | translate }}</ion-label>
+      </ion-list-header>
+      <ion-list inset="true">
+        <ion-item
+          button="true"
+          detail="false"
+          lines="none"
+          [disabled]="sendingInvite()"
+          (click)="sendInvite()">
+          <ion-icon slot="start" [icon]="paperPlaneOutline" color="primary" aria-hidden="true"></ion-icon>
+          <ion-label color="primary">
+            {{ 'admin.parents.detail.sendInvite' | translate }}
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    }
+
+    <ion-list-header>
+      <ion-label>{{ 'admin.parents.detail.danger' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list inset="true">
+      <ion-item button="true" detail="false" lines="none" (click)="confirmDelete()">
+        <ion-icon slot="start" [icon]="trashOutline" color="danger" aria-hidden="true"></ion-icon>
+        <ion-label color="danger">{{ 'admin.parents.detail.delete' | translate }}</ion-label>
+      </ion-item>
+    </ion-list>
+  }
+</ion-content>

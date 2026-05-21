@@ -1,0 +1,63 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()" [attr.aria-label]="'common.cancel' | translate">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'admin.posts.add' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button strong="true" (click)="save()">{{ 'common.save' | translate }}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <ion-list inset="true">
+      <ion-item>
+        <ion-input
+          [label]="'admin.posts.fields.title' | translate"
+          labelPlacement="floating"
+          formControlName="title">
+        </ion-input>
+      </ion-item>
+      @if (form.controls.title.touched && form.controls.title.invalid) {
+        <ion-note color="danger" class="ion-padding-start">
+          {{ 'common.required' | translate }}
+        </ion-note>
+      }
+      <ion-item>
+        <ion-textarea
+          [label]="'admin.posts.fields.description' | translate"
+          labelPlacement="floating"
+          autoGrow="true"
+          rows="5"
+          formControlName="description">
+        </ion-textarea>
+      </ion-item>
+      @if (form.controls.description.touched && form.controls.description.invalid) {
+        <ion-note color="danger" class="ion-padding-start">
+          {{ 'common.required' | translate }}
+        </ion-note>
+      }
+      <ion-item lines="none">
+        <ion-icon slot="start" [icon]="globeOutline" color="medium" aria-hidden="true"></ion-icon>
+        <ion-select
+          [label]="'admin.posts.fields.audience' | translate"
+          labelPlacement="floating"
+          interface="popover"
+          formControlName="departmentId">
+          <ion-select-option value="">
+            {{ 'admin.posts.allDepartments' | translate }}
+          </ion-select-option>
+          @for (dept of departments; track dept.id) {
+            <ion-select-option [value]="dept.id">{{ dept.name }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+    </ion-list>
+    <ion-text color="medium">
+      <p class="ion-padding-horizontal"><small>{{ 'admin.posts.imagesHint' | translate }}</small></p>
+    </ion-text>
+  </form>
+</ion-content>

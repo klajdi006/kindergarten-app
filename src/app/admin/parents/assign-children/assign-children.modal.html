@@ -1,0 +1,74 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()" [attr.aria-label]="'common.cancel' | translate">
+        <ion-icon slot="icon-only" name="close-outline" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'admin.parents.assignChildren' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button
+        strong="true"
+        [disabled]="selectedCount() === 0"
+        (click)="confirm()">
+        @if (selectedCount() > 0) {
+          {{ 'admin.parents.assignWithCount' | translate: { count: selectedCount() } }}
+        } @else {
+          {{ 'admin.parents.assign' | translate }}
+        }
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar
+      [value]="search()"
+      (ionInput)="onSearch($any($event))"
+      [placeholder]="'admin.parents.searchChildrenPlaceholder' | translate">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (filtered().length === 0) {
+    <div class="ion-padding ion-text-center">
+      <ion-text color="medium">
+        <p>
+          @if (search().trim()) {
+            {{ 'admin.parents.noChildrenMatch' | translate }}
+          } @else {
+            {{ 'admin.parents.noAvailableChildren' | translate }}
+          }
+        </p>
+      </ion-text>
+    </div>
+  } @else {
+    <ion-list>
+      @for (child of filtered(); track child.id) {
+        <ion-item button="true" detail="false" (click)="toggle(child.id)">
+          <ion-icon
+            slot="start"
+            [icon]="isSelected(child.id) ? checkmarkCircle : ellipseOutline"
+            [color]="isSelected(child.id) ? 'primary' : 'medium'"
+            aria-hidden="true">
+          </ion-icon>
+          <ion-avatar
+            slot="start"
+            style="background:var(--ion-color-success);color:var(--ion-color-success-contrast);display:inline-flex;align-items:center;justify-content:center;font-weight:600;">
+            {{ initials(child) }}
+          </ion-avatar>
+          <ion-label>
+            <h3>{{ child.firstName }} {{ child.lastName }}</h3>
+            <p>
+              @if (childAge(child); as a) {
+                {{ 'admin.parents.detail.years' | translate: { years: a } }}
+              }
+              @if (child.birthDate) {
+                · {{ child.birthDate | dateDmy }}
+              }
+            </p>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+</ion-content>

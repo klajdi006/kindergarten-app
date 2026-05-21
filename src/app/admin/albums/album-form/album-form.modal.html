@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()" [attr.aria-label]="'common.cancel' | translate">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      {{ (isEdit ? 'admin.albums.edit' : 'admin.albums.add') | translate }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button strong="true" (click)="save()">{{ 'common.save' | translate }}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <ion-list inset="true">
+      <ion-item>
+        <ion-input
+          [label]="'admin.albums.fields.name' | translate"
+          labelPlacement="floating"
+          [placeholder]="'admin.albums.namePlaceholder' | translate"
+          formControlName="name">
+        </ion-input>
+      </ion-item>
+      @if (form.controls.name.touched && form.controls.name.invalid) {
+        <ion-note color="danger" class="ion-padding-start">
+          {{ 'common.required' | translate }}
+        </ion-note>
+      }
+      <ion-item lines="none">
+        <ion-select
+          [label]="'admin.albums.fields.department' | translate"
+          labelPlacement="floating"
+          interface="popover"
+          formControlName="departmentId">
+          @for (dept of departments; track dept.id) {
+            <ion-select-option [value]="dept.id">{{ dept.name }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+      @if (form.controls.departmentId.touched && form.controls.departmentId.invalid) {
+        <ion-note color="danger" class="ion-padding-start">
+          {{ 'common.required' | translate }}
+        </ion-note>
+      }
+    </ion-list>
+  </form>
+</ion-content>

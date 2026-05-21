@@ -1,0 +1,97 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()" [attr.aria-label]="'common.cancel' | translate">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'admin.staff.add' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button strong="true" (click)="save()">{{ 'common.save' | translate }}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <ion-list inset="true">
+      <ion-item>
+        <ion-input
+          [label]="'admin.staff.fields.firstName' | translate"
+          labelPlacement="floating"
+          formControlName="firstName">
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          [label]="'admin.staff.fields.lastName' | translate"
+          labelPlacement="floating"
+          formControlName="lastName">
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          type="email"
+          autocomplete="email"
+          [label]="'admin.staff.fields.email' | translate"
+          labelPlacement="floating"
+          formControlName="email">
+        </ion-input>
+      </ion-item>
+      @if (form.controls.email.touched && form.controls.email.invalid) {
+        <ion-note color="danger" class="ion-padding-start">
+          {{ 'login.validation.invalidEmail' | translate }}
+        </ion-note>
+      }
+      <ion-item>
+        <ion-input
+          type="tel"
+          inputmode="tel"
+          [label]="'admin.staff.fields.phone' | translate"
+          labelPlacement="floating"
+          formControlName="phone">
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-select
+          [label]="'admin.staff.fields.role' | translate"
+          labelPlacement="floating"
+          interface="action-sheet"
+          [cancelText]="'common.cancel' | translate"
+          formControlName="role">
+          <ion-select-option value="employee">{{ 'roles.employee' | translate }}</ion-select-option>
+          <ion-select-option value="admin">{{ 'roles.admin' | translate }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      @if (isEmployee()) {
+        <ion-item lines="none">
+          <ion-select
+            [label]="'admin.staff.fields.departments' | translate"
+            labelPlacement="floating"
+            interface="action-sheet"
+            multiple="true"
+            [cancelText]="'common.cancel' | translate"
+            [okText]="'common.save' | translate"
+            [value]="departmentsValue()"
+            (ionChange)="onDepartmentsChange($any($event))">
+            <ion-select-option [value]="ALL">
+              {{ 'admin.staff.fields.allDepartments' | translate }}
+            </ion-select-option>
+            @for (d of departments.all(); track d.id) {
+              <ion-select-option [value]="d.id">{{ d.name }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        @if (departments.all().length === 0) {
+          <ion-text color="medium">
+            <p class="ion-padding-start"><small>{{ 'admin.staff.noDepartments' | translate }}</small></p>
+          </ion-text>
+        }
+      }
+    </ion-list>
+
+    <ion-text color="medium">
+      <p class="ion-padding-horizontal"><small>{{ 'admin.staff.inviteHint' | translate }}</small></p>
+    </ion-text>
+  </form>
+</ion-content>

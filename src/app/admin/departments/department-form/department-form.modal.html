@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()" [attr.aria-label]="'common.cancel' | translate">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      {{ (isEdit ? 'admin.departments.edit' : 'admin.departments.add') | translate }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button strong="true" (click)="save()">{{ 'common.save' | translate }}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <ion-list inset="true">
+      <ion-item>
+        <ion-input
+          [label]="'admin.departments.fields.name' | translate"
+          labelPlacement="floating"
+          formControlName="name">
+        </ion-input>
+      </ion-item>
+      @if (form.controls.name.touched && form.controls.name.invalid) {
+        <ion-note color="danger" class="ion-padding-start">
+          {{ 'common.required' | translate }}
+        </ion-note>
+      }
+      <ion-item>
+        <ion-input
+          type="number"
+          inputmode="numeric"
+          [label]="'admin.departments.fields.ageMin' | translate"
+          labelPlacement="floating"
+          formControlName="ageMin">
+        </ion-input>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-input
+          type="number"
+          inputmode="numeric"
+          [label]="'admin.departments.fields.ageMax' | translate"
+          labelPlacement="floating"
+          formControlName="ageMax">
+        </ion-input>
+      </ion-item>
+    </ion-list>
+  </form>
+</ion-content>

@@ -1,0 +1,203 @@
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import {
+  IonBadge,
+  IonCard,
+  IonCardContent,
+  IonContent,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonListHeader,
+  IonNote,
+  IonRefresher,
+  IonRefresherContent,
+  IonText,
+  ModalController,
+} from '@ionic/angular/standalone';
+import {
+  alertCircleOutline,
+  bandageOutline,
+  businessOutline,
+  giftOutline,
+  happyOutline,
+  mailOutline,
+  megaphoneOutline,
+  peopleOutline,
+  sunnyOutline,
+} from 'ionicons/icons';
+import { TranslatePipe } from '@ngx-translate/core';
+import { PendingParentsModal } from '@app/admin/parents/pending-parents/pending-parents.modal';
+import { PendingStaffModal } from '@app/admin/staff/pending-staff/pending-staff.modal';
+import { UnassignedChildrenModal } from '@app/admin/children/unassigned-children/unassigned-children.modal';
+import { AuthService } from '@app/auth/auth.service';
+import { AbsencesService } from '@app/data/absences.service';
+import { ChildrenService } from '@app/data/children.service';
+import { DepartmentsService } from '@app/data/departments.service';
+import { ParentsService } from '@app/data/parents.service';
+import { PostsService } from '@app/data/posts.service';
+import { StaffService } from '@app/data/staff.service';
+import { Child, Department, Post } from '@app/data/types';
+import { completeRefresher } from '@app/shared/utils/refresher';
+import { TabHeaderComponent } from '@app/shared/components/tab-header/tab-header.component';
+import { DateDmyPipe } from '@app/shared/pipes/date-dmy.pipe';
+
+@Component({
+  selector: 'app-admin-home',
+  templateUrl: 'admin-home.page.html',
+  imports: [
+    RouterLink,
+    IonContent,
+    IonRefresher,
+    IonRefresherContent,
+    IonCard,
+    IonCardContent,
+    IonList,
+    IonListHeader,
+    IonItem,
+    IonLabel,
+    IonIcon,
+    IonBadge,
+    IonNote,
+    IonText,
+    TabHeaderComponent,
+    TranslatePipe,
+    DateDmyPipe,
+  ],
+})
+export class AdminHomePage {
+  readonly auth = inject(AuthService);
+  readonly parents = inject(ParentsService);
+  readonly children = inject(ChildrenService);
+  readonly departments = inject(DepartmentsService);
+  readonly staff = inject(StaffService);
+  readonly absences = inject(AbsencesService);
+  readonly posts = inject(PostsService);
+  private readonly modalCtrl = inject(ModalController);
+
+  protected readonly onRefresh = completeRefresher;
+
+  async openPendingParents(): Promise<void> {
+    const modal = await this.modalCtrl.create({ component: PendingParentsModal });
+    await modal.present();
+  }
+
+  async openPendingStaff(): Promise<void> {
+    const modal = await this.modalCtrl.create({ component: PendingStaffModal });
+    await modal.present();
+  }
+
+  async openUnassignedChildren(): Promise<void> {
+    const modal = await this.modalCtrl.create({ component: UnassignedChildrenModal });
+    await modal.present();
+  }
+
+  readonly today = computed(() => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  });
+
+  readonly stats = computed(() => {
+    const total = this.children.count();
+    const today = this.today();
+    const todayAbsences = this.absences
+      .all()
+      .filter((a) => a.startDate <= today && a.endDate >= today);
+    const sick = todayAbsences.filter((a) => a.type === 'sick').length;
+    const holiday = todayAbsences.filter((a) => a.type === 'holiday').length;
+    return { total, present: total - sick - holiday, sick, holiday };
+  });
+
+  readonly pendingParents = computed(
+    () => this.parents.all().filter((p) => p.claimedByUid === null).length,
+  );
+  readonly pendingStaff = computed(
+    () => this.staff.all().filter((s) => s.claimedByUid === null).length,
+  );
+  readonly unassignedChildren = computed(
+    () => this.children.all().filter((c) => c.parentIds.length === 0).length,
+  );
+
+  readonly hasAttention = computed(
+    () => this.pendingParents() + this.pendingStaff() + this.unassignedChildren() > 0,
+  );
+
+  readonly departmentRows = computed(() =>
+    this.departments
+      .all()
+      .map((d) => ({
+        dept: d,
+        count: this.children.all().filter((c) => c.departmentId === d.id).length,
+      }))
+      .sort((a, b) => b.count - a.count),
+  );
+
+  readonly upcomingBirthdays = computed<Child[]>(() => {
+    const now = new Date();
+    const todayDoy = monthDay(now);
+    const horizonDoy = monthDay(addDays(now, 7));
+    const wraps = horizonDoy < todayDoy;
+    return this.children
+      .all()
+      .filter((c) => {
+        const birth = new Date(c.birthDate);
+        if (Number.isNaN(birth.getTime())) return false;
+        const doy = monthDay(birth);
+        return wraps ? doy >= todayDoy || doy <= horizonDoy : doy >= todayDoy && doy <= horizonDoy;
+      })
+      .slice()
+      .sort((a, b) => sortableDoy(new Date(a.birthDate), todayDoy) - sortableDoy(new Date(b.birthDate), todayDoy))
+      .slice(0, 5);
+  });
+
+  readonly recentPosts = computed<Post[]>(() => this.posts.all().slice(0, 3));
+
+  departmentName(deptId: string | null): string {
+    if (!deptId) return '';
+    return this.departments.all().find((d) => d.id === deptId)?.name ?? '';
+  }
+
+  protected readonly alertCircleOutline = alertCircleOutline;
+  protected readonly bandageOutline = bandageOutline;
+  protected readonly businessOutline = businessOutline;
+  protected readonly giftOutline = giftOutline;
+  protected readonly happyOutline = happyOutline;
+  protected readonly mailOutline = mailOutline;
+  protected readonly megaphoneOutline = megaphoneOutline;
+  protected readonly peopleOutline = peopleOutline;
+  protected readonly sunnyOutline = sunnyOutline;
+
+  readonly loading = signal(true);
+
+  constructor() {
+    effect(() => {
+      if (
+        this.parents.count() > 0 ||
+        this.children.count() > 0 ||
+        this.departments.count() > 0
+      ) {
+        this.loading.set(false);
+      }
+    });
+    setTimeout(() => this.loading.set(false), 1500);
+  }
+}
+
+function monthDay(d: Date): number {
+  return d.getMonth() * 100 + d.getDate();
+}
+
+function addDays(d: Date, days: number): Date {
+  const r = new Date(d);
+  r.setDate(r.getDate() + days);
+  return r;
+}
+
+function sortableDoy(birth: Date, todayDoy: number): number {
+  const doy = monthDay(birth);
+  return doy >= todayDoy ? doy : doy + 1200;
+}

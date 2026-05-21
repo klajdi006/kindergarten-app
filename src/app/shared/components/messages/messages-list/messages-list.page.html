@@ -1,0 +1,63 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{ 'messages.title' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($any($event))">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading()) {
+    <app-skeleton-list [count]="6" />
+  } @else if (conversations.mine().length === 0) {
+    <div
+      class="ion-text-center"
+      style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;padding-top:3rem;">
+      <ion-icon
+        [icon]="chatbubblesOutline"
+        style="font-size:3rem;color:var(--ion-color-medium);"
+        aria-hidden="true">
+      </ion-icon>
+      <ion-text color="medium">
+        <p>{{ 'messages.empty' | translate }}</p>
+      </ion-text>
+    </div>
+  } @else {
+    <ion-list>
+      @for (conv of conversations.mine(); track conv.id) {
+        <ion-item button="true" (click)="open(conv)">
+          <ion-avatar
+            slot="start"
+            style="display:inline-flex;align-items:center;justify-content:center;background:var(--ion-color-primary);color:var(--ion-color-primary-contrast);font-weight:600;">
+            @if (conv.isGroup) {
+              <ion-icon [icon]="peopleOutline" aria-hidden="true"></ion-icon>
+            } @else {
+              {{ initials(displayTitle(conv)) }}
+            }
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ displayTitle(conv) }}</h2>
+            @if (conv.lastMessage) {
+              <p>{{ conv.lastMessage }}</p>
+            } @else {
+              <p><ion-text color="medium"><em>{{ 'messages.noMessages' | translate }}</em></ion-text></p>
+            }
+          </ion-label>
+          @if (otherRoleBadge(conv); as r) {
+            <ion-badge slot="end" [color]="r === 'parent' ? 'tertiary' : (r === 'admin' ? 'primary' : 'success')">
+              {{ 'roles.' + r | translate }}
+            </ion-badge>
+          }
+        </ion-item>
+      }
+    </ion-list>
+  }
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="openNew()" [attr.aria-label]="'messages.new' | translate">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

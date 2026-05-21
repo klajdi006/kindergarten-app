@@ -1,0 +1,73 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()" [attr.aria-label]="'common.cancel' | translate">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'settings.operatingHours.title' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button strong="true" (click)="save()">{{ 'common.save' | translate }}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-list inset="true">
+    @for (day of weekDays; track day) {
+      @let h = draft()[day];
+      <ion-item>
+        <ion-icon slot="start" [icon]="timeOutline" color="medium" aria-hidden="true"></ion-icon>
+        <ion-label>{{ 'days.' + day | translate }}</ion-label>
+        <ion-toggle
+          slot="end"
+          [checked]="h.open"
+          (ionChange)="toggleDayOpen(day, $any($event))">
+        </ion-toggle>
+      </ion-item>
+      @if (h.open) {
+        <ion-item>
+          <ion-label>{{ 'settings.operatingHours.from' | translate }}</ion-label>
+          <ion-datetime-button slot="end" [datetime]="'op-' + day + '-from'"></ion-datetime-button>
+        </ion-item>
+        <ion-item>
+          <ion-label>{{ 'settings.operatingHours.to' | translate }}</ion-label>
+          <ion-datetime-button slot="end" [datetime]="'op-' + day + '-to'"></ion-datetime-button>
+        </ion-item>
+      } @else {
+        <ion-item lines="full">
+          <ion-label color="medium">
+            <p>{{ 'settings.operatingHours.closed' | translate }}</p>
+          </ion-label>
+        </ion-item>
+      }
+    }
+  </ion-list>
+
+  @for (day of weekDays; track day) {
+    @let h = draft()[day];
+    @if (h.open) {
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+            [id]="'op-' + day + '-from'"
+            presentation="time"
+            minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
+            [value]="h.from"
+            (ionChange)="onTimeChange(day, 'from', $any($event))">
+          </ion-datetime>
+        </ng-template>
+      </ion-modal>
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+            [id]="'op-' + day + '-to'"
+            presentation="time"
+            minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
+            [value]="h.to"
+            (ionChange)="onTimeChange(day, 'to', $any($event))">
+          </ion-datetime>
+        </ng-template>
+      </ion-modal>
+    }
+  }
+</ion-content>

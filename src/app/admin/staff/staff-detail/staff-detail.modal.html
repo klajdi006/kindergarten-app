@@ -1,0 +1,149 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon slot="icon-only" name="close-outline" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'admin.staff.detail.title' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button strong="true" [disabled]="form.pristine || saving()" (click)="save()">
+        {{ 'common.save' | translate }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+@if (record(); as r) {
+  <ion-content class="ion-padding-bottom">
+    <div class="ion-text-center ion-padding">
+      <ion-avatar
+        style="width:80px;height:80px;margin:0 auto;display:inline-flex;align-items:center;justify-content:center;background:var(--ion-color-primary);color:var(--ion-color-primary-contrast);font-size:1.75rem;font-weight:600;">
+        {{ initials(r) }}
+      </ion-avatar>
+      <h2 class="ion-no-margin ion-padding-top">{{ r.firstName }} {{ r.lastName }}</h2>
+      <ion-badge [color]="r.role === 'admin' ? 'primary' : 'success'">
+        {{ 'roles.' + r.role | translate }}
+      </ion-badge>
+      <div class="ion-padding-top">
+        @if (r.claimedByUid) {
+          <ion-text color="success">
+            <small>{{ 'admin.staff.claimed' | translate }}</small>
+          </ion-text>
+        } @else {
+          <ion-text color="medium">
+            <small>{{ 'admin.staff.pending' | translate }}</small>
+          </ion-text>
+        }
+      </div>
+    </div>
+
+    <form [formGroup]="form">
+      <ion-list-header>
+        <ion-label>{{ 'admin.staff.detail.profile' | translate }}</ion-label>
+      </ion-list-header>
+      <ion-list inset="true">
+        <ion-item>
+          <ion-input
+            [label]="'admin.staff.fields.firstName' | translate"
+            labelPlacement="stacked"
+            formControlName="firstName">
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input
+            [label]="'admin.staff.fields.lastName' | translate"
+            labelPlacement="stacked"
+            formControlName="lastName">
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-icon slot="start" [icon]="mailOutline" color="medium" aria-hidden="true"></ion-icon>
+          <ion-input
+            type="email"
+            [label]="'admin.staff.fields.email' | translate"
+            labelPlacement="stacked"
+            formControlName="email">
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-icon slot="start" [icon]="callOutline" color="medium" aria-hidden="true"></ion-icon>
+          <ion-input
+            type="tel"
+            [label]="'admin.staff.fields.phone' | translate"
+            labelPlacement="stacked"
+            formControlName="phone">
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-select
+            [label]="'admin.staff.fields.role' | translate"
+            labelPlacement="stacked"
+            interface="action-sheet"
+            [cancelText]="'common.cancel' | translate"
+            formControlName="role">
+            <ion-select-option value="employee">{{ 'roles.employee' | translate }}</ion-select-option>
+            <ion-select-option value="admin">{{ 'roles.admin' | translate }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        @if (isEmployee()) {
+          <ion-item lines="none">
+            <ion-select
+              [label]="'admin.staff.fields.departments' | translate"
+              labelPlacement="stacked"
+              interface="action-sheet"
+              multiple="true"
+              [cancelText]="'common.cancel' | translate"
+              [okText]="'common.save' | translate"
+              [value]="departmentsValue()"
+              (ionChange)="onDepartmentsChange($any($event))">
+              <ion-select-option [value]="ALL">
+                {{ 'admin.staff.fields.allDepartments' | translate }}
+              </ion-select-option>
+              @for (d of departments.all(); track d.id) {
+                <ion-select-option [value]="d.id">{{ d.name }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          @if (departments.all().length === 0) {
+            <ion-item lines="none">
+              <ion-text color="medium">
+                <p><small>{{ 'admin.staff.noDepartments' | translate }}</small></p>
+              </ion-text>
+            </ion-item>
+          }
+        }
+      </ion-list>
+    </form>
+
+    <ion-list-header>
+      <ion-label>{{ 'admin.staff.detail.invite' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list inset="true">
+      <ion-item
+        button="true"
+        detail="false"
+        [disabled]="sendingInvite()"
+        (click)="sendInvite()">
+        <ion-icon slot="start" [icon]="paperPlaneOutline" color="primary"></ion-icon>
+        <ion-label color="primary">{{ 'admin.staff.detail.sendInvite' | translate }}</ion-label>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-text color="medium">
+          <p><small>{{ 'admin.staff.inviteHint' | translate }}</small></p>
+        </ion-text>
+      </ion-item>
+    </ion-list>
+
+    <ion-list-header>
+      <ion-label color="danger">{{ 'admin.staff.detail.danger' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list inset="true">
+      <ion-item button="true" detail="false" lines="none" (click)="confirmDelete()">
+        <ion-icon slot="start" [icon]="trashOutline" color="danger"></ion-icon>
+        <ion-label color="danger">{{ 'admin.staff.detail.delete' | translate }}</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+}

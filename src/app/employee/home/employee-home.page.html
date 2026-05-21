@@ -1,0 +1,144 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{ 'employee.home.title' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($any($event))">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="ion-padding">
+    <ion-text>
+      <h2 class="ion-no-margin">
+        {{ 'employee.home.greeting' | translate: { name: auth.currentUser()?.displayName || ('employee.home.fallbackName' | translate) } }}
+      </h2>
+    </ion-text>
+    @if (me(); as s) {
+      <ion-text color="medium">
+        @if (s.allDepartments) {
+          <p>{{ 'employee.home.allDepartmentsScope' | translate }}</p>
+        } @else {
+          <p>
+            {{ s.departmentIds.length }} {{ 'admin.staff.deptCount' | translate }}
+          </p>
+        }
+      </ion-text>
+    }
+  </div>
+
+  <!-- Stats strip -->
+  <div class="ion-padding-horizontal" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+    <ion-card style="margin:0;">
+      <ion-card-content style="padding:12px;">
+        <div style="font-size:0.75rem;color:var(--ion-color-medium);">
+          {{ 'employee.home.stats.expected' | translate }}
+        </div>
+        <div style="font-size:1.5rem;font-weight:600;">{{ stats().expected }}</div>
+      </ion-card-content>
+    </ion-card>
+    <ion-card style="margin:0;">
+      <ion-card-content style="padding:12px;">
+        <div style="font-size:0.75rem;color:var(--ion-color-medium);">
+          {{ 'employee.home.stats.present' | translate }}
+        </div>
+        <div style="font-size:1.5rem;font-weight:600;color:var(--ion-color-success);">{{ stats().present }}</div>
+      </ion-card-content>
+    </ion-card>
+    <ion-card style="margin:0;">
+      <ion-card-content style="padding:12px;">
+        <div style="font-size:0.75rem;color:var(--ion-color-medium);">
+          {{ 'employee.home.stats.sick' | translate }}
+        </div>
+        <div style="font-size:1.5rem;font-weight:600;color:var(--ion-color-danger);">{{ stats().sick }}</div>
+      </ion-card-content>
+    </ion-card>
+    <ion-card style="margin:0;">
+      <ion-card-content style="padding:12px;">
+        <div style="font-size:0.75rem;color:var(--ion-color-medium);">
+          {{ 'employee.home.stats.holiday' | translate }}
+        </div>
+        <div style="font-size:1.5rem;font-weight:600;color:var(--ion-color-warning);">{{ stats().holiday }}</div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Today's roster -->
+  <ion-list-header>
+    <ion-label>{{ 'employee.home.todayRoster' | translate }}</ion-label>
+  </ion-list-header>
+  @if (loading()) {
+    <app-skeleton-list [count]="4" [avatar]="false" />
+  } @else {
+    <ion-list>
+      @if (todayRoster().length === 0) {
+        <ion-item lines="none">
+          <ion-text color="medium">
+            <p>{{ 'employee.home.noOneToday' | translate }}</p>
+          </ion-text>
+        </ion-item>
+      } @else {
+        @for (row of todayRoster(); track row.child.id) {
+          <ion-item>
+            <ion-icon
+              slot="start"
+              [icon]="iconForStatus(row.status)"
+              [color]="colorForStatus(row.status)"
+              aria-hidden="true">
+            </ion-icon>
+            <ion-label>
+              <h3>{{ row.child.firstName }} {{ row.child.lastName }}</h3>
+              @if (row.child.departmentId) {
+                <p>{{ departmentName(row.child.departmentId) }}</p>
+              }
+            </ion-label>
+            <ion-chip
+              slot="end"
+              [color]="row.status === 'expected' ? 'primary' : 'medium'"
+              [outline]="row.status !== 'expected'">
+              <ion-icon [icon]="timeOutline" aria-hidden="true"></ion-icon>
+              <ion-label>{{ row.arrival }} – {{ row.departure }}</ion-label>
+            </ion-chip>
+          </ion-item>
+        }
+      }
+    </ion-list>
+  }
+
+  <!-- Upcoming birthdays -->
+  @if (upcomingBirthdays().length > 0) {
+    <ion-list-header>
+      <ion-label>{{ 'employee.home.upcomingBirthdays' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list>
+      @for (c of upcomingBirthdays(); track c.id) {
+        <ion-item>
+          <ion-icon slot="start" [icon]="giftOutline" color="tertiary" aria-hidden="true"></ion-icon>
+          <ion-label>
+            <h3>{{ c.firstName }} {{ c.lastName }}</h3>
+            <p>{{ c.birthDate | dateDmy }}</p>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+
+  <!-- Recent posts -->
+  @if (recentPosts().length > 0) {
+    <ion-list-header>
+      <ion-label>{{ 'employee.home.recentPosts' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list>
+      @for (p of recentPosts(); track p.id) {
+        <ion-item>
+          <ion-icon slot="start" [icon]="megaphoneOutline" color="primary" aria-hidden="true"></ion-icon>
+          <ion-label>
+            <h3>{{ p.title }}</h3>
+            <p>{{ p.authorName }}</p>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+</ion-content>

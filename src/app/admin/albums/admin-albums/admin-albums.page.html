@@ -1,0 +1,47 @@
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($any($event))">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (loading()) {
+    <app-skeleton-list [count]="5" [avatar]="false" />
+  } @else if (albums.all().length === 0) {
+    <div class="ion-padding ion-text-center">
+      <ion-icon [icon]="imagesOutline" style="font-size:3rem;color:var(--ion-color-medium);"></ion-icon>
+      <ion-text color="medium">
+        <p>{{ 'admin.albums.empty' | translate }}</p>
+      </ion-text>
+    </div>
+  } @else {
+    <ion-list>
+      @for (album of albums.all(); track album.id) {
+        <ion-item-sliding>
+          <ion-item button="true" [routerLink]="['/admin/content/albums', album.id]">
+            <ion-icon slot="start" [icon]="imagesOutline" color="primary" aria-hidden="true"></ion-icon>
+            <ion-label>
+              <h2>{{ album.name }}</h2>
+              <p>
+                {{ departmentName(album.departmentId) }}
+                · {{ 'admin.albums.photoCount' | translate: { count: album.photoCount } }}
+              </p>
+            </ion-label>
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option color="primary" (click)="openEdit(album, $event)">
+              <ion-icon slot="icon-only" [icon]="createOutline"></ion-icon>
+            </ion-item-option>
+            <ion-item-option color="danger" (click)="confirmDelete(album, $event)">
+              <ion-icon slot="icon-only" [icon]="trashOutline"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      }
+    </ion-list>
+  }
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="openCreate()" [attr.aria-label]="'common.add' | translate">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

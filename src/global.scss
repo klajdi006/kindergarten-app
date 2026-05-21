@@ -33,5 +33,21 @@
  */
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+/* @import "@ionic/angular/css/palettes/dark.system.css"; */
+@import '@ionic/angular/css/palettes/dark.class.css';
+
+/* Hide the shell tab bar on mobile when a conversation is open so the
+   on-screen keyboard doesn't push it into the message input. */
+@media (max-width: 767.98px) {
+  ion-tab-bar.tab-bar-hide-mobile {
+    display: none;
+  }
+
+  /* iOS PWA has no browser/tab-bar chrome at the bottom — keep the message
+     input off the home-indicator area when the tab bar is hidden. Skip this
+     while the keyboard is open: the home indicator is covered by the keyboard
+     and the inset would just add empty space above it. */
+  ion-footer.ios-pwa-footer:not(.keyboard-open) {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

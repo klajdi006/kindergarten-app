@@ -1,0 +1,85 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <app-language-toggle></app-language-toggle>
+      <app-theme-toggle></app-theme-toggle>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-grid fixed>
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" sizeMd="8" sizeLg="5">
+        <div class="ion-text-center ion-padding-vertical">
+          <h1>{{ 'app.name' | translate }}</h1>
+          <p>{{ 'login.welcome' | translate }}</p>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="submit()">
+          <ion-list inset="true">
+            <ion-item>
+              <ion-input
+                [label]="'login.fields.email' | translate"
+                labelPlacement="floating"
+                type="email"
+                autocomplete="email"
+                formControlName="email">
+              </ion-input>
+            </ion-item>
+            @if (form.controls.email.touched && form.controls.email.invalid) {
+              <ion-note color="danger" class="ion-padding-start">
+                {{ 'login.validation.invalidEmail' | translate }}
+              </ion-note>
+            }
+
+            <ion-item lines="none">
+              <ion-input
+                [label]="'login.fields.password' | translate"
+                labelPlacement="floating"
+                type="password"
+                autocomplete="current-password"
+                formControlName="password">
+              </ion-input>
+            </ion-item>
+            @if (form.controls.password.touched && form.controls.password.invalid) {
+              <ion-note color="danger" class="ion-padding-start">
+                {{ 'login.validation.passwordMin' | translate }}
+              </ion-note>
+            }
+          </ion-list>
+
+          @if (errorMessage(); as msg) {
+            <ion-text color="danger">
+              <p class="ion-text-center ion-margin-top">{{ msg | translate }}</p>
+            </ion-text>
+          }
+
+          <div class="ion-padding-horizontal ion-margin-top">
+            <ion-button
+              type="submit"
+              expand="block"
+              [disabled]="isLoading()">
+              @if (isLoading()) {
+                <ion-spinner name="dots"></ion-spinner>
+              } @else {
+                {{ 'login.submit' | translate }}
+              }
+            </ion-button>
+          </div>
+        </form>
+
+        <ion-text color="medium">
+          <p class="ion-text-center">
+            {{ 'login.noAccount' | translate }}
+            <a routerLink="/signup">{{ 'login.signUpLink' | translate }}</a>
+          </p>
+          <p class="ion-text-center">
+            {{ 'login.parentInvited' | translate }}
+            <a routerLink="/claim">{{ 'login.claimLink' | translate }}</a>
+          </p>
+        </ion-text>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

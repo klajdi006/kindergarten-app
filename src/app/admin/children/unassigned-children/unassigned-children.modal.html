@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()" [attr.aria-label]="'common.cancel' | translate">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'admin.home.unassignedChildren' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  @if (unassigned().length === 0) {
+    <div class="ion-padding ion-text-center">
+      <ion-text color="medium">
+        <p>{{ 'admin.children.empty' | translate }}</p>
+      </ion-text>
+    </div>
+  } @else {
+    <ion-list>
+      @for (child of unassigned(); track child.id) {
+        <ion-item button="true" (click)="openEdit(child)">
+          <ion-label>
+            <h2>{{ child.lastName }}, {{ child.firstName }}</h2>
+            <p>{{ 'admin.children.born' | translate }}: {{ child.birthDate | dateDmy }}</p>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+</ion-content>

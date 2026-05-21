@@ -1,0 +1,90 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{ 'parent.posts.title' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($any($event))">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (myDepartments().length > 0) {
+    <ion-item lines="full">
+      <ion-icon
+        slot="start"
+        [icon]="funnelOutline"
+        color="medium"
+        aria-hidden="true">
+      </ion-icon>
+      <ion-select
+        [label]="'parent.posts.filter.label' | translate"
+        labelPlacement="start"
+        interface="action-sheet"
+        [value]="filter()"
+        (ionChange)="setFilter($any($event))">
+        <ion-select-option value="all">
+          {{ 'parent.posts.filter.all' | translate }}
+        </ion-select-option>
+        @for (dept of myDepartments(); track dept.id) {
+          <ion-select-option [value]="dept.id">{{ dept.name }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+  }
+
+  @if (loading()) {
+    @for (i of skeletonRows; track i) {
+      <ion-card>
+        <ion-card-header>
+          <ion-card-subtitle>
+            <ion-skeleton-text [animated]="true" style="width: 40%; height: 0.8rem;"></ion-skeleton-text>
+          </ion-card-subtitle>
+          <ion-card-title>
+            <ion-skeleton-text [animated]="true" style="width: 70%; height: 1.2rem;"></ion-skeleton-text>
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-skeleton-text [animated]="true" style="width: 100%; height: 0.9rem;"></ion-skeleton-text>
+          <ion-skeleton-text [animated]="true" style="width: 90%; height: 0.9rem;"></ion-skeleton-text>
+          <ion-skeleton-text [animated]="true" style="width: 60%; height: 0.9rem;"></ion-skeleton-text>
+        </ion-card-content>
+      </ion-card>
+    }
+  } @else if (visiblePosts().length === 0) {
+    <div
+      class="ion-text-center"
+      style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;padding-top:3rem;">
+      <ion-icon
+        [icon]="newspaperOutline"
+        style="font-size:3rem;color:var(--ion-color-medium);"
+        aria-hidden="true">
+      </ion-icon>
+      <ion-text color="medium">
+        <p>{{ 'parent.posts.empty' | translate }}</p>
+      </ion-text>
+    </div>
+  } @else {
+    @for (post of visiblePosts(); track post.id) {
+      <ion-card>
+        <ion-card-header>
+          <ion-card-subtitle>
+            @if (post.departmentId) {
+              {{ departmentLabel(post.departmentId) }}
+            } @else {
+              🌐 {{ 'admin.posts.allDepartments' | translate }}
+            }
+            · {{ post.createdAt | dateDmy }}
+            @if (post.authorName) {
+              · {{ post.authorName }}
+            }
+          </ion-card-subtitle>
+          <ion-card-title>{{ post.title }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content style="white-space: pre-line;">
+          {{ post.description }}
+        </ion-card-content>
+      </ion-card>
+    }
+  }
+</ion-content>

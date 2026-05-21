@@ -1,0 +1,65 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()" [attr.aria-label]="'common.cancel' | translate">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      {{ (isEdit ? 'admin.children.edit' : 'admin.children.add') | translate }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button strong="true" (click)="save()">{{ 'common.save' | translate }}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <ion-list inset="true">
+      <ion-item>
+        <ion-input
+          [label]="'admin.children.fields.firstName' | translate"
+          labelPlacement="floating"
+          formControlName="firstName">
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          [label]="'admin.children.fields.lastName' | translate"
+          labelPlacement="floating"
+          formControlName="lastName">
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>{{ 'admin.children.fields.birthDate' | translate }}</ion-label>
+        <ion-datetime-button slot="end" datetime="child-birthDate"></ion-datetime-button>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-select
+          [label]="'admin.children.fields.department' | translate"
+          labelPlacement="floating"
+          interface="popover"
+          formControlName="departmentId">
+          <ion-select-option value="">
+            {{ 'admin.children.unassigned' | translate }}
+          </ion-select-option>
+          @for (dept of departments; track dept.id) {
+            <ion-select-option [value]="dept.id">{{ dept.name }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+    </ion-list>
+  </form>
+</ion-content>
+
+<ion-modal [keepContentsMounted]="true">
+  <ng-template>
+    <ion-datetime
+      id="child-birthDate"
+      presentation="date"
+      [max]="todayIso"
+      [value]="form.controls.birthDate.value || null"
+      (ionChange)="onBirthDateChange($any($event))">
+    </ion-datetime>
+  </ng-template>
+</ion-modal>

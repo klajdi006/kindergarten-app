@@ -1,0 +1,440 @@
+{
+  "app": {
+    "name": "E-Kopshti"
+  },
+  "login": {
+    "welcome": "Mirë se erdhe përsëri",
+    "fields": {
+      "email": "Email",
+      "password": "Fjalëkalimi"
+    },
+    "submit": "Hyr",
+    "validation": {
+      "invalidEmail": "Shkruani një email të vlefshëm.",
+      "passwordMin": "Fjalëkalimi duhet të ketë të paktën 6 karaktere."
+    },
+    "noAccount": "Nuk keni llogari administratori?",
+    "signUpLink": "Regjistrohu",
+    "parentInvited": "Të ftuar si prind?",
+    "claimLink": "Aktivizo ftesën",
+    "footer": "Prindër — prisni <strong>emailin e ftesës</strong> nga kopshti juaj."
+  },
+  "signup": {
+    "title": "Krijo një llogari administratori",
+    "subtitle": "Regjistroni kopshtin tuaj",
+    "fields": {
+      "fullName": "Emri i plotë",
+      "email": "Email",
+      "password": "Fjalëkalimi",
+      "kindergartenName": "Emri i kopshtit",
+      "address": "Adresa e kopshtit"
+    },
+    "submit": "Krijo llogarinë",
+    "validation": {
+      "nameRequired": "Ju lutem shkruani emrin tuaj.",
+      "invalidEmail": "Shkruani një email të vlefshëm.",
+      "passwordMin": "Fjalëkalimi duhet të ketë të paktën 6 karaktere.",
+      "kindergartenNameRequired": "Ju lutem shkruani emrin e kopshtit.",
+      "addressRequired": "Ju lutem shkruani adresën e kopshtit."
+    },
+    "haveAccount": "Keni tashmë një llogari?",
+    "signInLink": "Hyr"
+  },
+  "claim": {
+    "title": "Aktivizo ftesën",
+    "subtitle": "Përdorni email-in që kopshti ka regjistruar për ju",
+    "linkSubtitle": "Vendos një fjalëkalim për {{ email }}",
+    "fields": {
+      "email": "Email",
+      "password": "Zgjidh një fjalëkalim"
+    },
+    "submit": "Aktivizo dhe hyr",
+    "backToLogin": "Kthehu te hyrja",
+    "errors": {
+      "noInvite": "Nuk u gjet ftesë për këtë email. Kërkoji administratorit të kopshtit t'ju shtojë."
+    }
+  },
+  "auth": {
+    "errors": {
+      "invalidEmail": "Ky email duket i pavlefshëm.",
+      "wrongCredentials": "Email ose fjalëkalim i gabuar.",
+      "emailInUse": "Ka tashmë një llogari me këtë email.",
+      "weakPassword": "Fjalëkalimi duhet të ketë të paktën 6 karaktere.",
+      "network": "Gabim rrjeti. Kontrolloni lidhjen tuaj.",
+      "invalidLink": "Kjo lidhje ftese është e pavlefshme ose është përdorur më parë. Kërkoji administratorit të dërgojë një të re.",
+      "linkSignInDisabled": "Hyrja me lidhje email nuk është e aktivizuar për këtë projekt. Kërkoji administratorit ta aktivizojë në Firebase Console → Authentication → Sign-in method.",
+      "recentLoginRequired": "Sesioni juaj skadoi. Hap përsëri lidhjen e ftesës nga emaili.",
+      "generic": "Diçka shkoi keq. Ju lutem provoni përsëri."
+    }
+  },
+  "common": {
+    "signOut": "Dil",
+    "language": "Gjuha",
+    "theme": "Tema",
+    "comingSoon": "Së shpejti.",
+    "add": "Shto",
+    "edit": "Modifiko",
+    "delete": "Fshi",
+    "save": "Ruaj",
+    "cancel": "Anulo",
+    "required": "E detyrueshme.",
+    "selectDate": "Zgjidh",
+    "confirmDeleteTitle": "Të fshihet?",
+    "confirmDeleteMessage": "A jeni i sigurt që doni të fshini {{ name }}?"
+  },
+  "days": {
+    "monday": "E hënë",
+    "tuesday": "E martë",
+    "wednesday": "E mërkurë",
+    "thursday": "E enjte",
+    "friday": "E premte",
+    "saturday": "E shtunë",
+    "sunday": "E diel"
+  },
+  "admin": {
+    "tabs": {
+      "home": "Kreu",
+      "people": "Anëtarët",
+      "content": "Përmbajtja",
+      "settings": "Cilësimet",
+      "parents": "Prindërit",
+      "children": "Fëmijët",
+      "departments": "Departamentet",
+      "albums": "Albumet",
+      "posts": "Postimet",
+      "staff": "Stafi"
+    },
+    "people": { "title": "Anëtarët" },
+    "content": { "title": "Përmbajtja" },
+    "posts": {
+      "title": "Postimet",
+      "empty": "Nuk ka ende postime. Trokit + për të shkruar njoftimin e parë.",
+      "emptyMine": "Nuk keni shkruar ende ndonjë postim.",
+      "tabs": {
+        "feed": "Të gjitha",
+        "mine": "Të miat"
+      },
+      "add": "Postim i ri",
+      "edit": "Modifiko postimin",
+      "imagesHint": "Bashkëngjitja e fotove vjen së shpejti.",
+      "allDepartments": "Të gjitha departamentet",
+      "fields": {
+        "title": "Titulli",
+        "description": "Përshkrimi",
+        "audience": "I dukshëm për"
+      },
+      "detail": {
+        "title": "Postimi",
+        "updated": "modifikuar",
+        "danger": "Zona e rrezikshme",
+        "delete": "Fshi postimin"
+      }
+    },
+    "albums": {
+      "title": "Albumet",
+      "empty": "Nuk ka ende albume. Krijoni një për të shtuar foto.",
+      "emptyPhotos": "Nuk ka ende foto në këtë album.",
+      "photosDisabled": "Ngarkimi i fotove do të aktivizohet pasi të konfigurohet Firebase Storage.",
+      "add": "Album i ri",
+      "edit": "Modifiko albumin",
+      "addPhotos": "Shto foto",
+      "namePlaceholder": "p.sh. Daycare, Maj 2026",
+      "photoCount": "{{ count }} foto",
+      "confirmDeletePhoto": "Të fshihet kjo foto? Nuk mund të zhbëhet.",
+      "fields": {
+        "name": "Emri i albumit",
+        "department": "Departamenti"
+      }
+    },
+    "home": {
+      "title": "Paneli",
+      "greeting": "Përshëndetje, {{ name }}",
+      "fallbackName": "admin",
+      "stats": {
+        "total": "Regjistruar",
+        "present": "Prezent",
+        "sick": "Sëmurë",
+        "holiday": "Pushim",
+        "parents": "Prindërit",
+        "parentsHint": "Numri total i prindërve",
+        "children": "Fëmijët",
+        "childrenHint": "Fëmijët e regjistruar",
+        "departments": "Departamentet",
+        "departmentsHint": "Grupmoshat e përcaktuara"
+      },
+      "attention": "Kërkojnë vëmendje",
+      "pendingParents": "Ftesa prindërish në pritje",
+      "pendingStaff": "Ftesa stafi në pritje",
+      "unassignedChildren": "Fëmijë pa prind",
+      "departments": "Departamentet",
+      "upcomingBirthdays": "Ditëlindje këtë javë",
+      "recentPosts": "Postimet e fundit"
+    },
+    "parents": {
+      "title": "Prindërit",
+      "heading": "Menaxho prindërit",
+      "empty": "Nuk ka ende prindër. Shtoni një për të filluar.",
+      "add": "Shto prind",
+      "edit": "Modifiko prindin",
+      "fields": {
+        "firstName": "Emri",
+        "lastName": "Mbiemri",
+        "email": "Email",
+        "phone": "Telefoni",
+        "child": "Fëmija"
+      },
+      "noChildren": "Nuk ka fëmijë të caktuar.",
+      "assignChild": "Cakto fëmijë",
+      "assignChildren": "Cakto fëmijë",
+      "assign": "Cakto",
+      "assignWithCount": "Cakto ({{ count }})",
+      "searchChildrenPlaceholder": "Kërko fëmijë",
+      "noChildrenMatch": "Asnjë fëmijë nuk përputhet me kërkimin.",
+      "noAvailableChildren": "Të gjithë fëmijët janë tashmë të caktuar te ky prind. Shto fëmijë të tjerë.",
+      "claimed": "Llogaria u aktivizua",
+      "pending": "Në pritje të aktivizimit",
+      "filterPending": "Po shfaqen vetëm ftesat në pritje.",
+      "inviteHint": "Ndajeni këtë email me prindin. Do ta përdorë te faqja 'Aktivizo ftesën' për të vendosur fjalëkalimin.",
+      "detail": {
+        "title": "Prindi",
+        "profile": "Profili",
+        "children": "Fëmijët",
+        "invite": "Ftesa",
+        "sendInvite": "Dërgo emailin e ftesës",
+        "inviteSent": "Ftesa u dërgua te {{ email }}",
+        "danger": "Zona e rrezikshme",
+        "delete": "Fshi prindin",
+        "years": "{{ years }} vj"
+      }
+    },
+    "children": {
+      "title": "Fëmijët",
+      "heading": "Menaxho fëmijët",
+      "empty": "Nuk ka ende fëmijë. Shtoni një për të filluar.",
+      "add": "Shto fëmijë",
+      "edit": "Modifiko fëmijën",
+      "unassigned": "Pa caktuar",
+      "filterUnassigned": "Po shfaqen fëmijët pa departament.",
+      "born": "Lindur",
+      "noParents": "Nuk ka prindër të lidhur.",
+      "assignParents": "Cakto prind",
+      "assign": "Cakto",
+      "assignWithCount": "Cakto ({{ count }})",
+      "searchParentsPlaceholder": "Kërko prindër",
+      "noParentsMatch": "Asnjë prind nuk përputhet me kërkimin.",
+      "noAvailableParents": "Nuk ka prindër të disponueshëm. Shto një prind më parë.",
+      "fields": {
+        "firstName": "Emri",
+        "lastName": "Mbiemri",
+        "birthDate": "Datëlindja",
+        "department": "Departamenti"
+      },
+      "detail": {
+        "title": "Fëmija",
+        "profile": "Profili",
+        "parents": "Prindërit",
+        "delete": "Fshi fëmijën"
+      }
+    },
+    "departments": {
+      "title": "Departamentet",
+      "heading": "Menaxho departamentet",
+      "empty": "Nuk ka ende departamente. Provoni daycare (0–3), kopsht (3–5), parashkollor (5–6).",
+      "add": "Shto departament",
+      "edit": "Modifiko departamentin",
+      "ageRange": "Mosha {{ min }}–{{ max }}",
+      "fields": {
+        "name": "Emri",
+        "ageMin": "Mosha minimale",
+        "ageMax": "Mosha maksimale"
+      }
+    },
+    "staff": {
+      "title": "Stafi",
+      "heading": "Menaxho stafin",
+      "empty": "Nuk ka ende anëtarë të stafit. Ftoni një mësues për të filluar.",
+      "add": "Shto anëtar stafi",
+      "claimed": "Llogaria u aktivizua",
+      "pending": "Në pritje të aktivizimit",
+      "filterPending": "Po shfaqen vetëm ftesat në pritje.",
+      "inviteHint": "Dërgoni një email ftese që anëtari të aktivizojë llogarinë dhe të vendosë një fjalëkalim.",
+      "deptCount": "departamente",
+      "noDepartments": "Nuk ka ende departamente. Krijoni një së pari.",
+      "fields": {
+        "firstName": "Emri",
+        "lastName": "Mbiemri",
+        "email": "Email",
+        "phone": "Telefoni",
+        "role": "Roli",
+        "departments": "Departamentet",
+        "allDepartments": "Të gjitha departamentet"
+      },
+      "filter": {
+        "all": "Të gjithë"
+      },
+      "detail": {
+        "title": "Anëtar stafi",
+        "profile": "Profili",
+        "invite": "Ftesa",
+        "sendInvite": "Dërgo emailin e ftesës",
+        "inviteSent": "Ftesa u dërgua te {{ email }}",
+        "danger": "Zona e rrezikshme",
+        "delete": "Hiq anëtarin e stafit"
+      }
+    }
+  },
+  "parent": {
+    "tabs": {
+      "posts": "Postimet",
+      "children": "Fëmijët",
+      "settings": "Cilësimet"
+    },
+    "posts": {
+      "title": "Postimet",
+      "empty": "Nuk ka ende postime nga kopshti juaj.",
+      "filter": {
+        "label": "Filtro",
+        "all": "Të gjitha"
+      }
+    },
+    "children": {
+      "title": "Fëmijët e mi",
+      "heading": "Fëmijët tuaj",
+      "empty": "Nuk ka ende fëmijë të lidhur me profilin tuaj.",
+      "notFound": "Fëmija nuk u gjet.",
+      "detail": {
+        "profile": "Profili",
+        "today": "Sot",
+        "sickToday": "I/e sëmurë sot",
+        "planHoliday": "Planifiko pushim",
+        "upcomingHolidays": "Pushime të ardhshme",
+        "history": "Historia",
+        "from": "Nga",
+        "to": "Deri",
+        "addHoliday": "Shto pushim",
+        "years": "{{ years }} vjeç",
+        "born": "Lindur",
+        "weeklySchedule": "Orari javor",
+        "scheduleSaved": "Orari u ruajt.",
+        "schedule": {
+          "closed": "Kopshti është mbyllur",
+          "kgHours": "Hapur",
+          "arrival": "Ardhja",
+          "departure": "Largimi"
+        },
+        "errors": {
+          "endBeforeStart": "Data e mbarimit nuk mund të jetë para datës së fillimit.",
+          "startInPast": "Data e fillimit nuk mund të jetë në të kaluarën."
+        }
+      }
+    },
+    "absence": {
+      "heading": "Sëmundje & pushime",
+      "empty": "Nuk ka mungesa të regjistruara.",
+      "add": "Regjistro mungesë",
+      "types": {
+        "sick": "Sëmurë",
+        "holiday": "Pushim"
+      },
+      "startDate": "Data e fillimit",
+      "endDate": "Data e mbarimit",
+      "note": "Shënim (opsional)",
+      "confirmDelete": "Të hiqet kjo mungesë?"
+    }
+  },
+  "messages": {
+    "title": "Mesazhet",
+    "empty": "Nuk ka ende biseda. Trokit + për të nisur një.",
+    "new": "Bisedë e re",
+    "newGroup": "Grup i ri",
+    "newGroupHint": "Shkruani disa personave njëherësh",
+    "addParticipants": "Shto pjesëmarrës",
+    "create": "Krijo",
+    "start": "Fillo",
+    "placeholder": "Shkruani një mesazh…",
+    "send": "Dërgo",
+    "sendFailed": "Nuk u dërgua. Provo përsëri.",
+    "searchPlaceholder": "Kërko njerëz",
+    "directory": "Njerëzit",
+    "selected": "Të zgjedhurit",
+    "noPeople": "Nuk ka njerëz për t'i shkruar ende.",
+    "noMessages": "Nuk ka ende mesazhe.",
+    "groupTitle": "Titulli i grupit",
+    "groupTitlePlaceholder": "Opsional"
+  },
+  "employee": {
+    "tabs": {
+      "home": "Kreu",
+      "posts": "Postimet",
+      "settings": "Cilësimet"
+    },
+    "home": {
+      "title": "Sot",
+      "greeting": "Përshëndetje, {{ name }}",
+      "fallbackName": "mësues/e",
+      "sickToday": "Të sëmurë sot",
+      "holidayToday": "Me pushim sot",
+      "noneToday": "Asnjë sot.",
+      "children": "Fëmijët",
+      "noChildren": "Nuk ka ende fëmijë në departamentet tuaja.",
+      "allDepartmentsScope": "Qasje në të gjitha departamentet",
+      "stats": {
+        "expected": "Të pritur",
+        "present": "Prezent",
+        "sick": "Sëmurë",
+        "holiday": "Pushim"
+      },
+      "todayRoster": "Lista e sotme",
+      "noOneToday": "Asnjë fëmijë i planifikuar për sot.",
+      "upcomingBirthdays": "Ditëlindje këtë javë",
+      "recentPosts": "Postimet e fundit"
+    }
+  },
+  "roles": {
+    "admin": "admin",
+    "parent": "prind",
+    "employee": "mësues/e"
+  },
+  "root": {
+    "stuck": {
+      "title": "Profili juaj nuk u ngarkua",
+      "message": "Dilni dhe provoni përsëri, ose kontaktoni administratorin e kopshtit."
+    }
+  },
+  "pwa": {
+    "update": {
+      "title": "Përditësim i disponueshëm",
+      "message": "Një version i ri i aplikacionit është gati. Të rifreskohet për ta përditësuar?",
+      "confirm": "Përditëso",
+      "cancel": "Më vonë"
+    }
+  },
+  "settings": {
+    "title": "Cilësimet",
+    "sections": {
+      "profile": "Profili",
+      "kindergarten": "Kopshti",
+      "operatingHours": "Orari i kopshtit",
+      "preferences": "Preferencat",
+      "account": "Llogaria"
+    },
+    "fields": {
+      "name": "Emri",
+      "kindergartenName": "Emri i kopshtit",
+      "address": "Adresa e kopshtit",
+      "email": "Email"
+    },
+    "operatingHours": {
+      "title": "Orari i kopshtit",
+      "openDays": "Hapur {{ count }} ditë në javë",
+      "from": "Hapet",
+      "to": "Mbyllet",
+      "closed": "Mbyllur"
+    },
+    "theme": {
+      "system": "Sistemi",
+      "light": "E ndritshme",
+      "dark": "E errët"
+    }
+  }
+}

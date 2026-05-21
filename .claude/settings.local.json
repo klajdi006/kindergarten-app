@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx ng *)",
+      "Bash(echo \"EXIT=$?\")",
+      "Read(//tmp/claude/**)",
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=8192\" npx ng build --configuration development)",
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=8192\" npx ng build --configuration development --progress=false)",
+      "WebFetch(domain:registry.npmjs.org)",
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npx ng build --configuration=development --progress=false)",
+      "Bash(git check-ignore *)",
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npx ng build --configuration=development --verbose)",
+      "Bash(sips -z 192 192 icon-192.png)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npx ng build --configuration=production)",
+      "Bash(echo \"ng exit: $?\")",
+      "Read(//tmp/**)",
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npx ng build --configuration=development)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=6144\" npx ng build --configuration=development)"
+    ]
+  }
+}

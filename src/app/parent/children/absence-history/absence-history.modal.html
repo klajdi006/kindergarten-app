@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()" [attr.aria-label]="'common.cancel' | translate">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'parent.children.detail.history' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  @if (history.length === 0) {
+    <div class="ion-padding ion-text-center">
+      <ion-text color="medium">
+        <p>{{ 'parent.absence.empty' | translate }}</p>
+      </ion-text>
+    </div>
+  } @else {
+    <ion-list>
+      @for (a of history; track a.id) {
+        <ion-item>
+          <ion-icon
+            slot="start"
+            [icon]="a.type === 'sick' ? bandageOutline : sunnyOutline"
+            [color]="a.type === 'sick' ? 'danger' : 'warning'"
+            aria-hidden="true">
+          </ion-icon>
+          <ion-label>
+            <h3>{{ 'parent.absence.types.' + a.type | translate }}</h3>
+            <p>{{ a.startDate | dateDmy }} → {{ a.endDate | dateDmy }}</p>
+            @if (a.note) { <p>{{ a.note }}</p> }
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+</ion-content>

@@ -1,0 +1,8 @@
+<ion-button
+  size="small"
+  fill="clear"
+  [attr.aria-label]="ariaLabel()"
+  [title]="ariaLabel()"
+  (click)="theme.cycle()">
+  <ion-icon slot="icon-only" [name]="icon()"></ion-icon>
+</ion-button>
