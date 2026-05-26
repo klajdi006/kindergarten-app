@@ -1,6 +1,7 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
+  IonBadge,
   IonCard,
   IonCardContent,
   IonCardHeader,
@@ -36,6 +37,7 @@ import { AbsencesService } from '@app/data/absences.service';
 import { ChildrenService } from '@app/data/children.service';
 import { DepartmentsService } from '@app/data/departments.service';
 import { KindergartensService } from '@app/data/kindergartens.service';
+import { NotificationsService } from '@app/data/notifications.service';
 import { PostsService } from '@app/data/posts.service';
 import {
   DEFAULT_OPERATING_HOURS,
@@ -69,6 +71,7 @@ interface RosterRow {
     IonToolbar,
     IonTitle,
     IonContent,
+    IonBadge,
     IonCard,
     IonCardContent,
     IonChip,
@@ -94,6 +97,9 @@ export class EmployeeHomePage {
   readonly schedules = inject(SchedulesService);
   readonly kindergartens = inject(KindergartensService);
   readonly posts = inject(PostsService);
+  readonly notifications = inject(NotificationsService);
+
+  readonly newSickAtEntry = signal(0);
 
   readonly me = this.staff.currentStaff;
   protected readonly onRefresh = completeRefresher;
@@ -263,6 +269,18 @@ export class EmployeeHomePage {
       if (this.myChildren().length > 0) this.loading.set(false);
     });
     setTimeout(() => this.loading.set(false), 1500);
+
+    let markedFor: string | null = null;
+    effect(() => {
+      const s = this.me();
+      if (s && markedFor !== s.id) {
+        markedFor = s.id;
+        // Snapshot the unread count BEFORE marking seen so the home badge
+        // still reflects what arrived since last visit.
+        this.newSickAtEntry.set(this.notifications.staffUnreadSickCount());
+        void this.staff.markSickSeen();
+      }
+    });
   }
 }
 

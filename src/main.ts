@@ -5,6 +5,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideFirebaseApp, initializeApp, getApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, initializeFirestore } from '@angular/fire/firestore';
+import { provideMessaging, getMessaging } from '@angular/fire/messaging';
 import { provideStorage, getStorage } from '@angular/fire/storage';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideTranslateService } from '@ngx-translate/core';
@@ -23,9 +24,13 @@ bootstrapApplication(AppComponent, {
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideFirestore(() =>
-      initializeFirestore(getApp(), { experimentalForceLongPolling: true }),
+      // experimentalAutoDetectLongPolling (not Force) is required so that the
+      // Angular ngsw doesn't break the WebChannel streaming connection in the
+      // PWA. See project notes.
+      initializeFirestore(getApp(), { experimentalAutoDetectLongPolling: true }),
     ),
     provideStorage(() => getStorage()),
+    provideMessaging(() => getMessaging()),
     provideTranslateService({
       fallbackLang: 'en',
       lang: 'en',

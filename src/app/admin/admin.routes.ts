@@ -39,27 +39,9 @@ export const routes: Routes = [
         ],
       },
       {
-        path: 'content',
+        path: 'posts',
         loadComponent: () =>
-          import('@app/admin/content/admin-content.page').then((m) => m.AdminContentPage),
-        children: [
-          {
-            path: 'posts',
-            loadComponent: () =>
-              import('@app/admin/posts/admin-posts/admin-posts.page').then((m) => m.AdminPostsPage),
-          },
-          {
-            path: 'albums',
-            loadComponent: () =>
-              import('@app/admin/albums/admin-albums/admin-albums.page').then((m) => m.AdminAlbumsPage),
-          },
-          {
-            path: 'albums/:id',
-            loadComponent: () =>
-              import('@app/admin/albums/admin-album-detail/admin-album-detail.page').then((m) => m.AdminAlbumDetailPage),
-          },
-          { path: '', redirectTo: 'posts', pathMatch: 'full' },
-        ],
+          import('@app/admin/posts/admin-posts/admin-posts.page').then((m) => m.AdminPostsPage),
       },
       {
         path: 'messages',

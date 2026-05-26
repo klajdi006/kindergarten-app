@@ -1,0 +1,64 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()" [attr.aria-label]="'common.cancel' | translate">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'admin.posts.detail.title' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="ion-padding">
+    <h1 class="ion-no-margin" style="font-size:1.6rem;line-height:1.25;">{{ post.title }}</h1>
+
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
+      <ion-chip [color]="post.departmentId ? 'primary' : 'tertiary'" [outline]="true">
+        <ion-icon [icon]="globeOutline" aria-hidden="true"></ion-icon>
+        <ion-label>
+          @if (departmentName) {
+            {{ departmentName }}
+          } @else {
+            {{ 'admin.posts.allDepartments' | translate }}
+          }
+        </ion-label>
+      </ion-chip>
+      @if (post.authorName) {
+        <ion-chip color="medium" [outline]="true">
+          <ion-icon [icon]="personCircleOutline" aria-hidden="true"></ion-icon>
+          <ion-label>{{ post.authorName }}</ion-label>
+        </ion-chip>
+      }
+      <ion-chip color="medium" [outline]="true">
+        <ion-icon [icon]="timeOutline" aria-hidden="true"></ion-icon>
+        <ion-label>{{ post.createdAt | dateDmy }}</ion-label>
+      </ion-chip>
+    </div>
+
+    @if (post.updatedAt && post.updatedAt !== post.createdAt) {
+      <ion-text color="medium">
+        <p style="margin-top:8px;">
+          <small>
+            {{ 'admin.posts.detail.updated' | translate }} {{ post.updatedAt | dateDmy }}
+          </small>
+        </p>
+      </ion-text>
+    }
+
+    <p style="white-space:pre-line;margin-top:20px;font-size:1rem;line-height:1.5;">
+      {{ post.description }}
+    </p>
+
+    @if (post.imageUrls && post.imageUrls.length > 0) {
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:20px;">
+        @for (url of post.imageUrls; track url) {
+          <img
+            [src]="url"
+            alt=""
+            style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;" />
+        }
+      </div>
+    }
+  </div>
+</ion-content>

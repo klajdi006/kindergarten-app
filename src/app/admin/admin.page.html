@@ -8,13 +8,16 @@
       <ion-icon aria-hidden="true" name="people-outline"></ion-icon>
       <ion-label>{{ 'admin.tabs.people' | translate }}</ion-label>
     </ion-tab-button>
-    <ion-tab-button tab="content" href="/admin/content">
-      <ion-icon aria-hidden="true" name="documents-outline"></ion-icon>
-      <ion-label>{{ 'admin.tabs.content' | translate }}</ion-label>
+    <ion-tab-button tab="posts" href="/admin/posts">
+      <ion-icon aria-hidden="true" name="newspaper-outline"></ion-icon>
+      <ion-label>{{ 'admin.tabs.posts' | translate }}</ion-label>
     </ion-tab-button>
     <ion-tab-button tab="messages" href="/admin/messages">
       <ion-icon aria-hidden="true" name="chatbubbles-outline"></ion-icon>
       <ion-label>{{ 'messages.title' | translate }}</ion-label>
+      @if (notifications.unreadConversationsCount(); as n) {
+        <ion-badge color="danger">{{ n }}</ion-badge>
+      }
     </ion-tab-button>
     <ion-tab-button tab="settings" href="/admin/settings">
       <ion-icon aria-hidden="true" name="settings-outline"></ion-icon>

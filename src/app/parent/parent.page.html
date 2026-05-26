@@ -3,6 +3,13 @@
     <ion-tab-button tab="posts" href="/parent/posts">
       <ion-icon aria-hidden="true" name="newspaper-outline"></ion-icon>
       <ion-label>{{ 'parent.tabs.posts' | translate }}</ion-label>
+      @if (notifications.parentUnreadPostsCount(); as n) {
+        <ion-badge color="danger">{{ n }}</ion-badge>
+      }
+    </ion-tab-button>
+    <ion-tab-button tab="albums" href="/parent/albums">
+      <ion-icon aria-hidden="true" name="images-outline"></ion-icon>
+      <ion-label>{{ 'admin.albums.title' | translate }}</ion-label>
     </ion-tab-button>
     <ion-tab-button tab="children" href="/parent/children">
       <ion-icon aria-hidden="true" name="people-outline"></ion-icon>
@@ -11,6 +18,9 @@
     <ion-tab-button tab="messages" href="/parent/messages">
       <ion-icon aria-hidden="true" name="chatbubbles-outline"></ion-icon>
       <ion-label>{{ 'messages.title' | translate }}</ion-label>
+      @if (notifications.unreadConversationsCount(); as n) {
+        <ion-badge color="danger">{{ n }}</ion-badge>
+      }
     </ion-tab-button>
     <ion-tab-button tab="settings" href="/parent/settings">
       <ion-icon aria-hidden="true" name="settings-outline"></ion-icon>

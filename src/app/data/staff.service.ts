@@ -3,6 +3,7 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
   Firestore,
   addDoc,
+  arrayUnion,
   collection,
   collectionData,
   deleteDoc,
@@ -138,5 +139,34 @@ export class StaffService {
 
   async markClaimed(staffId: string, uid: string): Promise<void> {
     await updateDoc(doc(this.firestore, 'staff', staffId), { claimedByUid: uid });
+  }
+
+  async markPostsSeen(): Promise<void> {
+    const me = this.currentStaff();
+    if (!me) return;
+    await updateDoc(doc(this.firestore, 'staff', me.id), {
+      lastSeenPostsAt: Date.now(),
+    });
+  }
+
+  async markPostSeen(postId: string): Promise<void> {
+    const me = this.currentStaff();
+    if (!me) return;
+    if (me.seenPostIds?.includes(postId)) return;
+    try {
+      await updateDoc(doc(this.firestore, 'staff', me.id), {
+        seenPostIds: arrayUnion(postId),
+      });
+    } catch (err) {
+      console.warn('[staff] markPostSeen failed', err);
+    }
+  }
+
+  async markSickSeen(): Promise<void> {
+    const me = this.currentStaff();
+    if (!me) return;
+    await updateDoc(doc(this.firestore, 'staff', me.id), {
+      lastSeenSickAt: Date.now(),
+    });
   }
 }

@@ -3,14 +3,27 @@
     <ion-tab-button tab="home" href="/employee/home">
       <ion-icon aria-hidden="true" name="home-outline"></ion-icon>
       <ion-label>{{ 'employee.tabs.home' | translate }}</ion-label>
+      @if (notifications.staffUnreadSickCount(); as n) {
+        <ion-badge color="danger">{{ n }}</ion-badge>
+      }
     </ion-tab-button>
     <ion-tab-button tab="posts" href="/employee/posts">
       <ion-icon aria-hidden="true" name="newspaper-outline"></ion-icon>
       <ion-label>{{ 'employee.tabs.posts' | translate }}</ion-label>
+      @if (notifications.staffUnreadPostsCount(); as n) {
+        <ion-badge color="danger">{{ n }}</ion-badge>
+      }
+    </ion-tab-button>
+    <ion-tab-button tab="albums" href="/employee/albums">
+      <ion-icon aria-hidden="true" name="images-outline"></ion-icon>
+      <ion-label>{{ 'admin.albums.title' | translate }}</ion-label>
     </ion-tab-button>
     <ion-tab-button tab="messages" href="/employee/messages">
       <ion-icon aria-hidden="true" name="chatbubbles-outline"></ion-icon>
       <ion-label>{{ 'messages.title' | translate }}</ion-label>
+      @if (notifications.unreadConversationsCount(); as n) {
+        <ion-badge color="danger">{{ n }}</ion-badge>
+      }
     </ion-tab-button>
     <ion-tab-button tab="settings" href="/employee/settings">
       <ion-icon aria-hidden="true" name="settings-outline"></ion-icon>

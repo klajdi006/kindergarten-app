@@ -129,7 +129,7 @@
         <ion-select-option value="al">Shqip</ion-select-option>
       </ion-select>
     </ion-item>
-    <ion-item lines="none">
+    <ion-item>
       <ion-icon slot="start" [icon]="colorPaletteOutline" color="primary" aria-hidden="true"></ion-icon>
       <ion-select
         [label]="'common.theme' | translate"
@@ -148,6 +148,25 @@
         </ion-select-option>
       </ion-select>
     </ion-item>
+    @if (pushPermission() !== 'unsupported') {
+      <ion-item lines="none">
+        <ion-icon slot="start" [icon]="notificationsOutline" color="primary" aria-hidden="true"></ion-icon>
+        <ion-label>
+          <h3>{{ 'settings.push.label' | translate }}</h3>
+          @if (pushPermission() === 'denied') {
+            <ion-note color="danger">{{ 'settings.push.blocked' | translate }}</ion-note>
+          } @else {
+            <ion-note color="medium">{{ 'settings.push.hint' | translate }}</ion-note>
+          }
+        </ion-label>
+        <ion-toggle
+          slot="end"
+          [disabled]="pushPermission() === 'denied'"
+          [checked]="pushPermission() === 'granted'"
+          (ionChange)="onPushToggle($any($event))">
+        </ion-toggle>
+      </ion-item>
+    }
   </ion-list>
 
   <ion-list-header>

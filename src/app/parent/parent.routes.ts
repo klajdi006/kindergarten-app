@@ -12,6 +12,18 @@ export const routes: Routes = [
           import('@app/parent/posts/parent-posts.page').then((m) => m.ParentPostsPage),
       },
       {
+        path: 'albums',
+        loadComponent: () =>
+          import('@app/parent/albums/parent-albums.page').then((m) => m.ParentAlbumsPage),
+      },
+      {
+        path: 'albums/:id',
+        loadComponent: () =>
+          import('@app/parent/albums/parent-album-detail.page').then(
+            (m) => m.ParentAlbumDetailPage,
+          ),
+      },
+      {
         path: 'children',
         loadComponent: () =>
           import('@app/parent/children/parent-children/parent-children.page').then((m) => m.ParentChildrenPage),

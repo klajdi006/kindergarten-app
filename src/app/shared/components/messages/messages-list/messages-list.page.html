@@ -50,6 +50,9 @@
               {{ 'roles.' + r | translate }}
             </ion-badge>
           }
+          @if (notifications.isConversationUnread(conv.id)) {
+            <ion-badge slot="end" color="danger" aria-label="unread">●</ion-badge>
+          }
         </ion-item>
       }
     </ion-list>

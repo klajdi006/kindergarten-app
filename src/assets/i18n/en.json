@@ -77,6 +77,7 @@
     "delete": "Delete",
     "save": "Save",
     "cancel": "Cancel",
+    "more": "More",
     "required": "Required.",
     "selectDate": "Select",
     "confirmDeleteTitle": "Delete?",
@@ -134,13 +135,17 @@
       "title": "Albums",
       "empty": "No albums yet. Create one to start adding photos.",
       "emptyPhotos": "No photos in this album yet.",
+      "noPhotos": "No photos in this album yet.",
       "photosDisabled": "Photo upload will be enabled once Firebase Storage is set up.",
       "add": "New album",
       "edit": "Edit album",
       "addPhotos": "Add photos",
+      "upload": "Upload photos",
+      "uploadFailed": "Could not upload one or more photos.",
       "namePlaceholder": "e.g. Daycare, May 2026",
       "photoCount": "{{ count }} photos",
       "confirmDeletePhoto": "Delete this photo? This can't be undone.",
+      "confirmDeleteAlbum": "Delete \"{{ name }}\" and all its photos? This can't be undone.",
       "fields": {
         "name": "Album name",
         "department": "Department"
@@ -227,7 +232,12 @@
         "firstName": "First name",
         "lastName": "Last name",
         "birthDate": "Birth date",
+        "gender": "Gender",
         "department": "Department"
+      },
+      "gender": {
+        "male": "Male",
+        "female": "Female"
       },
       "detail": {
         "title": "Child",
@@ -435,6 +445,12 @@
       "system": "System",
       "light": "Light",
       "dark": "Dark"
+    },
+    "push": {
+      "label": "Push notifications",
+      "hint": "Get notified when messages, posts or sick reports arrive",
+      "blocked": "Blocked by browser. Enable from site settings.",
+      "failed": "Could not enable notifications. Try again."
     }
   }
 }

@@ -36,6 +36,95 @@
 /* @import "@ionic/angular/css/palettes/dark.system.css"; */
 @import '@ionic/angular/css/palettes/dark.class.css';
 
+/* Flash highlight for items focused via a notification tap (e.g. posts). */
+.notif-focus-flash {
+  animation: notif-focus-flash 1.2s ease-out 1;
+}
+
+@keyframes notif-focus-flash {
+  0%   { box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0.0); }
+  20%  { box-shadow: 0 0 0 4px rgba(var(--ion-color-primary-rgb), 0.55); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0.0); }
+}
+
+/* Swipeable photo viewer (scroll-snap horizontal carousel). */
+.photo-viewer-content {
+  --background: #000;
+}
+.photo-viewer-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  width: 100%;
+  height: 100%;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.photo-viewer-track::-webkit-scrollbar { display: none; }
+.photo-viewer-slide {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.photo-viewer-slide img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Album photo thumbnail grid. */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 4px;
+  padding: 4px;
+}
+.photo-grid-cell {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--ion-color-step-100);
+}
+.photo-grid-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.photo-grid-delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.55);
+  color: white;
+  border: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Unread post card: subtle left-border accent + a dot in the title. */
+ion-card.post-unread {
+  border-left: 3px solid var(--ion-color-primary);
+}
+
+.post-unread-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ion-color-primary);
+  flex-shrink: 0;
+}
+
 /* Hide the shell tab bar on mobile when a conversation is open so the
    on-screen keyboard doesn't push it into the message input. */
 @media (max-width: 767.98px) {

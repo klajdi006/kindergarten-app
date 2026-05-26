@@ -17,6 +17,18 @@ export const routes: Routes = [
           import('@app/employee/posts/employee-posts.page').then((m) => m.EmployeePostsPage),
       },
       {
+        path: 'albums',
+        loadComponent: () =>
+          import('@app/employee/albums/employee-albums.page').then((m) => m.EmployeeAlbumsPage),
+      },
+      {
+        path: 'albums/:id',
+        loadComponent: () =>
+          import('@app/employee/albums/employee-album-detail.page').then(
+            (m) => m.EmployeeAlbumDetailPage,
+          ),
+      },
+      {
         path: 'messages',
         loadComponent: () =>
           import('@app/shared/components/messages/messages-list/messages-list.page').then(

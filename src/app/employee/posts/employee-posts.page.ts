@@ -1,4 +1,5 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import {
   AlertController,
   IonCard,
@@ -33,11 +34,13 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '@app/auth/auth.service';
 import { DateDmyPipe } from '@app/shared/pipes/date-dmy.pipe';
 import { DepartmentsService } from '@app/data/departments.service';
+import { NotificationsService } from '@app/data/notifications.service';
 import { PostsService } from '@app/data/posts.service';
 import { StaffService } from '@app/data/staff.service';
 import { Department, Post } from '@app/data/types';
 import { PostFormModal, PostFormResult } from '@app/admin/posts/post-form/post-form.modal';
 import { PostDetailModal, PostUpdateResult } from '@app/admin/posts/post-detail/post-detail.modal';
+import { PostViewModal } from '@app/shared/components/post-view/post-view.modal';
 import { completeRefresher } from '@app/shared/utils/refresher';
 import { SkeletonListComponent } from '@app/shared/components/skeleton-list/skeleton-list.component';
 
@@ -83,9 +86,13 @@ export class EmployeePostsPage {
   private readonly auth = inject(AuthService);
   private readonly alertCtrl = inject(AlertController);
   private readonly modalCtrl = inject(ModalController);
+  private readonly route = inject(ActivatedRoute);
   readonly posts = inject(PostsService);
   readonly departments = inject(DepartmentsService);
   readonly staff = inject(StaffService);
+  readonly notifications = inject(NotificationsService);
+
+  readonly flashingPostId = signal<string | null>(null);
 
   protected readonly newspaperOutline = newspaperOutline;
   protected readonly trashOutline = trashOutline;
@@ -100,6 +107,23 @@ export class EmployeePostsPage {
       if (this.posts.all().length > 0) this.loading.set(false);
     });
     setTimeout(() => this.loading.set(false), 1500);
+
+    this.route.queryParamMap.subscribe((params) => {
+      const id = params.get('focus');
+      if (id) this.focusPost(id);
+    });
+  }
+
+  private focusPost(id: string): void {
+    this.flashingPostId.set(id);
+    if (this.view() !== 'feed') this.view.set('feed');
+    setTimeout(() => {
+      const el = document.getElementById(`post-${id}`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 50);
+    setTimeout(() => {
+      if (this.flashingPostId() === id) this.flashingPostId.set(null);
+    }, 1400);
   }
 
   readonly me = this.staff.currentStaff;
@@ -168,6 +192,18 @@ export class EmployeePostsPage {
         authorName: this.auth.currentUser()?.displayName ?? null,
       });
     }
+  }
+
+  async openView(post: Post): Promise<void> {
+    void this.staff.markPostSeen(post.id);
+    const modal = await this.modalCtrl.create({
+      component: PostViewModal,
+      componentProps: {
+        post,
+        departmentName: post.departmentId ? this.departmentLabel(post.departmentId) : null,
+      },
+    });
+    await modal.present();
   }
 
   async openDetail(post: Post): Promise<void> {

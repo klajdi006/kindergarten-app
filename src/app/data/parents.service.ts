@@ -149,4 +149,25 @@ export class ParentsService {
   async markClaimed(parentId: string, uid: string): Promise<void> {
     await updateDoc(doc(this.firestore, 'parents', parentId), { claimedByUid: uid });
   }
+
+  async markPostsSeen(): Promise<void> {
+    const me = this.currentParent();
+    if (!me) return;
+    await updateDoc(doc(this.firestore, 'parents', me.id), {
+      lastSeenPostsAt: Date.now(),
+    });
+  }
+
+  async markPostSeen(postId: string): Promise<void> {
+    const me = this.currentParent();
+    if (!me) return;
+    if (me.seenPostIds?.includes(postId)) return;
+    try {
+      await updateDoc(doc(this.firestore, 'parents', me.id), {
+        seenPostIds: arrayUnion(postId),
+      });
+    } catch (err) {
+      console.warn('[parents] markPostSeen failed', err);
+    }
+  }
 }

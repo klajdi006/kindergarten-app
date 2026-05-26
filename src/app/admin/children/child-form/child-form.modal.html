@@ -34,6 +34,20 @@
         <ion-label>{{ 'admin.children.fields.birthDate' | translate }}</ion-label>
         <ion-datetime-button slot="end" datetime="child-birthDate"></ion-datetime-button>
       </ion-item>
+      <ion-item>
+        <ion-select
+          [label]="'admin.children.fields.gender' | translate"
+          labelPlacement="floating"
+          interface="popover"
+          formControlName="gender">
+          <ion-select-option value="male">
+            {{ 'admin.children.gender.male' | translate }}
+          </ion-select-option>
+          <ion-select-option value="female">
+            {{ 'admin.children.gender.female' | translate }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
       <ion-item lines="none">
         <ion-select
           [label]="'admin.children.fields.department' | translate"

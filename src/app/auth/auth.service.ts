@@ -129,6 +129,7 @@ export class AuthService {
 
   async signOut(): Promise<void> {
     await signOut(this.auth);
+    localStorage.clear();
   }
 
   /**

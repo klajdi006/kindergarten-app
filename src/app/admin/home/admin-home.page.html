@@ -134,7 +134,7 @@
     </ion-list-header>
     <ion-list>
       @for (p of recentPosts(); track p.id) {
-        <ion-item button="true" detail="true" [routerLink]="['/admin/content/posts']">
+        <ion-item button="true" detail="true" [routerLink]="['/admin/posts']">
           <ion-icon slot="start" [icon]="megaphoneOutline" color="primary" aria-hidden="true"></ion-icon>
           <ion-label>
             <h3>{{ p.title }}</h3>

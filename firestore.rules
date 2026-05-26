@@ -69,7 +69,11 @@ service cloud.firestore {
                     || (isSignedIn()
                           && resource.data.claimedByUid == null
                           && request.resource.data.claimedByUid == uid()
-                          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['claimedByUid']));
+                          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['claimedByUid']))
+                    // Staff updating their own seen-at timestamps / seen-post ids.
+                    || (isSignedIn()
+                          && resource.data.claimedByUid == uid()
+                          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastSeenPostsAt', 'lastSeenSickAt', 'seenPostIds']));
 
       allow delete: if isAdmin() && inMyKg(resource.data.kindergartenId);
     }
@@ -116,7 +120,11 @@ service cloud.firestore {
                     || (isSignedIn()
                           && resource.data.claimedByUid == null
                           && request.resource.data.claimedByUid == uid()
-                          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['claimedByUid']));
+                          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['claimedByUid']))
+                    // Parents updating their own seen-at timestamp / seen-post ids.
+                    || (isSignedIn()
+                          && resource.data.claimedByUid == uid()
+                          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastSeenPostsAt', 'seenPostIds']));
       allow delete: if isAdmin() && inMyKg(resource.data.kindergartenId);
     }
 
@@ -141,16 +149,43 @@ service cloud.firestore {
     }
 
     // ---------- albums / photos ----------
+    // Employees own the photo content: they create albums in their
+    // accessible departments and upload photos. Anyone in the kindergarten
+    // can read (parent dept-level filtering happens client-side from the
+    // children they're linked to). Admins do not manage album content.
+    //
+    // Authorship overrides dept access: an employee can always manage
+    // (update/delete) albums they created, and photos they uploaded —
+    // even if their staff record's dept assignment changes later.
     match /albums/{id} {
       allow read: if inMyKg(resource.data.kindergartenId);
-      allow create: if isAdmin() && request.resource.data.kindergartenId == userKg();
-      allow update, delete: if isAdmin() && inMyKg(resource.data.kindergartenId);
+
+      allow create: if isEmployee()
+                    && request.resource.data.kindergartenId == userKg()
+                    && request.resource.data.createdByUid == uid()
+                    && canAccessDept(request.resource.data.departmentId);
+
+      allow update, delete: if isEmployee()
+                            && inMyKg(resource.data.kindergartenId)
+                            && (resource.data.createdByUid == uid()
+                                || canAccessDept(resource.data.departmentId));
     }
 
     match /photos/{id} {
       allow read: if inMyKg(resource.data.kindergartenId);
-      allow create: if isAdmin() && request.resource.data.kindergartenId == userKg();
-      allow delete: if isAdmin() && inMyKg(resource.data.kindergartenId);
+
+      allow create: if isEmployee()
+                    && request.resource.data.kindergartenId == userKg()
+                    && canAccessDept(
+                      get(/databases/$(database)/documents/albums/$(request.resource.data.albumId))
+                        .data.departmentId);
+
+      allow delete: if isEmployee()
+                    && inMyKg(resource.data.kindergartenId)
+                    && (resource.data.uploadedByUid == uid()
+                        || canAccessDept(
+                          get(/databases/$(database)/documents/albums/$(resource.data.albumId))
+                            .data.departmentId));
     }
 
     // ---------- conversations + messages ----------

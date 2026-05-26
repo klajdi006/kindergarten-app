@@ -33,8 +33,10 @@ import {
   bandageOutline,
   businessOutline,
   calendarOutline,
+  femaleOutline,
   happyOutline,
   hourglassOutline,
+  maleOutline,
   sunnyOutline,
   timeOutline,
   trashOutline,
@@ -227,8 +229,10 @@ export class ParentChildDetailPage {
   protected readonly bandageOutline = bandageOutline;
   protected readonly businessOutline = businessOutline;
   protected readonly calendarOutline = calendarOutline;
+  protected readonly femaleOutline = femaleOutline;
   protected readonly happyOutline = happyOutline;
   protected readonly hourglassOutline = hourglassOutline;
+  protected readonly maleOutline = maleOutline;
   protected readonly sunnyOutline = sunnyOutline;
   protected readonly timeOutline = timeOutline;
   protected readonly trashOutline = trashOutline;

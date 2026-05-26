@@ -16,7 +16,7 @@ import {
 } from '@angular/fire/firestore';
 import { Observable, catchError, of, switchMap } from 'rxjs';
 import { AuthService } from '@app/auth/auth.service';
-import { Child, Staff } from '@app/data/types';
+import { Child, ChildGender, Staff } from '@app/data/types';
 
 @Injectable({ providedIn: 'root' })
 export class ChildrenService {
@@ -62,6 +62,7 @@ export class ChildrenService {
     firstName: string;
     lastName: string;
     birthDate: string;
+    gender: ChildGender;
     departmentId: string | null;
   }): Promise<void> {
     const kgId = this.kgId();
@@ -70,6 +71,7 @@ export class ChildrenService {
       firstName: input.firstName.trim(),
       lastName: input.lastName.trim(),
       birthDate: input.birthDate,
+      gender: input.gender,
       departmentId: input.departmentId,
       parentIds: [],
       kindergartenId: kgId,
@@ -79,12 +81,19 @@ export class ChildrenService {
 
   async update(
     id: string,
-    input: { firstName: string; lastName: string; birthDate: string; departmentId: string | null },
+    input: {
+      firstName: string;
+      lastName: string;
+      birthDate: string;
+      gender: ChildGender;
+      departmentId: string | null;
+    },
   ): Promise<void> {
     await updateDoc(doc(this.firestore, 'children', id), {
       firstName: input.firstName.trim(),
       lastName: input.lastName.trim(),
       birthDate: input.birthDate,
+      gender: input.gender,
       departmentId: input.departmentId,
     });
   }

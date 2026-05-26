@@ -1,0 +1,20 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ currentIndex() + 1 }} / {{ photos.length }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="photo-viewer-content">
+  <div #track class="photo-viewer-track" (scroll)="onScroll()">
+    @for (photo of photos; track photo.id) {
+      <div class="photo-viewer-slide">
+        <img [src]="photo.downloadUrl" loading="lazy" alt="" />
+      </div>
+    }
+  </div>
+</ion-content>

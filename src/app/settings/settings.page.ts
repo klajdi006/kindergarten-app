@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -18,8 +18,10 @@ import {
   IonText,
   IonTextarea,
   IonTitle,
+  IonToggle,
   IonToolbar,
   ModalController,
+  ToastController,
 } from '@ionic/angular/standalone';
 import {
   businessOutline,
@@ -28,12 +30,14 @@ import {
   locationOutline,
   logOutOutline,
   mailOutline,
+  notificationsOutline,
   personOutline,
   timeOutline,
 } from 'ionicons/icons';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '@app/auth/auth.service';
 import { KindergartensService } from '@app/data/kindergartens.service';
+import { PushService } from '@app/data/push.service';
 import { getOperatingHours, WEEK_DAYS } from '@app/data/schedule';
 import { OperatingHoursModal } from '@app/settings/operating-hours/operating-hours.modal';
 import { LanguageService } from '@app/shared/services/language.service';
@@ -60,6 +64,7 @@ import { ThemeService } from '@app/shared/services/theme.service';
     IonSpinner,
     IonIcon,
     IonText,
+    IonToggle,
     TranslatePipe,
   ],
 })
@@ -71,6 +76,13 @@ export class SettingsPage {
   readonly theme = inject(ThemeService);
   private readonly router = inject(Router);
   private readonly modalCtrl = inject(ModalController);
+  private readonly push = inject(PushService);
+  private readonly toastCtrl = inject(ToastController);
+  private readonly t = inject(TranslateService);
+
+  readonly pushPermission = signal<NotificationPermission | 'unsupported'>(
+    this.push.permissionState(),
+  );
 
   readonly profile = toSignal(this.auth.userDoc$, { initialValue: null });
   readonly isLoading = this.auth.isLoading;
@@ -105,6 +117,7 @@ export class SettingsPage {
   protected readonly languageOutline = languageOutline;
   protected readonly colorPaletteOutline = colorPaletteOutline;
   protected readonly timeOutline = timeOutline;
+  protected readonly notificationsOutline = notificationsOutline;
 
   readonly openDaysCount = computed(
     () =>
@@ -175,6 +188,26 @@ export class SettingsPage {
     const value = event.detail.value;
     if (value === 'system' || value === 'light' || value === 'dark') {
       this.theme.setPreference(value);
+    }
+  }
+
+  async onPushToggle(event: CustomEvent): Promise<void> {
+    const wantsEnabled = !!event.detail.checked;
+    if (wantsEnabled) {
+      const ok = await this.push.enable();
+      this.pushPermission.set(this.push.permissionState());
+      if (!ok) {
+        const toast = await this.toastCtrl.create({
+          message: this.t.instant('settings.push.failed'),
+          duration: 3000,
+          color: 'warning',
+          position: 'bottom',
+        });
+        await toast.present();
+      }
+    } else {
+      await this.push.disable();
+      this.pushPermission.set(this.push.permissionState());
     }
   }
 

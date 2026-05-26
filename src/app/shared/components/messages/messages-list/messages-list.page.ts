@@ -23,6 +23,7 @@ import { addOutline, chatbubblesOutline, peopleOutline } from 'ionicons/icons';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '@app/auth/auth.service';
 import { ConversationsService } from '@app/data/conversations.service';
+import { NotificationsService } from '@app/data/notifications.service';
 import { Conversation } from '@app/data/types';
 import { completeRefresher } from '@app/shared/utils/refresher';
 import {
@@ -60,6 +61,7 @@ export class MessagesListPage {
   private readonly route = inject(ActivatedRoute);
   private readonly auth = inject(AuthService);
   readonly conversations = inject(ConversationsService);
+  readonly notifications = inject(NotificationsService);
 
   protected readonly chatbubblesOutline = chatbubblesOutline;
   protected readonly peopleOutline = peopleOutline;

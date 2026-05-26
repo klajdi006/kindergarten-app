@@ -136,6 +136,14 @@ export class ConversationsService {
     return ref.id;
   }
 
+  async markRead(conversationId: string): Promise<void> {
+    const uid = this.uid();
+    if (!uid) return;
+    await updateDoc(doc(this.firestore, 'conversations', conversationId), {
+      [`lastReadAt.${uid}`]: Date.now(),
+    });
+  }
+
   async sendMessage(conversationId: string, text: string): Promise<void> {
     const uid = this.uid();
     const myName = this.auth.currentUser()?.displayName ?? null;
@@ -157,6 +165,7 @@ export class ConversationsService {
       lastMessage: trimmed,
       lastMessageAt: now,
       lastMessageAuthorUid: uid,
+      [`lastReadAt.${uid}`]: now,
     });
   }
 }

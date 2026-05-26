@@ -24,12 +24,13 @@ import { addIcons } from 'ionicons';
 import { closeOutline } from 'ionicons/icons';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DateDmyPipe } from '@app/shared/pipes/date-dmy.pipe';
-import { Child, Department } from '@app/data/types';
+import { Child, ChildGender, Department } from '@app/data/types';
 
 export interface ChildFormResult {
   firstName: string;
   lastName: string;
   birthDate: string;
+  gender: ChildGender;
   departmentId: string | null;
 }
 
@@ -72,6 +73,7 @@ export class ChildFormModal implements OnInit {
     firstName: ['', [Validators.required]],
     lastName: ['', [Validators.required]],
     birthDate: ['', [Validators.required]],
+    gender: ['', [Validators.required]],
     departmentId: [''],
   });
 
@@ -87,6 +89,7 @@ export class ChildFormModal implements OnInit {
         firstName: this.child.firstName,
         lastName: this.child.lastName,
         birthDate: this.child.birthDate,
+        gender: this.child.gender,
         departmentId: this.child.departmentId ?? '',
       });
     }
@@ -109,11 +112,12 @@ export class ChildFormModal implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
-    const { firstName, lastName, birthDate, departmentId } = this.form.getRawValue();
+    const { firstName, lastName, birthDate, gender, departmentId } = this.form.getRawValue();
     const result: ChildFormResult = {
       firstName,
       lastName,
       birthDate: (birthDate ?? '').slice(0, 10),
+      gender: gender as ChildGender,
       departmentId: departmentId || null,
     };
     this.modalCtrl.dismiss(result, 'confirm');

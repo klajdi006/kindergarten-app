@@ -114,16 +114,19 @@ export class ConversationPage {
   private didInitialScroll = false;
 
   constructor() {
-    // Scroll to bottom whenever the message list grows. On the very first
-    // batch (going from 0 → N) jump instantly so the chat opens at the bottom
-    // like WhatsApp; subsequent messages animate.
+    effect(() => {
+      const id = this.conversationId();
+      if (id) void this.conversations.markRead(id);
+    });
+
     effect(() => {
       const count = this.messages().length;
       if (count > this.lastMessageCount) {
         const instant = !this.didInitialScroll;
         this.didInitialScroll = true;
-        // Defer past the next render so Ionic has measured the new content.
         setTimeout(() => this.scrollToBottom(instant ? 0 : 200), 0);
+        const id = this.conversationId();
+        if (id) void this.conversations.markRead(id);
       }
       this.lastMessageCount = count;
     });

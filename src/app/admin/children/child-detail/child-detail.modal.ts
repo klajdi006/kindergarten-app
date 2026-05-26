@@ -44,7 +44,7 @@ import {
 import { ChildrenService } from '@app/data/children.service';
 import { DepartmentsService } from '@app/data/departments.service';
 import { ParentsService } from '@app/data/parents.service';
-import { Child, Parent } from '@app/data/types';
+import { Child, ChildGender, Parent } from '@app/data/types';
 import { DateDmyPipe } from '@app/shared/pipes/date-dmy.pipe';
 
 @Component({
@@ -106,6 +106,7 @@ export class ChildDetailModal implements OnInit {
     firstName: ['', [Validators.required]],
     lastName: ['', [Validators.required]],
     birthDate: ['', [Validators.required]],
+    gender: ['', [Validators.required]],
     departmentId: [''],
   });
 
@@ -127,6 +128,7 @@ export class ChildDetailModal implements OnInit {
             firstName: c.firstName,
             lastName: c.lastName,
             birthDate: c.birthDate,
+            gender: c.gender,
             departmentId: c.departmentId ?? '',
           },
           { emitEvent: false },
@@ -142,6 +144,7 @@ export class ChildDetailModal implements OnInit {
         firstName: c.firstName,
         lastName: c.lastName,
         birthDate: c.birthDate,
+        gender: c.gender ?? '',
         departmentId: c.departmentId ?? '',
       });
       this.form.markAsPristine();
@@ -189,11 +192,12 @@ export class ChildDetailModal implements OnInit {
     }
     this.saving.set(true);
     try {
-      const { firstName, lastName, birthDate, departmentId } = this.form.getRawValue();
+      const { firstName, lastName, birthDate, gender, departmentId } = this.form.getRawValue();
       await this.children.update(c.id, {
         firstName,
         lastName,
         birthDate: (birthDate ?? '').slice(0, 10),
+        gender: gender as ChildGender,
         departmentId: departmentId || null,
       });
       this.form.markAsPristine();

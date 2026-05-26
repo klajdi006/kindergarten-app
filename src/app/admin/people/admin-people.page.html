@@ -1,23 +1,23 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>{{ 'admin.people.title' | translate }}</ion-title>
-  </ion-toolbar>
-  <ion-toolbar>
-    <ion-segment [value]="segment()" (ionChange)="onSegmentChange($any($event))">
-      <ion-segment-button value="parents">
-        <ion-label>{{ 'admin.tabs.parents' | translate }}</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="children">
-        <ion-label>{{ 'admin.tabs.children' | translate }}</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="departments">
-        <ion-label>{{ 'admin.tabs.departments' | translate }}</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="staff">
-        <ion-label>{{ 'admin.tabs.staff' | translate }}</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-  </ion-toolbar>
+    <ion-toolbar>
+        <ion-title>{{ 'admin.people.title' | translate }}</ion-title>
+    </ion-toolbar>
+    <ion-toolbar>
+        <ion-segment [value]="segment()" (ionChange)="onSegmentChange($any($event))">
+            <ion-segment-button value="parents">
+                <ion-label>{{ 'admin.tabs.parents' | translate }}</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="children">
+                <ion-label>{{ 'admin.tabs.children' | translate }}</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="staff">
+                <ion-label>{{ 'admin.tabs.staff' | translate }}</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="departments">
+                <ion-label>{{ 'admin.tabs.departments' | translate }}</ion-label>
+            </ion-segment-button>
+        </ion-segment>
+    </ion-toolbar>
 </ion-header>
 
 <router-outlet></router-outlet>

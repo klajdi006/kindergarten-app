@@ -46,7 +46,14 @@
         <div style="font-size:1.5rem;font-weight:600;color:var(--ion-color-success);">{{ stats().present }}</div>
       </ion-card-content>
     </ion-card>
-    <ion-card style="margin:0;">
+    <ion-card style="margin:0;position:relative;">
+      @if (newSickAtEntry() > 0) {
+        <ion-badge
+          color="danger"
+          style="position:absolute;top:6px;right:6px;font-size:0.7rem;">
+          +{{ newSickAtEntry() }}
+        </ion-badge>
+      }
       <ion-card-content style="padding:12px;">
         <div style="font-size:0.75rem;color:var(--ion-color-medium);">
           {{ 'employee.home.stats.sick' | translate }}

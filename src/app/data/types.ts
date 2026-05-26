@@ -24,6 +24,9 @@ export interface Staff {
   allDepartments: boolean;
   kindergartenId: Id;
   claimedByUid: Id | null;
+  lastSeenPostsAt?: number;
+  lastSeenSickAt?: number;
+  seenPostIds?: Id[];
   createdAt: number;
 }
 
@@ -36,11 +39,14 @@ export interface Department {
   createdAt: number;
 }
 
+export type ChildGender = 'male' | 'female';
+
 export interface Child {
   id: Id;
   firstName: string;
   lastName: string;
   birthDate: string;
+  gender: ChildGender;
   departmentId: Id | null;
   parentIds: Id[];
   kindergartenId: Id;
@@ -56,6 +62,8 @@ export interface Parent {
   childIds: Id[];
   claimedByUid: Id | null;
   kindergartenId: Id;
+  lastSeenPostsAt?: number;
+  seenPostIds?: Id[];
   createdAt: number;
 }
 
@@ -79,6 +87,7 @@ export interface Album {
   departmentId: Id;
   kindergartenId: Id;
   photoCount: number;
+  createdByUid?: Id;
   createdAt: number;
 }
 
@@ -118,6 +127,7 @@ export interface Conversation {
   lastMessage: string | null;
   lastMessageAt: number;
   lastMessageAuthorUid: Id | null;
+  lastReadAt?: Record<Id, number>;
   createdAt: number;
   createdByUid: Id;
 }

@@ -52,7 +52,13 @@
       </div>
     } @else {
       @for (post of visiblePosts(); track post.id) {
-        <ion-card>
+        @let unread = notifications.isStaffPostUnread(post.id);
+        <ion-card
+          button="true"
+          [id]="'post-' + post.id"
+          [class.notif-focus-flash]="flashingPostId() === post.id"
+          [class.post-unread]="unread"
+          (click)="openView(post)">
           <ion-card-header>
             <ion-card-subtitle>
               @if (post.departmentId) {
@@ -65,7 +71,12 @@
                 · {{ post.authorName }}
               }
             </ion-card-subtitle>
-            <ion-card-title>{{ post.title }}</ion-card-title>
+            <ion-card-title style="display:flex;align-items:center;gap:8px;">
+              <span style="flex:1;">{{ post.title }}</span>
+              @if (unread) {
+                <span class="post-unread-dot" aria-label="unread"></span>
+              }
+            </ion-card-title>
           </ion-card-header>
           <ion-card-content style="white-space: pre-line;">
             {{ post.description }}
