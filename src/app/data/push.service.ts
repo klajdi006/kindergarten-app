@@ -55,7 +55,15 @@ export class PushService {
     }
     if (permission !== 'granted') return false;
 
-    const swReg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    // Register the FCM worker under its own scope. The Angular PWA worker
+    // (ngsw-worker.js) already owns scope '/', and a browser allows only one
+    // service worker per scope — registering FCM at '/' would clobber ngsw (or
+    // be clobbered by it), so background pushes would land on a worker with no
+    // onBackgroundMessage handler and silently vanish. A dedicated scope lets
+    // both coexist. This matches FCM's own default scope.
+    const swReg = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+      scope: '/firebase-cloud-messaging-push-scope',
+    });
     const token = await getToken(this.messaging, {
       vapidKey: environment.vapidKey,
       serviceWorkerRegistration: swReg,
