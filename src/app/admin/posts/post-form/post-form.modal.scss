@@ -1,0 +1,9 @@
+.upload-failed-icon {
+  font-size: 2rem;
+  color: var(--ion-color-danger);
+}
+
+.file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

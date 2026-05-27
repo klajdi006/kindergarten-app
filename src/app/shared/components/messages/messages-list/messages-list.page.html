@@ -12,12 +12,10 @@
   @if (loading()) {
     <app-skeleton-list [count]="6" />
   } @else if (conversations.mine().length === 0) {
-    <div
-      class="ion-text-center"
-      style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;padding-top:3rem;">
+    <div class="ion-text-center empty-state">
       <ion-icon
-        [icon]="chatbubblesOutline"
-        style="font-size:3rem;color:var(--ion-color-medium);"
+        name="chatbubbles-outline"
+        class="empty-state-icon"
         aria-hidden="true">
       </ion-icon>
       <ion-text color="medium">
@@ -28,11 +26,9 @@
     <ion-list>
       @for (conv of conversations.mine(); track conv.id) {
         <ion-item button="true" (click)="open(conv)">
-          <ion-avatar
-            slot="start"
-            style="display:inline-flex;align-items:center;justify-content:center;background:var(--ion-color-primary);color:var(--ion-color-primary-contrast);font-weight:600;">
+          <ion-avatar slot="start" class="avatar-initials">
             @if (conv.isGroup) {
-              <ion-icon [icon]="peopleOutline" aria-hidden="true"></ion-icon>
+              <ion-icon name="people-outline" aria-hidden="true"></ion-icon>
             } @else {
               {{ initials(displayTitle(conv)) }}
             }

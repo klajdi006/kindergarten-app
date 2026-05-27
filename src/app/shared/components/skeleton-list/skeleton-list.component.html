@@ -3,7 +3,7 @@
     <ion-item lines="full">
       @if (avatar()) {
         <ion-avatar slot="start">
-          <ion-skeleton-text [animated]="true" style="width: 100%; height: 100%;"></ion-skeleton-text>
+          <ion-skeleton-text [animated]="true" class="avatar-skeleton"></ion-skeleton-text>
         </ion-avatar>
       }
       <ion-label>
@@ -11,7 +11,7 @@
           <ion-skeleton-text
             [animated]="true"
             [style.width]="l === 0 ? '60%' : '40%'"
-            style="height: 0.9rem;"></ion-skeleton-text>
+            class="line-skeleton"></ion-skeleton-text>
         }
       </ion-label>
     </ion-item>

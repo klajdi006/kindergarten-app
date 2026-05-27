@@ -49,6 +49,7 @@ type Mode = 'browse' | 'group';
 @Component({
   selector: 'app-new-conversation-modal',
   templateUrl: 'new-conversation.modal.html',
+  styleUrl: './new-conversation.modal.scss',
   imports: [
     ReactiveFormsModule,
     IonHeader,
@@ -86,12 +87,13 @@ export class NewConversationModal {
     title: [''],
   });
 
-  protected readonly checkmarkCircle = checkmarkCircle;
-  protected readonly ellipseOutline = ellipseOutline;
-  protected readonly peopleOutline = peopleOutline;
-
   constructor() {
-    addIcons({ 'close-outline': closeOutline });
+    addIcons({
+      'close-outline': closeOutline,
+      'people-outline': peopleOutline,
+      'checkmark-circle': checkmarkCircle,
+      'ellipse-outline': ellipseOutline,
+    });
   }
 
   readonly directory = computed<NewConversationParticipant[]>(() => {

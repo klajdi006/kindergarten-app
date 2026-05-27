@@ -7,7 +7,9 @@
     </ion-buttons>
     <ion-title>{{ 'admin.posts.add' | translate }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button strong="true" (click)="save()">{{ 'common.save' | translate }}</ion-button>
+      <ion-button strong="true" [disabled]="uploading" (click)="save()">
+        {{ 'common.save' | translate }}
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -41,7 +43,7 @@
         </ion-note>
       }
       <ion-item lines="none">
-        <ion-icon slot="start" [icon]="globeOutline" color="medium" aria-hidden="true"></ion-icon>
+        <ion-icon slot="start" name="globe-outline" color="medium" aria-hidden="true"></ion-icon>
         <ion-select
           [label]="'admin.posts.fields.audience' | translate"
           labelPlacement="floating"
@@ -56,8 +58,80 @@
         </ion-select>
       </ion-item>
     </ion-list>
-    <ion-text color="medium">
-      <p class="ion-padding-horizontal"><small>{{ 'admin.posts.imagesHint' | translate }}</small></p>
-    </ion-text>
+
+    <!-- Photos -->
+    <ion-list-header>
+      <ion-label>{{ 'admin.posts.photos' | translate }}</ion-label>
+    </ion-list-header>
+    @if (images().length > 0) {
+      <div class="photo-grid">
+        @for (img of images(); track img.id) {
+          <div class="photo-grid-cell">
+            <img [src]="img.previewUrl" alt="" [class.photo-uploading-img]="img.progress < 1 || img.failed" />
+            @if (img.failed) {
+              <div class="upload-overlay">
+                <ion-icon name="alert-circle-outline" class="upload-failed-icon"></ion-icon>
+              </div>
+            } @else if (img.progress < 1) {
+              <div class="upload-overlay">
+                <svg class="upload-ring" viewBox="0 0 36 36" aria-hidden="true">
+                  <circle class="upload-ring-bg" cx="18" cy="18" r="16"></circle>
+                  <circle class="upload-ring-fg" cx="18" cy="18" r="16"
+                    [style.stroke-dasharray]="RING_C" [style.stroke-dashoffset]="ringOffset(img.progress)"></circle>
+                </svg>
+                <span class="upload-pct">{{ pct(img.progress) }}%</span>
+              </div>
+            }
+            <button
+              class="photo-grid-delete"
+              type="button"
+              (click)="removeImage(img.id)"
+              [attr.aria-label]="'common.delete' | translate">
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
+          </div>
+        }
+      </div>
+    }
+    <ion-list inset="true">
+      <ion-item button="true" detail="false" (click)="imageInput.click()">
+        <ion-icon slot="start" name="images-outline" color="primary" aria-hidden="true"></ion-icon>
+        <ion-label color="primary">{{ 'admin.posts.addPhotos' | translate }}</ion-label>
+      </ion-item>
+    </ion-list>
+    <input type="file" accept="image/*" multiple hidden #imageInput (change)="onImagesPicked($event)" />
+
+    <!-- Files -->
+    <ion-list-header>
+      <ion-label>{{ 'admin.posts.files' | translate }}</ion-label>
+    </ion-list-header>
+    @if (files().length > 0) {
+      <ion-list inset="true">
+        @for (f of files(); track f.id) {
+          <ion-item>
+            <ion-icon slot="start" name="document-outline" color="medium" aria-hidden="true"></ion-icon>
+            <ion-label>
+              <h3 class="file-name">{{ f.name }}</h3>
+              @if (f.failed) {
+                <ion-note color="danger">{{ 'admin.albums.uploadFailed' | translate }}</ion-note>
+              } @else if (f.progress < 1) {
+                <ion-note color="medium">{{ pct(f.progress) }}%</ion-note>
+              }
+            </ion-label>
+            <ion-button slot="end" fill="clear" color="medium" (click)="removeFile(f.id)"
+              [attr.aria-label]="'common.delete' | translate">
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-button>
+          </ion-item>
+        }
+      </ion-list>
+    }
+    <ion-list inset="true">
+      <ion-item button="true" detail="false" (click)="fileInput.click()">
+        <ion-icon slot="start" name="document-outline" color="primary" aria-hidden="true"></ion-icon>
+        <ion-label color="primary">{{ 'admin.posts.addFiles' | translate }}</ion-label>
+      </ion-item>
+    </ion-list>
+    <input type="file" multiple hidden #fileInput (change)="onFilesPicked($event)" />
   </form>
 </ion-content>

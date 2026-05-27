@@ -25,6 +25,7 @@ import { Staff } from '@app/data/types';
 @Component({
   selector: 'app-pending-staff-modal',
   templateUrl: 'pending-staff.modal.html',
+  styleUrl: './pending-staff.modal.scss',
   imports: [
     IonHeader,
     IonToolbar,

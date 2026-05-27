@@ -154,6 +154,13 @@
   cursor: pointer;
 }
 
+/* Document download link (per-child documents, used by admin + parent). */
+.doc-link {
+  color: var(--ion-color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
 /* Unread post card: subtle left-border accent + a dot in the title. */
 ion-card.post-unread {
   border-left: 3px solid var(--ion-color-primary);

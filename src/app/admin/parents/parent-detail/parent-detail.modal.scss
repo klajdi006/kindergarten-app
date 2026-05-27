@@ -1,0 +1,22 @@
+.avatar-circle {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: var(--ion-color-primary);
+  color: var(--ion-color-primary-contrast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.25rem;
+  font-weight: 600;
+  margin: 0 auto;
+}
+
+.avatar-initials-success {
+  background: var(--ion-color-success);
+  color: var(--ion-color-success-contrast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}

@@ -1,0 +1,28 @@
+@if (thumbs().length > 0) {
+  <div class="post-thumb-row">
+    @for (url of thumbs(); track url; let i = $index) {
+      <div class="post-thumb" (click)="openImage(i, $event)">
+        <img [src]="url" loading="lazy" alt="" />
+        @if (i === thumbs().length - 1 && extra() > 0) {
+          <div class="post-thumb-more">+{{ extra() }}</div>
+        }
+      </div>
+    }
+  </div>
+}
+
+@if (attachments().length > 0) {
+  <div class="post-file-links">
+    @for (att of attachments(); track att.path) {
+      <a
+        class="post-file-link"
+        [href]="att.url"
+        target="_blank"
+        rel="noopener"
+        (click)="$event.stopPropagation()">
+        <ion-icon name="attach-outline" aria-hidden="true"></ion-icon>
+        <span>{{ att.name }}</span>
+      </a>
+    }
+  </div>
+}

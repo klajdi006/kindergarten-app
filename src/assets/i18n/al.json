@@ -117,7 +117,11 @@
       },
       "add": "Postim i ri",
       "edit": "Modifiko postimin",
-      "imagesHint": "Bashkëngjitja e fotove vjen së shpejti.",
+      "photos": "Fotot",
+      "files": "Skedarët",
+      "addPhotos": "Shto foto",
+      "addFiles": "Shto skedarë",
+      "fileCount": "{{ count }} skedarë",
       "allDepartments": "Të gjitha departamentet",
       "fields": {
         "title": "Titulli",
@@ -243,6 +247,9 @@
         "title": "Fëmija",
         "profile": "Profili",
         "parents": "Prindërit",
+        "documents": "Dokumentet",
+        "noDocuments": "Nuk ka ende dokumente.",
+        "uploadDocument": "Ngarko dokument",
         "delete": "Fshi fëmijën"
       }
     },
@@ -314,6 +321,7 @@
       "notFound": "Fëmija nuk u gjet.",
       "detail": {
         "profile": "Profili",
+        "documents": "Dokumentet",
         "today": "Sot",
         "sickToday": "I/e sëmurë sot",
         "planHoliday": "Planifiko pushim",

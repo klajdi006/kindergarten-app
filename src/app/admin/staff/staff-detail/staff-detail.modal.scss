@@ -1,0 +1,12 @@
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ion-color-primary);
+  color: var(--ion-color-primary-contrast);
+  font-size: 1.75rem;
+  font-weight: 600;
+}

@@ -117,7 +117,11 @@
       },
       "add": "New post",
       "edit": "Edit post",
-      "imagesHint": "Image attachments coming soon.",
+      "photos": "Photos",
+      "files": "Files",
+      "addPhotos": "Add photos",
+      "addFiles": "Add files",
+      "fileCount": "{{ count }} files",
       "allDepartments": "All departments",
       "fields": {
         "title": "Title",
@@ -243,6 +247,9 @@
         "title": "Child",
         "profile": "Profile",
         "parents": "Parents",
+        "documents": "Documents",
+        "noDocuments": "No documents yet.",
+        "uploadDocument": "Upload document",
         "delete": "Delete child"
       }
     },
@@ -314,6 +321,7 @@
       "notFound": "Child not found.",
       "detail": {
         "profile": "Profile",
+        "documents": "Documents",
         "today": "Today",
         "sickToday": "Sick today",
         "planHoliday": "Plan a holiday",

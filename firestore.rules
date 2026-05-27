@@ -211,6 +211,23 @@ service cloud.firestore {
       }
     }
 
+    // ---------- documents ----------
+    // Per-child files (e.g. signed contracts). Admins manage them; the linked
+    // parents read them. Parent access is enforced by denormalized
+    // allowedParentUids on each doc (the parent's auth uid must be listed).
+    match /documents/{id} {
+      // Admin: any doc in their kg. Parent: only docs whose allowedParentUids
+      // lists them. inMyKg is scoped to the admin branch so the parent query
+      // (filtered by allowedParentUids array-contains, without a kindergartenId
+      // filter) is still rule-safe — those uids are only ever the child's kg
+      // parents anyway.
+      allow read: if isSignedIn()
+                  && ((isAdmin() && inMyKg(resource.data.kindergartenId))
+                      || (uid() in resource.data.allowedParentUids));
+      allow create: if isAdmin() && request.resource.data.kindergartenId == userKg();
+      allow update, delete: if isAdmin() && inMyKg(resource.data.kindergartenId);
+    }
+
     // ---------- absences ----------
     // Admin/employee in the kindergarten: read all (dept-level filtering is
     // applied to /children, so identifying an absent child still requires

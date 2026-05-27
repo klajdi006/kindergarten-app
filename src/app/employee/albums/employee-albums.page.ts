@@ -39,6 +39,7 @@ import { SkeletonListComponent } from '@app/shared/components/skeleton-list/skel
 @Component({
   selector: 'app-employee-albums',
   templateUrl: 'employee-albums.page.html',
+  styleUrl: './employee-albums.page.scss',
   imports: [
     IonHeader,
     IonToolbar,
@@ -97,16 +98,16 @@ export class EmployeeAlbumsPage {
     return s.allDepartments || s.departmentIds.includes(album.departmentId);
   }
 
-  protected readonly createOutline = createOutline;
-  protected readonly ellipsisVerticalOutline = ellipsisVerticalOutline;
-  protected readonly imagesOutline = imagesOutline;
-  protected readonly trashOutline = trashOutline;
   protected readonly onRefresh = completeRefresher;
 
   readonly loading = signal(true);
 
   constructor() {
-    addIcons({ 'add-outline': addOutline });
+    addIcons({
+      'add-outline': addOutline,
+      'images-outline': imagesOutline,
+      'ellipsis-vertical-outline': ellipsisVerticalOutline,
+    });
     effect(() => {
       if (this.albums.all().length > 0) this.loading.set(false);
     });

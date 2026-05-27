@@ -133,7 +133,6 @@ export class ParentChildrenPage {
   }
 
   protected readonly bandageOutline = bandageOutline;
-  protected readonly happyOutline = happyOutline;
 
   readonly loading = signal(true);
 

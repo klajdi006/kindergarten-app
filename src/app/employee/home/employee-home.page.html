@@ -29,44 +29,44 @@
   </div>
 
   <!-- Stats strip -->
-  <div class="ion-padding-horizontal" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
-    <ion-card style="margin:0;">
-      <ion-card-content style="padding:12px;">
-        <div style="font-size:0.75rem;color:var(--ion-color-medium);">
+  <div class="ion-padding-horizontal stats-strip">
+    <ion-card class="stat-card">
+      <ion-card-content class="stat-content">
+        <div class="stat-label">
           {{ 'employee.home.stats.expected' | translate }}
         </div>
-        <div style="font-size:1.5rem;font-weight:600;">{{ stats().expected }}</div>
+        <div class="stat-value">{{ stats().expected }}</div>
       </ion-card-content>
     </ion-card>
-    <ion-card style="margin:0;">
-      <ion-card-content style="padding:12px;">
-        <div style="font-size:0.75rem;color:var(--ion-color-medium);">
+    <ion-card class="stat-card">
+      <ion-card-content class="stat-content">
+        <div class="stat-label">
           {{ 'employee.home.stats.present' | translate }}
         </div>
-        <div style="font-size:1.5rem;font-weight:600;color:var(--ion-color-success);">{{ stats().present }}</div>
+        <div class="stat-value stat-value-present">{{ stats().present }}</div>
       </ion-card-content>
     </ion-card>
-    <ion-card style="margin:0;position:relative;">
+    <ion-card class="stat-card stat-card-sick">
       @if (newSickAtEntry() > 0) {
         <ion-badge
           color="danger"
-          style="position:absolute;top:6px;right:6px;font-size:0.7rem;">
+          class="stat-badge">
           +{{ newSickAtEntry() }}
         </ion-badge>
       }
-      <ion-card-content style="padding:12px;">
-        <div style="font-size:0.75rem;color:var(--ion-color-medium);">
+      <ion-card-content class="stat-content">
+        <div class="stat-label">
           {{ 'employee.home.stats.sick' | translate }}
         </div>
-        <div style="font-size:1.5rem;font-weight:600;color:var(--ion-color-danger);">{{ stats().sick }}</div>
+        <div class="stat-value stat-value-sick">{{ stats().sick }}</div>
       </ion-card-content>
     </ion-card>
-    <ion-card style="margin:0;">
-      <ion-card-content style="padding:12px;">
-        <div style="font-size:0.75rem;color:var(--ion-color-medium);">
+    <ion-card class="stat-card">
+      <ion-card-content class="stat-content">
+        <div class="stat-label">
           {{ 'employee.home.stats.holiday' | translate }}
         </div>
-        <div style="font-size:1.5rem;font-weight:600;color:var(--ion-color-warning);">{{ stats().holiday }}</div>
+        <div class="stat-value stat-value-holiday">{{ stats().holiday }}</div>
       </ion-card-content>
     </ion-card>
   </div>
@@ -90,7 +90,7 @@
           <ion-item>
             <ion-icon
               slot="start"
-              [icon]="iconForStatus(row.status)"
+              [name]="iconForStatus(row.status)"
               [color]="colorForStatus(row.status)"
               aria-hidden="true">
             </ion-icon>
@@ -104,7 +104,7 @@
               slot="end"
               [color]="row.status === 'expected' ? 'primary' : 'medium'"
               [outline]="row.status !== 'expected'">
-              <ion-icon [icon]="timeOutline" aria-hidden="true"></ion-icon>
+              <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
               <ion-label>{{ row.arrival }} – {{ row.departure }}</ion-label>
             </ion-chip>
           </ion-item>
@@ -121,7 +121,7 @@
     <ion-list>
       @for (c of upcomingBirthdays(); track c.id) {
         <ion-item>
-          <ion-icon slot="start" [icon]="giftOutline" color="tertiary" aria-hidden="true"></ion-icon>
+          <ion-icon slot="start" name="gift-outline" color="tertiary" aria-hidden="true"></ion-icon>
           <ion-label>
             <h3>{{ c.firstName }} {{ c.lastName }}</h3>
             <p>{{ c.birthDate | dateDmy }}</p>
@@ -139,7 +139,7 @@
     <ion-list>
       @for (p of recentPosts(); track p.id) {
         <ion-item>
-          <ion-icon slot="start" [icon]="megaphoneOutline" color="primary" aria-hidden="true"></ion-icon>
+          <ion-icon slot="start" name="megaphone-outline" color="primary" aria-hidden="true"></ion-icon>
           <ion-label>
             <h3>{{ p.title }}</h3>
             <p>{{ p.authorName }}</p>

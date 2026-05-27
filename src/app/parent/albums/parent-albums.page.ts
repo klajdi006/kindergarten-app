@@ -14,6 +14,7 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
 import { imagesOutline } from 'ionicons/icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { of, switchMap } from 'rxjs';
@@ -28,6 +29,7 @@ import { SkeletonListComponent } from '@app/shared/components/skeleton-list/skel
 @Component({
   selector: 'app-parent-albums',
   templateUrl: 'parent-albums.page.html',
+  styleUrl: './parent-albums.page.scss',
   imports: [
     RouterLink,
     IonHeader,
@@ -82,12 +84,12 @@ export class ParentAlbumsPage {
     return this.departmentsById().get(id) ?? this.t.instant('admin.children.unassigned');
   }
 
-  protected readonly imagesOutline = imagesOutline;
   protected readonly onRefresh = completeRefresher;
 
   readonly loading = signal(true);
 
   constructor() {
+    addIcons({ 'images-outline': imagesOutline });
     effect(() => {
       if (this.albums.all().length > 0) this.loading.set(false);
     });

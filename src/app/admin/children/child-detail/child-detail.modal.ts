@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, computed, effect, inject, signal } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -21,6 +22,7 @@ import {
   IonList,
   IonListHeader,
   IonModal,
+  IonNote,
   IonSelect,
   IonSelectOption,
   IonText,
@@ -33,23 +35,36 @@ import { addIcons } from 'ionicons';
 import {
   closeCircleOutline,
   closeOutline,
+  cloudUploadOutline,
+  documentOutline,
+  downloadOutline,
   personAddOutline,
   trashOutline,
 } from 'ionicons/icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { of, switchMap } from 'rxjs';
 import {
   AssignParentsModal,
   AssignParentsResult,
 } from '@app/admin/children/assign-parents/assign-parents.modal';
 import { ChildrenService } from '@app/data/children.service';
 import { DepartmentsService } from '@app/data/departments.service';
+import { DocumentsService } from '@app/data/documents.service';
 import { ParentsService } from '@app/data/parents.service';
-import { Child, ChildGender, Parent } from '@app/data/types';
+import { Child, ChildDocument, ChildGender, Parent } from '@app/data/types';
 import { DateDmyPipe } from '@app/shared/pipes/date-dmy.pipe';
+
+interface DocUpload {
+  id: string;
+  name: string;
+  progress: number;
+  failed: boolean;
+}
 
 @Component({
   selector: 'app-child-detail-modal',
   templateUrl: 'child-detail.modal.html',
+  styleUrl: './child-detail.modal.scss',
   imports: [
     ReactiveFormsModule,
     IonHeader,
@@ -71,7 +86,9 @@ import { DateDmyPipe } from '@app/shared/pipes/date-dmy.pipe';
     IonModal,
     IonIcon,
     IonText,
+    IonNote,
     TranslatePipe,
+    DateDmyPipe,
   ],
 })
 export class ChildDetailModal implements OnInit {
@@ -83,8 +100,20 @@ export class ChildDetailModal implements OnInit {
   readonly children = inject(ChildrenService);
   readonly parents = inject(ParentsService);
   readonly departments = inject(DepartmentsService);
+  readonly documentsService = inject(DocumentsService);
 
   @Input({ required: true }) childId!: string;
+
+  private readonly childIdSig = signal<string | null>(null);
+
+  readonly documents = toSignal(
+    toObservable(this.childIdSig).pipe(
+      switchMap((id) => (id ? this.documentsService.forChild(id) : of<ChildDocument[]>([]))),
+    ),
+    { initialValue: [] as ChildDocument[] },
+  );
+
+  readonly docUploads = signal<DocUpload[]>([]);
 
   readonly child = computed<Child | null>(
     () => this.children.all().find((c) => c.id === this.childId) ?? null,
@@ -114,12 +143,16 @@ export class ChildDetailModal implements OnInit {
 
   readonly todayIso = todayIso();
 
-  protected readonly closeCircleOutline = closeCircleOutline;
-  protected readonly personAddOutline = personAddOutline;
-  protected readonly trashOutline = trashOutline;
-
   constructor() {
-    addIcons({ 'close-outline': closeOutline });
+    addIcons({
+      'close-outline': closeOutline,
+      'close-circle-outline': closeCircleOutline,
+      'person-add-outline': personAddOutline,
+      'trash-outline': trashOutline,
+      'document-outline': documentOutline,
+      'cloud-upload-outline': cloudUploadOutline,
+      'download-outline': downloadOutline,
+    });
     effect(() => {
       const c = this.child();
       if (c && this.form.pristine) {
@@ -138,6 +171,7 @@ export class ChildDetailModal implements OnInit {
   }
 
   ngOnInit(): void {
+    this.childIdSig.set(this.childId);
     const c = this.child();
     if (c) {
       this.form.patchValue({
@@ -247,12 +281,76 @@ export class ChildDetailModal implements OnInit {
     for (const id of data.selectedIds) {
       await this.parents.assignChild(id, c.id);
     }
+    // Keep document access in sync with the new parent links.
+    await this.documentsService.refreshAccessForChild(c.id, this.parents.all());
   }
 
   async unlink(parentId: string): Promise<void> {
     const c = this.child();
     if (!c) return;
     await this.parents.unassignChild(parentId, c.id);
+    await this.documentsService.refreshAccessForChild(c.id, this.parents.all());
+  }
+
+  async onDocsPicked(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const files = input.files ? Array.from(input.files) : [];
+    input.value = '';
+    const c = this.child();
+    if (!c || files.length === 0) return;
+    const parents = this.parents.all();
+
+    for (const file of files) {
+      const entry: DocUpload = {
+        id:
+          typeof crypto !== 'undefined' && 'randomUUID' in crypto
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        name: file.name,
+        progress: 0,
+        failed: false,
+      };
+      this.docUploads.update((l) => [...l, entry]);
+      try {
+        await this.documentsService.upload(c, parents, file, (f) =>
+          this.docUploads.update((l) =>
+            l.map((u) => (u.id === entry.id ? { ...u, progress: f } : u)),
+          ),
+        );
+        this.docUploads.update((l) => l.filter((u) => u.id !== entry.id));
+      } catch (err) {
+        console.error('[documents] upload failed', err);
+        this.docUploads.update((l) =>
+          l.map((u) => (u.id === entry.id ? { ...u, failed: true } : u)),
+        );
+      }
+    }
+  }
+
+  dismissFailedDoc(id: string): void {
+    this.docUploads.update((l) => l.filter((u) => u.id !== id));
+  }
+
+  async confirmDeleteDoc(document: ChildDocument): Promise<void> {
+    const alert = await this.alertCtrl.create({
+      header: this.t.instant('common.confirmDeleteTitle'),
+      message: this.t.instant('common.confirmDeleteMessage', { name: document.name }),
+      buttons: [
+        { text: this.t.instant('common.cancel'), role: 'cancel' },
+        {
+          text: this.t.instant('common.delete'),
+          role: 'destructive',
+          handler: () => {
+            this.documentsService.remove(document);
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
+
+  pct(progress: number): number {
+    return Math.round(progress * 100);
   }
 
   private async showToast(

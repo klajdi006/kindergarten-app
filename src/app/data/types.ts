@@ -67,6 +67,19 @@ export interface Parent {
   createdAt: number;
 }
 
+export interface ChildDocument {
+  id: Id;
+  childId: Id;
+  kindergartenId: Id;
+  name: string;
+  url: string;
+  path: string;
+  /** Auth uids of the child's claimed parents — denormalized for the read rule. */
+  allowedParentUids: Id[];
+  uploadedByUid: Id;
+  uploadedAt: number;
+}
+
 export type AbsenceType = 'sick' | 'holiday';
 
 export interface Absence {
@@ -101,12 +114,22 @@ export interface Photo {
   uploadedAt: number;
 }
 
+export interface PostAttachment {
+  name: string;
+  url: string;
+  path: string;
+}
+
 export interface Post {
   id: Id;
   title: string;
   description: string;
   departmentId: Id | null;
   imageUrls: string[];
+  /** Storage paths parallel to imageUrls, for cleanup on delete. */
+  imagePaths?: string[];
+  /** Non-image file attachments shown as download links. */
+  attachments?: PostAttachment[];
   kindergartenId: Id;
   authorUid: Id;
   authorName: string | null;

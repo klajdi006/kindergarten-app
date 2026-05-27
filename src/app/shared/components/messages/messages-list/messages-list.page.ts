@@ -35,6 +35,7 @@ import { SkeletonListComponent } from '@app/shared/components/skeleton-list/skel
 @Component({
   selector: 'app-messages-list',
   templateUrl: 'messages-list.page.html',
+  styleUrl: './messages-list.page.scss',
   imports: [
     IonHeader,
     IonToolbar,
@@ -63,14 +64,16 @@ export class MessagesListPage {
   readonly conversations = inject(ConversationsService);
   readonly notifications = inject(NotificationsService);
 
-  protected readonly chatbubblesOutline = chatbubblesOutline;
-  protected readonly peopleOutline = peopleOutline;
   protected readonly onRefresh = completeRefresher;
 
   readonly loading = signal(true);
 
   constructor() {
-    addIcons({ 'add-outline': addOutline });
+    addIcons({
+      'add-outline': addOutline,
+      'chatbubbles-outline': chatbubblesOutline,
+      'people-outline': peopleOutline,
+    });
     effect(() => {
       if (this.conversations.mine().length > 0) this.loading.set(false);
     });

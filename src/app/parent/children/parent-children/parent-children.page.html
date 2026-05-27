@@ -21,7 +21,7 @@
           detail="true"
           lines="full"
           [routerLink]="['/parent/children', child.id]">
-          <ion-icon slot="start" [icon]="happyOutline" color="primary" aria-hidden="true"></ion-icon>
+          <ion-icon slot="start" name="happy-outline" color="primary" aria-hidden="true"></ion-icon>
           <ion-label>
             <h2>{{ child.firstName }} {{ child.lastName }}</h2>
             @if (departmentName(child); as dn) {
@@ -32,7 +32,7 @@
         <ion-item lines="none">
           <ion-icon
             slot="start"
-            [icon]="bandageOutline"
+            name="bandage-outline"
             [color]="isSickToday(child.id) ? 'danger' : 'medium'"
             aria-hidden="true">
           </ion-icon>

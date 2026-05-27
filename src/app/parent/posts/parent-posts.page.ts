@@ -22,6 +22,7 @@ import {
   IonToolbar,
   ModalController,
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
 import { funnelOutline, newspaperOutline } from 'ionicons/icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { of, switchMap } from 'rxjs';
@@ -33,11 +34,13 @@ import { ParentsService } from '@app/data/parents.service';
 import { PostsService } from '@app/data/posts.service';
 import { Child, Department, Post } from '@app/data/types';
 import { PostViewModal } from '@app/shared/components/post-view/post-view.modal';
+import { PostMediaPreviewComponent } from '@app/shared/components/post-media-preview/post-media-preview.component';
 import { completeRefresher } from '@app/shared/utils/refresher';
 
 @Component({
   selector: 'app-parent-posts',
   templateUrl: 'parent-posts.page.html',
+  styleUrl: './parent-posts.page.scss',
   imports: [
     IonHeader,
     IonToolbar,
@@ -56,6 +59,7 @@ import { completeRefresher } from '@app/shared/utils/refresher';
     IonCardContent,
     IonIcon,
     IonSkeletonText,
+    PostMediaPreviewComponent,
     TranslatePipe,
     DateDmyPipe,
   ],
@@ -136,20 +140,20 @@ export class ParentPostsPage {
     if (typeof value === 'string' && value) this.filter.set(value);
   }
 
-  protected readonly funnelOutline = funnelOutline;
-
   departmentLabel(deptId: string | null): string {
     if (!deptId) return this.t.instant('admin.posts.allDepartments');
     const dept = this.kgDepartments().find((d) => d.id === deptId);
     return dept?.name ?? '';
   }
 
-  protected readonly newspaperOutline = newspaperOutline;
-
   readonly loading = signal(true);
   protected readonly skeletonRows = [0, 1, 2];
 
   constructor() {
+    addIcons({
+      'funnel-outline': funnelOutline,
+      'newspaper-outline': newspaperOutline,
+    });
     effect(() => {
       if (this.allPosts().length > 0) this.loading.set(false);
     });

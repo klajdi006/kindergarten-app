@@ -16,6 +16,7 @@ import {
   IonText,
   ModalController,
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
 import {
   alertCircleOutline,
   bandageOutline,
@@ -46,6 +47,7 @@ import { DateDmyPipe } from '@app/shared/pipes/date-dmy.pipe';
 @Component({
   selector: 'app-admin-home',
   templateUrl: 'admin-home.page.html',
+  styleUrl: './admin-home.page.scss',
   imports: [
     RouterLink,
     IonContent,
@@ -161,19 +163,21 @@ export class AdminHomePage {
     return this.departments.all().find((d) => d.id === deptId)?.name ?? '';
   }
 
-  protected readonly alertCircleOutline = alertCircleOutline;
   protected readonly bandageOutline = bandageOutline;
-  protected readonly businessOutline = businessOutline;
-  protected readonly giftOutline = giftOutline;
   protected readonly happyOutline = happyOutline;
-  protected readonly mailOutline = mailOutline;
-  protected readonly megaphoneOutline = megaphoneOutline;
   protected readonly peopleOutline = peopleOutline;
   protected readonly sunnyOutline = sunnyOutline;
 
   readonly loading = signal(true);
 
   constructor() {
+    addIcons({
+      'mail-outline': mailOutline,
+      'alert-circle-outline': alertCircleOutline,
+      'business-outline': businessOutline,
+      'gift-outline': giftOutline,
+      'megaphone-outline': megaphoneOutline,
+    });
     effect(() => {
       if (
         this.parents.count() > 0 ||

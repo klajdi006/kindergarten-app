@@ -42,9 +42,7 @@
       @for (s of visible(); track s.id) {
         <ion-item-sliding>
           <ion-item button="true" detail="true" (click)="openDetail(s)">
-            <ion-avatar
-              slot="start"
-              style="display:inline-flex;align-items:center;justify-content:center;background:var(--ion-color-primary);color:var(--ion-color-primary-contrast);font-weight:600;">
+            <ion-avatar slot="start" class="avatar-initials">
               {{ initials(s) }}
             </ion-avatar>
             <ion-label>
@@ -68,7 +66,7 @@
           </ion-item>
           <ion-item-options side="end">
             <ion-item-option color="danger" (click)="confirmDelete(s)">
-              <ion-icon slot="icon-only" [icon]="trashOutline" aria-hidden="true"></ion-icon>
+              <ion-icon slot="icon-only" name="trash-outline" aria-hidden="true"></ion-icon>
             </ion-item-option>
           </ion-item-options>
         </ion-item-sliding>

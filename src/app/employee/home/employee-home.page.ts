@@ -22,6 +22,7 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
 import {
   bandageOutline,
   giftOutline,
@@ -66,6 +67,7 @@ interface RosterRow {
 @Component({
   selector: 'app-employee-home',
   templateUrl: 'employee-home.page.html',
+  styleUrl: './employee-home.page.scss',
   imports: [
     IonHeader,
     IonToolbar,
@@ -234,11 +236,11 @@ export class EmployeeHomePage {
   iconForStatus(status: RosterRow['status']): string {
     switch (status) {
       case 'sick':
-        return bandageOutline;
+        return 'bandage-outline';
       case 'holiday':
-        return sunnyOutline;
+        return 'sunny-outline';
       default:
-        return happyOutline;
+        return 'happy-outline';
     }
   }
 
@@ -253,18 +255,20 @@ export class EmployeeHomePage {
     }
   }
 
-  protected readonly bandageOutline = bandageOutline;
-  protected readonly happyOutline = happyOutline;
-  protected readonly sunnyOutline = sunnyOutline;
-  protected readonly timeOutline = timeOutline;
-  protected readonly giftOutline = giftOutline;
-  protected readonly megaphoneOutline = megaphoneOutline;
   protected readonly DEFAULT_OPERATING_HOURS = DEFAULT_OPERATING_HOURS;
   protected readonly defaultScheduleFor = defaultScheduleFor;
 
   readonly loading = signal(true);
 
   constructor() {
+    addIcons({
+      'bandage-outline': bandageOutline,
+      'happy-outline': happyOutline,
+      'sunny-outline': sunnyOutline,
+      'time-outline': timeOutline,
+      'gift-outline': giftOutline,
+      'megaphone-outline': megaphoneOutline,
+    });
     effect(() => {
       if (this.myChildren().length > 0) this.loading.set(false);
     });

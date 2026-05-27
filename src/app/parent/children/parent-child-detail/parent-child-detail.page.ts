@@ -33,6 +33,8 @@ import {
   bandageOutline,
   businessOutline,
   calendarOutline,
+  documentOutline,
+  downloadOutline,
   femaleOutline,
   happyOutline,
   hourglassOutline,
@@ -47,6 +49,7 @@ import { DateDmyPipe } from '@app/shared/pipes/date-dmy.pipe';
 import { AbsencesService } from '@app/data/absences.service';
 import { ChildrenService } from '@app/data/children.service';
 import { DepartmentsService } from '@app/data/departments.service';
+import { DocumentsService } from '@app/data/documents.service';
 import { KindergartensService } from '@app/data/kindergartens.service';
 import { ParentsService } from '@app/data/parents.service';
 import { SchedulesService } from '@app/data/schedules.service';
@@ -60,7 +63,7 @@ import {
   getOperatingHours,
   getWeeklySchedule,
 } from '@app/data/schedule';
-import { Absence, Child, Department } from '@app/data/types';
+import { Absence, Child, ChildDocument, Department } from '@app/data/types';
 import { AbsenceHistoryModal } from '@app/parent/children/absence-history/absence-history.modal';
 import { completeRefresher } from '@app/shared/utils/refresher';
 import { SkeletonListComponent } from '@app/shared/components/skeleton-list/skeleton-list.component';
@@ -103,6 +106,7 @@ export class ParentChildDetailPage {
   private readonly absences = inject(AbsencesService);
   private readonly kindergartens = inject(KindergartensService);
   private readonly schedules = inject(SchedulesService);
+  private readonly documentsService = inject(DocumentsService);
   private readonly fb = inject(FormBuilder);
   private readonly t = inject(TranslateService);
   private readonly alertCtrl = inject(AlertController);
@@ -147,6 +151,13 @@ export class ParentChildDetailPage {
     if (!id) return null;
     return this.myChildren().find((c) => c.id === id) ?? null;
   });
+
+  readonly documents = toSignal(
+    toObservable(this.childId).pipe(
+      switchMap((id) => (id ? this.documentsService.forChild(id) : of<ChildDocument[]>([]))),
+    ),
+    { initialValue: [] as ChildDocument[] },
+  );
 
   readonly departmentName = computed(() => {
     const deptId = this.child()?.departmentId;
@@ -226,16 +237,6 @@ export class ParentChildDetailPage {
     }
   }
 
-  protected readonly bandageOutline = bandageOutline;
-  protected readonly businessOutline = businessOutline;
-  protected readonly calendarOutline = calendarOutline;
-  protected readonly femaleOutline = femaleOutline;
-  protected readonly happyOutline = happyOutline;
-  protected readonly hourglassOutline = hourglassOutline;
-  protected readonly maleOutline = maleOutline;
-  protected readonly sunnyOutline = sunnyOutline;
-  protected readonly timeOutline = timeOutline;
-  protected readonly trashOutline = trashOutline;
   protected readonly weekDays = WEEK_DAYS;
 
   readonly loading = signal(true);
@@ -254,7 +255,21 @@ export class ParentChildDetailPage {
   );
 
   constructor() {
-    addIcons({ 'add-outline': addOutline });
+    addIcons({
+      'add-outline': addOutline,
+      'bandage-outline': bandageOutline,
+      'business-outline': businessOutline,
+      'calendar-outline': calendarOutline,
+      'document-outline': documentOutline,
+      'download-outline': downloadOutline,
+      'female-outline': femaleOutline,
+      'happy-outline': happyOutline,
+      'hourglass-outline': hourglassOutline,
+      'male-outline': maleOutline,
+      'sunny-outline': sunnyOutline,
+      'time-outline': timeOutline,
+      'trash-outline': trashOutline,
+    });
     effect(() => {
       if (this.myChildren().length > 0) this.loading.set(false);
     });

@@ -16,7 +16,7 @@
     @for (day of weekDays; track day) {
       @let h = draft()[day];
       <ion-item>
-        <ion-icon slot="start" [icon]="timeOutline" color="medium" aria-hidden="true"></ion-icon>
+        <ion-icon slot="start" name="time-outline" color="medium" aria-hidden="true"></ion-icon>
         <ion-label>{{ 'days.' + day | translate }}</ion-label>
         <ion-toggle
           slot="end"

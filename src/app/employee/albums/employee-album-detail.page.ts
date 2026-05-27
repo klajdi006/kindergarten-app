@@ -45,6 +45,7 @@ interface PendingUpload {
 @Component({
   selector: 'app-employee-album-detail',
   templateUrl: 'employee-album-detail.page.html',
+  styleUrl: './employee-album-detail.page.scss',
   imports: [
     IonHeader,
     IonToolbar,
@@ -126,8 +127,6 @@ export class EmployeeAlbumDetailPage {
     if (pendingUrls.size === 0) return this.photos();
     return this.photos().filter((p) => !pendingUrls.has(p.downloadUrl));
   });
-
-  protected readonly imagesOutline = imagesOutline;
 
   constructor() {
     addIcons({

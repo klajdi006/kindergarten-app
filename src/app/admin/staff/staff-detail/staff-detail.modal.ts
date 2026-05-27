@@ -41,6 +41,7 @@ const ALL = '__all__';
 @Component({
   selector: 'app-staff-detail-modal',
   templateUrl: 'staff-detail.modal.html',
+  styleUrl: './staff-detail.modal.scss',
   imports: [
     ReactiveFormsModule,
     IonHeader,
@@ -123,13 +124,14 @@ export class StaffDetailModal implements OnInit {
   readonly saving = signal(false);
   readonly sendingInvite = signal(false);
 
-  protected readonly callOutline = callOutline;
-  protected readonly mailOutline = mailOutline;
-  protected readonly paperPlaneOutline = paperPlaneOutline;
-  protected readonly trashOutline = trashOutline;
-
   constructor() {
-    addIcons({ 'close-outline': closeOutline });
+    addIcons({
+      'close-outline': closeOutline,
+      'mail-outline': mailOutline,
+      'call-outline': callOutline,
+      'paper-plane-outline': paperPlaneOutline,
+      'trash-outline': trashOutline,
+    });
     effect(() => {
       const r = this.record();
       if (r && this.form.pristine) {

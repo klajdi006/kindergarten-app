@@ -41,6 +41,7 @@ import { Department, Post } from '@app/data/types';
 import { PostFormModal, PostFormResult } from '@app/admin/posts/post-form/post-form.modal';
 import { PostDetailModal, PostUpdateResult } from '@app/admin/posts/post-detail/post-detail.modal';
 import { PostViewModal } from '@app/shared/components/post-view/post-view.modal';
+import { PostMediaPreviewComponent } from '@app/shared/components/post-media-preview/post-media-preview.component';
 import { completeRefresher } from '@app/shared/utils/refresher';
 import { SkeletonListComponent } from '@app/shared/components/skeleton-list/skeleton-list.component';
 
@@ -51,6 +52,7 @@ type PostDetailDismiss =
 @Component({
   selector: 'app-employee-posts',
   templateUrl: 'employee-posts.page.html',
+  styleUrl: './employee-posts.page.scss',
   imports: [
     IonHeader,
     IonToolbar,
@@ -76,6 +78,7 @@ type PostDetailDismiss =
     IonCardSubtitle,
     IonCardContent,
     IonSkeletonText,
+    PostMediaPreviewComponent,
     TranslatePipe,
     DateDmyPipe,
     SkeletonListComponent,
@@ -94,15 +97,17 @@ export class EmployeePostsPage {
 
   readonly flashingPostId = signal<string | null>(null);
 
-  protected readonly newspaperOutline = newspaperOutline;
-  protected readonly trashOutline = trashOutline;
   protected readonly onRefresh = completeRefresher;
 
   readonly loading = signal(true);
   protected readonly skeletonRows = [0, 1, 2];
 
   constructor() {
-    addIcons({ 'add-outline': addOutline });
+    addIcons({
+      'add-outline': addOutline,
+      'newspaper-outline': newspaperOutline,
+      'trash-outline': trashOutline,
+    });
     effect(() => {
       if (this.posts.all().length > 0) this.loading.set(false);
     });

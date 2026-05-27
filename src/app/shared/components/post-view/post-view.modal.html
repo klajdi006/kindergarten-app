@@ -11,11 +11,11 @@
 
 <ion-content [fullscreen]="true">
   <div class="ion-padding">
-    <h1 class="ion-no-margin" style="font-size:1.6rem;line-height:1.25;">{{ post.title }}</h1>
+    <h1 class="ion-no-margin post-title">{{ post.title }}</h1>
 
-    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
+    <div class="chip-row">
       <ion-chip [color]="post.departmentId ? 'primary' : 'tertiary'" [outline]="true">
-        <ion-icon [icon]="globeOutline" aria-hidden="true"></ion-icon>
+        <ion-icon name="globe-outline" aria-hidden="true"></ion-icon>
         <ion-label>
           @if (departmentName) {
             {{ departmentName }}
@@ -26,19 +26,19 @@
       </ion-chip>
       @if (post.authorName) {
         <ion-chip color="medium" [outline]="true">
-          <ion-icon [icon]="personCircleOutline" aria-hidden="true"></ion-icon>
+          <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
           <ion-label>{{ post.authorName }}</ion-label>
         </ion-chip>
       }
       <ion-chip color="medium" [outline]="true">
-        <ion-icon [icon]="timeOutline" aria-hidden="true"></ion-icon>
+        <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
         <ion-label>{{ post.createdAt | dateDmy }}</ion-label>
       </ion-chip>
     </div>
 
     @if (post.updatedAt && post.updatedAt !== post.createdAt) {
       <ion-text color="medium">
-        <p style="margin-top:8px;">
+        <p class="updated-line">
           <small>
             {{ 'admin.posts.detail.updated' | translate }} {{ post.updatedAt | dateDmy }}
           </small>
@@ -46,17 +46,35 @@
       </ion-text>
     }
 
-    <p style="white-space:pre-line;margin-top:20px;font-size:1rem;line-height:1.5;">
+    <p class="post-description">
       {{ post.description }}
     </p>
 
     @if (post.imageUrls && post.imageUrls.length > 0) {
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:20px;">
-        @for (url of post.imageUrls; track url) {
+      <div class="image-grid">
+        @for (url of post.imageUrls; track url; let i = $index) {
           <img
             [src]="url"
             alt=""
-            style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;" />
+            loading="lazy"
+            (click)="openImage(i)"
+            class="grid-image" />
+        }
+      </div>
+    }
+
+    @if (post.attachments && post.attachments.length > 0) {
+      <div class="attachment-list">
+        @for (att of post.attachments; track att.path) {
+          <a
+            [href]="att.url"
+            target="_blank"
+            rel="noopener"
+            class="attachment-link">
+            <ion-icon name="document-outline" color="medium" aria-hidden="true"></ion-icon>
+            <span class="attachment-name">{{ att.name }}</span>
+            <ion-icon name="download-outline" color="primary" aria-hidden="true"></ion-icon>
+          </a>
         }
       </div>
     }

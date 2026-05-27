@@ -19,8 +19,7 @@
 <ion-content [fullscreen]="true">
   @if (parent(); as p) {
     <div class="ion-text-center ion-padding-top">
-      <div
-        style="width:96px;height:96px;border-radius:50%;background:var(--ion-color-primary);color:var(--ion-color-primary-contrast);display:inline-flex;align-items:center;justify-content:center;font-size:2.25rem;font-weight:600;margin:0 auto;">
+      <div class="avatar-circle">
         {{ initials(p) }}
       </div>
       <h2 class="ion-no-margin ion-padding-top">{{ p.firstName }} {{ p.lastName }}</h2>
@@ -54,7 +53,7 @@
         </ion-input>
       </ion-item>
       <ion-item>
-        <ion-icon slot="start" [icon]="mailOutline" color="medium" aria-hidden="true"></ion-icon>
+        <ion-icon slot="start" name="mail-outline" color="medium" aria-hidden="true"></ion-icon>
         <ion-input
           type="email"
           autocomplete="email"
@@ -64,7 +63,7 @@
         </ion-input>
       </ion-item>
       <ion-item lines="none">
-        <ion-icon slot="start" [icon]="callOutline" color="medium" aria-hidden="true"></ion-icon>
+        <ion-icon slot="start" name="call-outline" color="medium" aria-hidden="true"></ion-icon>
         <ion-input
           type="tel"
           inputmode="tel"
@@ -81,9 +80,7 @@
     <ion-list inset="true">
       @for (child of assignedChildren(); track child.id) {
         <ion-item>
-          <ion-avatar
-            slot="start"
-            style="background:var(--ion-color-success);color:var(--ion-color-success-contrast);display:inline-flex;align-items:center;justify-content:center;font-weight:600;">
+          <ion-avatar slot="start" class="avatar-initials-success">
             {{ initials(child) }}
           </ion-avatar>
           <ion-label>
@@ -104,7 +101,7 @@
             size="small"
             (click)="unassign(child.id)"
             [attr.aria-label]="'common.delete' | translate">
-            <ion-icon slot="icon-only" [icon]="closeCircleOutline"></ion-icon>
+            <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
           </ion-button>
         </ion-item>
       } @empty {
@@ -115,7 +112,7 @@
         </ion-item>
       }
       <ion-item button="true" detail="false" lines="none" (click)="openAssign()">
-        <ion-icon slot="start" [icon]="personAddOutline" color="primary" aria-hidden="true"></ion-icon>
+        <ion-icon slot="start" name="person-add-outline" color="primary" aria-hidden="true"></ion-icon>
         <ion-label color="primary">{{ 'admin.parents.assignChildren' | translate }}</ion-label>
       </ion-item>
     </ion-list>
@@ -131,7 +128,7 @@
           lines="none"
           [disabled]="sendingInvite()"
           (click)="sendInvite()">
-          <ion-icon slot="start" [icon]="paperPlaneOutline" color="primary" aria-hidden="true"></ion-icon>
+          <ion-icon slot="start" name="paper-plane-outline" color="primary" aria-hidden="true"></ion-icon>
           <ion-label color="primary">
             {{ 'admin.parents.detail.sendInvite' | translate }}
           </ion-label>
@@ -144,7 +141,7 @@
     </ion-list-header>
     <ion-list inset="true">
       <ion-item button="true" detail="false" lines="none" (click)="confirmDelete()">
-        <ion-icon slot="start" [icon]="trashOutline" color="danger" aria-hidden="true"></ion-icon>
+        <ion-icon slot="start" name="trash-outline" color="danger" aria-hidden="true"></ion-icon>
         <ion-label color="danger">{{ 'admin.parents.detail.delete' | translate }}</ion-label>
       </ion-item>
     </ion-list>

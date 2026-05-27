@@ -29,6 +29,7 @@ export interface AssignChildrenResult {
 @Component({
   selector: 'app-assign-children-modal',
   templateUrl: 'assign-children.modal.html',
+  styleUrl: './assign-children.modal.scss',
   imports: [
     IonHeader,
     IonToolbar,
@@ -55,11 +56,12 @@ export class AssignChildrenModal {
   readonly search = signal('');
   readonly selectedIds = signal<Set<string>>(new Set());
 
-  protected readonly checkmarkCircle = checkmarkCircle;
-  protected readonly ellipseOutline = ellipseOutline;
-
   constructor() {
-    addIcons({ 'close-outline': closeOutline });
+    addIcons({
+      'close-outline': closeOutline,
+      'checkmark-circle': checkmarkCircle,
+      'ellipse-outline': ellipseOutline,
+    });
   }
 
   readonly sorted = computed<Child[]>(() =>

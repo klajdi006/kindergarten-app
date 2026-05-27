@@ -13,7 +13,7 @@
     <ion-item lines="full">
       <ion-icon
         slot="start"
-        [icon]="funnelOutline"
+        name="funnel-outline"
         color="medium"
         aria-hidden="true">
       </ion-icon>
@@ -38,26 +38,24 @@
       <ion-card>
         <ion-card-header>
           <ion-card-subtitle>
-            <ion-skeleton-text [animated]="true" style="width: 40%; height: 0.8rem;"></ion-skeleton-text>
+            <ion-skeleton-text [animated]="true" class="skeleton-subtitle"></ion-skeleton-text>
           </ion-card-subtitle>
           <ion-card-title>
-            <ion-skeleton-text [animated]="true" style="width: 70%; height: 1.2rem;"></ion-skeleton-text>
+            <ion-skeleton-text [animated]="true" class="skeleton-title"></ion-skeleton-text>
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <ion-skeleton-text [animated]="true" style="width: 100%; height: 0.9rem;"></ion-skeleton-text>
-          <ion-skeleton-text [animated]="true" style="width: 90%; height: 0.9rem;"></ion-skeleton-text>
-          <ion-skeleton-text [animated]="true" style="width: 60%; height: 0.9rem;"></ion-skeleton-text>
+          <ion-skeleton-text [animated]="true" class="skeleton-line-full"></ion-skeleton-text>
+          <ion-skeleton-text [animated]="true" class="skeleton-line-wide"></ion-skeleton-text>
+          <ion-skeleton-text [animated]="true" class="skeleton-line-short"></ion-skeleton-text>
         </ion-card-content>
       </ion-card>
     }
   } @else if (visiblePosts().length === 0) {
-    <div
-      class="ion-text-center"
-      style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;padding-top:3rem;">
+    <div class="ion-text-center empty-state">
       <ion-icon
-        [icon]="newspaperOutline"
-        style="font-size:3rem;color:var(--ion-color-medium);"
+        name="newspaper-outline"
+        class="empty-state-icon"
         aria-hidden="true">
       </ion-icon>
       <ion-text color="medium">
@@ -85,15 +83,16 @@
               · {{ post.authorName }}
             }
           </ion-card-subtitle>
-          <ion-card-title style="display:flex;align-items:center;gap:8px;">
-            <span style="flex:1;">{{ post.title }}</span>
+          <ion-card-title class="post-title">
+            <span class="post-title-text">{{ post.title }}</span>
             @if (unread) {
               <span class="post-unread-dot" aria-label="unread"></span>
             }
           </ion-card-title>
         </ion-card-header>
-        <ion-card-content style="white-space: pre-line;">
+        <ion-card-content class="post-content">
           {{ post.description }}
+          <app-post-media-preview [post]="post" />
         </ion-card-content>
       </ion-card>
     }

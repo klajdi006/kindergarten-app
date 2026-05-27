@@ -47,13 +47,11 @@
         <ion-item button="true" detail="false" (click)="toggle(child.id)">
           <ion-icon
             slot="start"
-            [icon]="isSelected(child.id) ? checkmarkCircle : ellipseOutline"
+            [name]="isSelected(child.id) ? 'checkmark-circle' : 'ellipse-outline'"
             [color]="isSelected(child.id) ? 'primary' : 'medium'"
             aria-hidden="true">
           </ion-icon>
-          <ion-avatar
-            slot="start"
-            style="background:var(--ion-color-success);color:var(--ion-color-success-contrast);display:inline-flex;align-items:center;justify-content:center;font-weight:600;">
+          <ion-avatar slot="start" class="avatar-initials-success">
             {{ initials(child) }}
           </ion-avatar>
           <ion-label>

@@ -1,0 +1,35 @@
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.stat-card {
+  margin: 0;
+}
+
+.stat-card-content {
+  padding: 12px;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--ion-color-medium);
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.stat-value-success {
+  color: var(--ion-color-success);
+}
+
+.stat-value-danger {
+  color: var(--ion-color-danger);
+}
+
+.stat-value-warning {
+  color: var(--ion-color-warning);
+}

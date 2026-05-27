@@ -10,6 +10,7 @@ import { NotificationRouterService } from '@app/data/notification-router.service
 @Component({
   selector: 'app-root-splash',
   templateUrl: 'root.page.html',
+  styleUrl: './root.page.scss',
   imports: [IonContent, IonSpinner, IonButton, IonText, TranslatePipe],
 })
 export class RootPage {

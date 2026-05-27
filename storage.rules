@@ -16,5 +16,25 @@ service firebase.storage {
                    && request.resource.contentType.matches('image/.*');
       allow delete: if request.auth != null;
     }
+
+    // Post attachments (images + arbitrary files). Read by any signed-in user;
+    // writes are signed-in + size-capped (no content-type restriction so PDFs/
+    // docs are allowed). Firestore /posts rules remain the access authority.
+    match /posts/{kgId}/{file} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+                   && request.resource.size < 20 * 1024 * 1024;
+      allow delete: if request.auth != null;
+    }
+
+    // Per-child documents (e.g. signed contracts). The object URL is the
+    // secret — discovery is gated by the access-controlled /documents/{id}
+    // Firestore doc, which only admins + the child's parents can read.
+    match /documents/{kgId}/{childId}/{file} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+                   && request.resource.size < 20 * 1024 * 1024;
+      allow delete: if request.auth != null;
+    }
   }
 }

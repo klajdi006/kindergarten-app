@@ -27,6 +27,7 @@ import {
   IonToolbar,
   ToastController,
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
 import { sendOutline } from 'ionicons/icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { of, switchMap } from 'rxjs';
@@ -38,6 +39,7 @@ import { isIosPwa } from '@app/shared/utils/platform';
 @Component({
   selector: 'app-conversation',
   templateUrl: 'conversation.page.html',
+  styleUrl: './conversation.page.scss',
   imports: [
     ReactiveFormsModule,
     IonHeader,
@@ -106,7 +108,6 @@ export class ConversationPage {
     { mine: false, width: '50%' },
   ];
 
-  protected readonly sendOutline = sendOutline;
   protected readonly iosPwa = isIosPwa();
   readonly keyboardOpen = signal(false);
 
@@ -114,6 +115,7 @@ export class ConversationPage {
   private didInitialScroll = false;
 
   constructor() {
+    addIcons({ 'send-outline': sendOutline });
     effect(() => {
       const id = this.conversationId();
       if (id) void this.conversations.markRead(id);

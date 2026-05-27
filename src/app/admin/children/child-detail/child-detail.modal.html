@@ -19,8 +19,7 @@
 <ion-content [fullscreen]="true">
   @if (child(); as c) {
     <div class="ion-text-center ion-padding-top">
-      <div
-        style="width:96px;height:96px;border-radius:50%;background:var(--ion-color-success);color:var(--ion-color-success-contrast);display:inline-flex;align-items:center;justify-content:center;font-size:2.25rem;font-weight:600;margin:0 auto;">
+      <div class="avatar-circle">
         {{ initials(c) }}
       </div>
       <h2 class="ion-no-margin ion-padding-top">{{ c.firstName }} {{ c.lastName }}</h2>
@@ -88,9 +87,7 @@
     <ion-list inset="true">
       @for (parent of linkedParents(); track parent.id) {
         <ion-item>
-          <ion-avatar
-            slot="start"
-            style="background:var(--ion-color-primary);color:var(--ion-color-primary-contrast);display:inline-flex;align-items:center;justify-content:center;font-weight:600;">
+          <ion-avatar slot="start" class="avatar-initials">
             {{ initials(parent) }}
           </ion-avatar>
           <ion-label>
@@ -104,7 +101,7 @@
             size="small"
             (click)="unlink(parent.id)"
             [attr.aria-label]="'common.delete' | translate">
-            <ion-icon slot="icon-only" [icon]="closeCircleOutline"></ion-icon>
+            <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
           </ion-button>
         </ion-item>
       } @empty {
@@ -115,17 +112,72 @@
         </ion-item>
       }
       <ion-item button="true" detail="false" lines="none" (click)="openAssign()">
-        <ion-icon slot="start" [icon]="personAddOutline" color="primary" aria-hidden="true"></ion-icon>
+        <ion-icon slot="start" name="person-add-outline" color="primary" aria-hidden="true"></ion-icon>
         <ion-label color="primary">{{ 'admin.children.assignParents' | translate }}</ion-label>
       </ion-item>
     </ion-list>
+
+    <ion-list-header>
+      <ion-label>{{ 'admin.children.detail.documents' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list inset="true">
+      @for (doc of documents(); track doc.id) {
+        <ion-item>
+          <ion-icon slot="start" name="document-outline" color="medium" aria-hidden="true"></ion-icon>
+          <ion-label>
+            <a [href]="doc.url" target="_blank" rel="noopener" class="doc-link">{{ doc.name }}</a>
+            <p><small>{{ doc.uploadedAt | dateDmy }}</small></p>
+          </ion-label>
+          <ion-button
+            slot="end"
+            fill="clear"
+            color="medium"
+            size="small"
+            (click)="confirmDeleteDoc(doc)"
+            [attr.aria-label]="'common.delete' | translate">
+            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+      }
+      @for (up of docUploads(); track up.id) {
+        <ion-item>
+          <ion-icon slot="start" name="document-outline" color="medium" aria-hidden="true"></ion-icon>
+          <ion-label>
+            <h3>{{ up.name }}</h3>
+            @if (up.failed) {
+              <ion-note color="danger">{{ 'admin.albums.uploadFailed' | translate }}</ion-note>
+            } @else {
+              <ion-note color="medium">{{ pct(up.progress) }}%</ion-note>
+            }
+          </ion-label>
+          @if (up.failed) {
+            <ion-button slot="end" fill="clear" color="medium" size="small"
+              (click)="dismissFailedDoc(up.id)" [attr.aria-label]="'common.delete' | translate">
+              <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-button>
+          }
+        </ion-item>
+      }
+      @if (documents().length === 0 && docUploads().length === 0) {
+        <ion-item lines="none">
+          <ion-text color="medium">
+            <p><small>{{ 'admin.children.detail.noDocuments' | translate }}</small></p>
+          </ion-text>
+        </ion-item>
+      }
+      <ion-item button="true" detail="false" lines="none" (click)="docInput.click()">
+        <ion-icon slot="start" name="cloud-upload-outline" color="primary" aria-hidden="true"></ion-icon>
+        <ion-label color="primary">{{ 'admin.children.detail.uploadDocument' | translate }}</ion-label>
+      </ion-item>
+    </ion-list>
+    <input type="file" multiple hidden #docInput (change)="onDocsPicked($event)" />
 
     <ion-list-header>
       <ion-label>{{ 'admin.parents.detail.danger' | translate }}</ion-label>
     </ion-list-header>
     <ion-list inset="true">
       <ion-item button="true" detail="false" lines="none" (click)="confirmDelete()">
-        <ion-icon slot="start" [icon]="trashOutline" color="danger" aria-hidden="true"></ion-icon>
+        <ion-icon slot="start" name="trash-outline" color="danger" aria-hidden="true"></ion-icon>
         <ion-label color="danger">{{ 'admin.children.detail.delete' | translate }}</ion-label>
       </ion-item>
     </ion-list>

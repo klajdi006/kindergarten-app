@@ -56,10 +56,8 @@ export class OperatingHoursModal implements OnInit {
   readonly draft = signal<OperatingHours>(DEFAULT_OPERATING_HOURS);
   readonly weekDays = WEEK_DAYS;
 
-  protected readonly timeOutline = timeOutline;
-
   constructor() {
-    addIcons({ 'close-outline': closeOutline });
+    addIcons({ 'close-outline': closeOutline, 'time-outline': timeOutline });
   }
 
   ngOnInit(): void {

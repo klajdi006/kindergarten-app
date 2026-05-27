@@ -33,6 +33,7 @@ import { SkeletonListComponent } from '@app/shared/components/skeleton-list/skel
 @Component({
   selector: 'app-admin-parents',
   templateUrl: 'admin-parents.page.html',
+  styleUrl: './admin-parents.page.scss',
   host: { style: 'display: contents' },
   imports: [
     IonContent,
@@ -60,7 +61,6 @@ export class AdminParentsPage {
   private readonly route = inject(ActivatedRoute);
   readonly parents = inject(ParentsService);
 
-  protected readonly trashOutline = trashOutline;
   protected readonly onRefresh = completeRefresher;
 
   readonly filter = toSignal(
@@ -79,7 +79,7 @@ export class AdminParentsPage {
   readonly loading = signal(true);
 
   constructor() {
-    addIcons({ 'add-outline': addOutline });
+    addIcons({ 'add-outline': addOutline, 'trash-outline': trashOutline });
     effect(() => {
       if (this.parents.all().length > 0) this.loading.set(false);
     });

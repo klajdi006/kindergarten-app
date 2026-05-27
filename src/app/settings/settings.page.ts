@@ -23,6 +23,7 @@ import {
   ModalController,
   ToastController,
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
 import {
   businessOutline,
   colorPaletteOutline,
@@ -46,6 +47,7 @@ import { ThemeService } from '@app/shared/services/theme.service';
 @Component({
   selector: 'app-settings',
   templateUrl: 'settings.page.html',
+  styleUrl: './settings.page.scss',
   imports: [
     ReactiveFormsModule,
     IonHeader,
@@ -109,22 +111,23 @@ export class SettingsPage {
     address: [''],
   });
 
-  protected readonly logOutOutline = logOutOutline;
-  protected readonly personOutline = personOutline;
-  protected readonly businessOutline = businessOutline;
-  protected readonly locationOutline = locationOutline;
-  protected readonly mailOutline = mailOutline;
-  protected readonly languageOutline = languageOutline;
-  protected readonly colorPaletteOutline = colorPaletteOutline;
-  protected readonly timeOutline = timeOutline;
-  protected readonly notificationsOutline = notificationsOutline;
-
   readonly openDaysCount = computed(
     () =>
       WEEK_DAYS.filter((d) => getOperatingHours(this.kindergartens.current())[d].open).length,
   );
 
   constructor() {
+    addIcons({
+      'person-outline': personOutline,
+      'mail-outline': mailOutline,
+      'business-outline': businessOutline,
+      'location-outline': locationOutline,
+      'time-outline': timeOutline,
+      'language-outline': languageOutline,
+      'color-palette-outline': colorPaletteOutline,
+      'notifications-outline': notificationsOutline,
+      'log-out-outline': logOutOutline,
+    });
     effect(() => {
       const doc = this.profile();
       if (doc && this.form.pristine) {

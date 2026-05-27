@@ -4,6 +4,7 @@ import { IonAvatar, IonItem, IonLabel, IonList, IonSkeletonText } from '@ionic/a
 @Component({
   selector: 'app-skeleton-list',
   templateUrl: 'skeleton-list.component.html',
+  styleUrl: './skeleton-list.component.scss',
   imports: [IonList, IonItem, IonAvatar, IonLabel, IonSkeletonText],
 })
 export class SkeletonListComponent {

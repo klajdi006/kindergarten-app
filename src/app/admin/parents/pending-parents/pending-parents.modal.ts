@@ -24,6 +24,7 @@ import { Parent } from '@app/data/types';
 @Component({
   selector: 'app-pending-parents-modal',
   templateUrl: 'pending-parents.modal.html',
+  styleUrl: './pending-parents.modal.scss',
   imports: [
     IonHeader,
     IonToolbar,

@@ -14,41 +14,41 @@
   </div>
 
   <!-- Today snapshot -->
-  <div class="ion-padding-horizontal" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
-    <ion-card style="margin:0;">
-      <ion-card-content style="padding:12px;">
-        <div style="font-size:0.75rem;color:var(--ion-color-medium);">
+  <div class="ion-padding-horizontal stats-grid">
+    <ion-card class="stat-card">
+      <ion-card-content class="stat-card-content">
+        <div class="stat-label">
           {{ 'admin.home.stats.total' | translate }}
         </div>
-        <div style="font-size:1.5rem;font-weight:600;">{{ stats().total }}</div>
+        <div class="stat-value">{{ stats().total }}</div>
       </ion-card-content>
     </ion-card>
-    <ion-card style="margin:0;">
-      <ion-card-content style="padding:12px;">
-        <div style="font-size:0.75rem;color:var(--ion-color-medium);">
+    <ion-card class="stat-card">
+      <ion-card-content class="stat-card-content">
+        <div class="stat-label">
           {{ 'admin.home.stats.present' | translate }}
         </div>
-        <div style="font-size:1.5rem;font-weight:600;color:var(--ion-color-success);">
+        <div class="stat-value stat-value-success">
           {{ stats().present }}
         </div>
       </ion-card-content>
     </ion-card>
-    <ion-card style="margin:0;">
-      <ion-card-content style="padding:12px;">
-        <div style="font-size:0.75rem;color:var(--ion-color-medium);">
+    <ion-card class="stat-card">
+      <ion-card-content class="stat-card-content">
+        <div class="stat-label">
           {{ 'admin.home.stats.sick' | translate }}
         </div>
-        <div style="font-size:1.5rem;font-weight:600;color:var(--ion-color-danger);">
+        <div class="stat-value stat-value-danger">
           {{ stats().sick }}
         </div>
       </ion-card-content>
     </ion-card>
-    <ion-card style="margin:0;">
-      <ion-card-content style="padding:12px;">
-        <div style="font-size:0.75rem;color:var(--ion-color-medium);">
+    <ion-card class="stat-card">
+      <ion-card-content class="stat-card-content">
+        <div class="stat-label">
           {{ 'admin.home.stats.holiday' | translate }}
         </div>
-        <div style="font-size:1.5rem;font-weight:600;color:var(--ion-color-warning);">
+        <div class="stat-value stat-value-warning">
           {{ stats().holiday }}
         </div>
       </ion-card-content>
@@ -63,21 +63,21 @@
     <ion-list>
       @if (pendingParents() > 0) {
         <ion-item button="true" detail="true" (click)="openPendingParents()">
-          <ion-icon slot="start" [icon]="mailOutline" color="warning" aria-hidden="true"></ion-icon>
+          <ion-icon slot="start" name="mail-outline" color="warning" aria-hidden="true"></ion-icon>
           <ion-label>{{ 'admin.home.pendingParents' | translate }}</ion-label>
           <ion-badge slot="end" color="warning">{{ pendingParents() }}</ion-badge>
         </ion-item>
       }
       @if (pendingStaff() > 0) {
         <ion-item button="true" detail="true" (click)="openPendingStaff()">
-          <ion-icon slot="start" [icon]="mailOutline" color="warning" aria-hidden="true"></ion-icon>
+          <ion-icon slot="start" name="mail-outline" color="warning" aria-hidden="true"></ion-icon>
           <ion-label>{{ 'admin.home.pendingStaff' | translate }}</ion-label>
           <ion-badge slot="end" color="warning">{{ pendingStaff() }}</ion-badge>
         </ion-item>
       }
       @if (unassignedChildren() > 0) {
         <ion-item button="true" detail="true" (click)="openUnassignedChildren()">
-          <ion-icon slot="start" [icon]="alertCircleOutline" color="danger" aria-hidden="true"></ion-icon>
+          <ion-icon slot="start" name="alert-circle-outline" color="danger" aria-hidden="true"></ion-icon>
           <ion-label>{{ 'admin.home.unassignedChildren' | translate }}</ion-label>
           <ion-badge slot="end" color="danger">{{ unassignedChildren() }}</ion-badge>
         </ion-item>
@@ -93,7 +93,7 @@
     <ion-list>
       @for (row of departmentRows(); track row.dept.id) {
         <ion-item>
-          <ion-icon slot="start" [icon]="businessOutline" color="tertiary" aria-hidden="true"></ion-icon>
+          <ion-icon slot="start" name="business-outline" color="tertiary" aria-hidden="true"></ion-icon>
           <ion-label>
             <h3>{{ row.dept.name }}</h3>
             <p>{{ 'admin.departments.ageRange' | translate: { min: row.dept.ageMin, max: row.dept.ageMax } }}</p>
@@ -112,7 +112,7 @@
     <ion-list>
       @for (c of upcomingBirthdays(); track c.id) {
         <ion-item>
-          <ion-icon slot="start" [icon]="giftOutline" color="tertiary" aria-hidden="true"></ion-icon>
+          <ion-icon slot="start" name="gift-outline" color="tertiary" aria-hidden="true"></ion-icon>
           <ion-label>
             <h3>{{ c.firstName }} {{ c.lastName }}</h3>
             <p>
@@ -135,7 +135,7 @@
     <ion-list>
       @for (p of recentPosts(); track p.id) {
         <ion-item button="true" detail="true" [routerLink]="['/admin/posts']">
-          <ion-icon slot="start" [icon]="megaphoneOutline" color="primary" aria-hidden="true"></ion-icon>
+          <ion-icon slot="start" name="megaphone-outline" color="primary" aria-hidden="true"></ion-icon>
           <ion-label>
             <h3>{{ p.title }}</h3>
             <p>{{ p.authorName }}</p>

@@ -44,6 +44,7 @@ type PostDetailDismiss =
 @Component({
   selector: 'app-admin-posts',
   templateUrl: 'admin-posts.page.html',
+  styleUrl: './admin-posts.page.scss',
   host: { style: 'display: contents' },
   imports: [
     IonContent,
@@ -92,15 +93,17 @@ export class AdminPostsPage {
     if (value === 'feed' || value === 'mine') this.view.set(value);
   }
 
-  protected readonly newspaperOutline = newspaperOutline;
-  protected readonly trashOutline = trashOutline;
   protected readonly onRefresh = completeRefresher;
 
   readonly loading = signal(true);
   protected readonly skeletonRows = [0, 1, 2];
 
   constructor() {
-    addIcons({ 'add-outline': addOutline });
+    addIcons({
+      'add-outline': addOutline,
+      'newspaper-outline': newspaperOutline,
+      'trash-outline': trashOutline,
+    });
     effect(() => {
       if (this.posts.all().length > 0) this.loading.set(false);
     });

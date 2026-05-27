@@ -40,6 +40,7 @@ import { Child, Parent } from '@app/data/types';
 @Component({
   selector: 'app-parent-detail-modal',
   templateUrl: 'parent-detail.modal.html',
+  styleUrl: './parent-detail.modal.scss',
   imports: [
     ReactiveFormsModule,
     IonHeader,
@@ -102,15 +103,16 @@ export class ParentDetailModal implements OnInit {
   readonly saving = signal(false);
   readonly sendingInvite = signal(false);
 
-  protected readonly callOutline = callOutline;
-  protected readonly closeCircleOutline = closeCircleOutline;
-  protected readonly mailOutline = mailOutline;
-  protected readonly paperPlaneOutline = paperPlaneOutline;
-  protected readonly personAddOutline = personAddOutline;
-  protected readonly trashOutline = trashOutline;
-
   constructor() {
-    addIcons({ 'close-outline': closeOutline });
+    addIcons({
+      'close-outline': closeOutline,
+      'mail-outline': mailOutline,
+      'call-outline': callOutline,
+      'close-circle-outline': closeCircleOutline,
+      'person-add-outline': personAddOutline,
+      'paper-plane-outline': paperPlaneOutline,
+      'trash-outline': trashOutline,
+    });
     // Keep form in sync with live parent record (only when pristine, so user
     // edits aren't clobbered).
     effect(() => {

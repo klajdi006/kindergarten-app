@@ -19,9 +19,7 @@
     <ion-list>
       @for (parent of pending(); track parent.id) {
         <ion-item button="true" (click)="openDetail(parent)">
-          <ion-avatar
-            slot="start"
-            style="background:var(--ion-color-primary);color:var(--ion-color-primary-contrast);display:inline-flex;align-items:center;justify-content:center;font-weight:600;">
+          <ion-avatar slot="start" class="avatar-initials">
             {{ initials(parent) }}
           </ion-avatar>
           <ion-label>

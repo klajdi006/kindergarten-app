@@ -24,6 +24,7 @@ import { PhotoViewerModal } from '@app/shared/components/photo-viewer/photo-view
 @Component({
   selector: 'app-parent-album-detail',
   templateUrl: 'parent-album-detail.page.html',
+  styleUrl: './parent-album-detail.page.scss',
   imports: [
     IonHeader,
     IonToolbar,
@@ -70,10 +71,12 @@ export class ParentAlbumDetailPage {
   readonly loading = computed(() => this.photosState().loading);
 
   protected readonly skeletonCells = Array.from({ length: 9 });
-  protected readonly imagesOutline = imagesOutline;
 
   constructor() {
-    addIcons({ 'close-outline': closeOutline });
+    addIcons({
+      'close-outline': closeOutline,
+      'images-outline': imagesOutline,
+    });
   }
 
   async openViewer(index: number): Promise<void> {

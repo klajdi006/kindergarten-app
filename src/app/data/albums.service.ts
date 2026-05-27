@@ -96,44 +96,26 @@ export class AlbumsService {
   async remove(id: string): Promise<void> {
     const kgId = this.kgId();
     if (!kgId) throw new Error('No kindergarten');
-    let photosSnap;
-    try {
-      // The /photos read rule is `inMyKg(resource.data.kindergartenId)`. For
-      // a list query, Firestore requires the query itself to constrain that
-      // field, otherwise it rejects upfront as potentially unsafe — even when
-      // the result would be empty.
-      photosSnap = await getDocs(
-        query(
-          collection(this.firestore, 'photos'),
-          where('albumId', '==', id),
-          where('kindergartenId', '==', kgId),
-        ),
-      );
-    } catch (err) {
-      console.error('[albums] cascade: photos query denied', err);
-      throw err;
-    }
-    console.log('[albums] cascade: deleting', photosSnap.size, 'photos for album', id);
+    // The /photos read rule is `inMyKg(resource.data.kindergartenId)`. For a
+    // list query, Firestore requires the query itself to constrain that field,
+    // otherwise it rejects upfront — so we filter by kindergartenId too.
+    const photosSnap = await getDocs(
+      query(
+        collection(this.firestore, 'photos'),
+        where('albumId', '==', id),
+        where('kindergartenId', '==', kgId),
+      ),
+    );
     for (const docSnap of photosSnap.docs) {
       const data = docSnap.data() as Omit<Photo, 'id'>;
       try {
         await deleteObject(ref(this.storage, data.storagePath));
       } catch (err) {
-        console.warn('[albums] cascade: storage delete failed', err);
+        console.warn('[albums] storage delete failed (non-fatal)', err);
       }
-      try {
-        await deleteDoc(doc(this.firestore, 'photos', docSnap.id));
-      } catch (err) {
-        console.error('[albums] cascade: photo doc delete denied', docSnap.id, err);
-        throw err;
-      }
+      await deleteDoc(doc(this.firestore, 'photos', docSnap.id));
     }
-    try {
-      await deleteDoc(doc(this.firestore, 'albums', id));
-    } catch (err) {
-      console.error('[albums] cascade: album doc delete denied', err);
-      throw err;
-    }
+    await deleteDoc(doc(this.firestore, 'albums', id));
   }
 
   /**
@@ -170,10 +152,7 @@ export class AlbumsService {
             onProgress?.(snapshot.bytesTransferred / snapshot.totalBytes);
           }
         },
-        (err) => {
-          console.error('[albums] upload: storage put failed', err);
-          reject(err);
-        },
+        reject,
         async () => {
           try {
             const downloadUrl = await getDownloadURL(storageRef);
@@ -191,7 +170,6 @@ export class AlbumsService {
             onProgress?.(1);
             resolve(downloadUrl);
           } catch (err) {
-            console.error('[albums] upload: firestore write failed', err);
             reject(err);
           }
         },
@@ -203,21 +181,11 @@ export class AlbumsService {
     try {
       await deleteObject(ref(this.storage, photo.storagePath));
     } catch (err) {
-      console.warn('[albums] removePhoto: storage delete failed (non-fatal)', err);
+      console.warn('[albums] storage delete failed (non-fatal)', err);
     }
-    try {
-      await deleteDoc(doc(this.firestore, 'photos', photo.id));
-    } catch (err) {
-      console.error('[albums] removePhoto: photo doc delete denied', err);
-      throw err;
-    }
-    try {
-      await updateDoc(doc(this.firestore, 'albums', photo.albumId), {
-        photoCount: increment(-1),
-      });
-    } catch (err) {
-      console.error('[albums] removePhoto: album photoCount update denied', err);
-      throw err;
-    }
+    await deleteDoc(doc(this.firestore, 'photos', photo.id));
+    await updateDoc(doc(this.firestore, 'albums', photo.albumId), {
+      photoCount: increment(-1),
+    });
   }
 }

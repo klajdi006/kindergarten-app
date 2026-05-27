@@ -13,7 +13,7 @@
     <app-skeleton-list [count]="5" [avatar]="false" />
   } @else if (visibleAlbums().length === 0) {
     <div class="ion-padding ion-text-center">
-      <ion-icon [icon]="imagesOutline" style="font-size:3rem;color:var(--ion-color-medium);"></ion-icon>
+      <ion-icon name="images-outline" class="empty-state-icon"></ion-icon>
       <ion-text color="medium">
         <p>{{ 'admin.albums.empty' | translate }}</p>
       </ion-text>
@@ -22,7 +22,7 @@
     <ion-list>
       @for (album of visibleAlbums(); track album.id) {
         <ion-item button="true" [routerLink]="['/parent/albums', album.id]">
-          <ion-icon slot="start" [icon]="imagesOutline" color="primary" aria-hidden="true"></ion-icon>
+          <ion-icon slot="start" name="images-outline" color="primary" aria-hidden="true"></ion-icon>
           <ion-label>
             <h2>{{ album.name }}</h2>
             <p>

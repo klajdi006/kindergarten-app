@@ -36,10 +36,8 @@
   @if (mode() === 'browse') {
     <ion-list>
       <ion-item button="true" detail="false" (click)="startGroupMode()">
-        <ion-avatar
-          slot="start"
-          style="display:inline-flex;align-items:center;justify-content:center;background:var(--ion-color-success);color:var(--ion-color-success-contrast);">
-          <ion-icon [icon]="peopleOutline" aria-hidden="true"></ion-icon>
+        <ion-avatar slot="start" class="avatar-icon-success">
+          <ion-icon name="people-outline" aria-hidden="true"></ion-icon>
         </ion-avatar>
         <ion-label color="primary">
           <h2>{{ 'messages.newGroup' | translate }}</h2>
@@ -63,9 +61,7 @@
       <ion-list>
         @for (p of filtered(); track p.uid) {
           <ion-item button="true" detail="false" (click)="pickOne(p)">
-            <ion-avatar
-              slot="start"
-              style="display:inline-flex;align-items:center;justify-content:center;background:var(--ion-color-primary);color:var(--ion-color-primary-contrast);font-weight:600;">
+            <ion-avatar slot="start" class="avatar-initials">
               {{ initials(p.name) }}
             </ion-avatar>
             <ion-label>{{ p.name }}</ion-label>
@@ -79,12 +75,11 @@
   } @else {
     <!-- group mode -->
     @if (selected().length > 0) {
-      <div class="ion-padding-horizontal ion-padding-top" style="display:flex;flex-wrap:wrap;gap:0.35rem;">
+      <div class="ion-padding-horizontal ion-padding-top chip-row">
         @for (p of selected(); track p.uid) {
           <ion-chip [outline]="true" (click)="removeFromGroup(p)">
             <ion-avatar>
-              <div
-                style="width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--ion-color-primary);color:var(--ion-color-primary-contrast);font-size:0.7rem;font-weight:600;">
+              <div class="chip-avatar">
                 {{ initials(p.name) }}
               </div>
             </ion-avatar>
@@ -123,9 +118,7 @@
       <ion-list>
         @for (p of filtered(); track p.uid) {
           <ion-item button="true" detail="false" (click)="toggleForGroup(p)">
-            <ion-avatar
-              slot="start"
-              style="display:inline-flex;align-items:center;justify-content:center;background:var(--ion-color-primary);color:var(--ion-color-primary-contrast);font-weight:600;">
+            <ion-avatar slot="start" class="avatar-initials">
               {{ initials(p.name) }}
             </ion-avatar>
             <ion-label>{{ p.name }}</ion-label>
@@ -134,7 +127,7 @@
             </ion-badge>
             <ion-icon
               slot="end"
-              [icon]="isSelected(p.uid) ? checkmarkCircle : ellipseOutline"
+              [name]="isSelected(p.uid) ? 'checkmark-circle' : 'ellipse-outline'"
               [color]="isSelected(p.uid) ? 'primary' : 'medium'"
               aria-hidden="true">
             </ion-icon>

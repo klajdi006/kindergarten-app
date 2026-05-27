@@ -43,11 +43,12 @@ export class AbsenceHistoryModal {
 
   @Input() history: Absence[] = [];
 
-  protected readonly bandageOutline = bandageOutline;
-  protected readonly sunnyOutline = sunnyOutline;
-
   constructor() {
-    addIcons({ 'close-outline': closeOutline });
+    addIcons({
+      'close-outline': closeOutline,
+      'bandage-outline': bandageOutline,
+      'sunny-outline': sunnyOutline,
+    });
   }
 
   close(): void {

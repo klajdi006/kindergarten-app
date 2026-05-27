@@ -38,6 +38,7 @@ type Filter = 'all' | StaffRole;
 @Component({
   selector: 'app-admin-staff',
   templateUrl: 'admin-staff.page.html',
+  styleUrl: './admin-staff.page.scss',
   host: { style: 'display: contents' },
   imports: [
     IonContent,
@@ -84,13 +85,12 @@ export class AdminStaffPage {
     return list;
   });
 
-  protected readonly trashOutline = trashOutline;
   protected readonly onRefresh = completeRefresher;
 
   readonly loading = signal(true);
 
   constructor() {
-    addIcons({ 'add-outline': addOutline });
+    addIcons({ 'add-outline': addOutline, 'trash-outline': trashOutline });
     effect(() => {
       if (this.staff.all().length > 0) this.loading.set(false);
     });
