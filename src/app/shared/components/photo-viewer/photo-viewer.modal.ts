@@ -48,9 +48,34 @@ export class PhotoViewerModal implements AfterViewInit {
     addIcons({ 'close-outline': closeOutline });
   }
 
+  /** True until we've performed the initial jump to startIndex, so the
+   *  onScroll handler doesn't fight the programmatic scroll. */
+  private settled = false;
+
   ngAfterViewInit(): void {
-    this.currentIndex.set(Math.min(this.startIndex, this.photos.length - 1));
-    queueMicrotask(() => this.scrollTo(this.currentIndex(), 'instant'));
+    this.currentIndex.set(
+      Math.min(Math.max(this.startIndex, 0), this.photos.length - 1),
+    );
+    this.scrollToStartWhenReady(0);
+  }
+
+  /**
+   * The modal animates in, so the track's clientWidth is 0 for a few frames.
+   * Retry on each animation frame until it has a real width, then jump.
+   */
+  private scrollToStartWhenReady(attempt: number): void {
+    const el = this.trackEl?.nativeElement;
+    if (el && el.clientWidth > 0) {
+      el.scrollTo({ left: this.currentIndex() * el.clientWidth, behavior: 'auto' });
+      // Let the resulting scroll event settle before trusting onScroll.
+      requestAnimationFrame(() => (this.settled = true));
+      return;
+    }
+    if (attempt > 60) {
+      this.settled = true;
+      return;
+    }
+    requestAnimationFrame(() => this.scrollToStartWhenReady(attempt + 1));
   }
 
   close(): void {
@@ -58,15 +83,10 @@ export class PhotoViewerModal implements AfterViewInit {
   }
 
   onScroll(): void {
+    if (!this.settled) return;
     const el = this.trackEl?.nativeElement;
-    if (!el) return;
+    if (!el || el.clientWidth === 0) return;
     const idx = Math.round(el.scrollLeft / el.clientWidth);
     if (idx !== this.currentIndex()) this.currentIndex.set(idx);
-  }
-
-  private scrollTo(index: number, behavior: ScrollBehavior): void {
-    const el = this.trackEl?.nativeElement;
-    if (!el) return;
-    el.scrollTo({ left: index * el.clientWidth, behavior });
   }
 }
