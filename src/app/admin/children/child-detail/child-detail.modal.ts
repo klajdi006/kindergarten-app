@@ -38,6 +38,7 @@ import {
   cloudUploadOutline,
   documentOutline,
   downloadOutline,
+  eyeOutline,
   personAddOutline,
   trashOutline,
 } from 'ionicons/icons';
@@ -152,6 +153,7 @@ export class ChildDetailModal implements OnInit {
       'document-outline': documentOutline,
       'cloud-upload-outline': cloudUploadOutline,
       'download-outline': downloadOutline,
+      'eye-outline': eyeOutline,
     });
     effect(() => {
       const c = this.child();
@@ -329,6 +331,23 @@ export class ChildDetailModal implements OnInit {
 
   dismissFailedDoc(id: string): void {
     this.docUploads.update((l) => l.filter((u) => u.id !== id));
+  }
+
+  isPdf(document: ChildDocument): boolean {
+    return /\.pdf$/i.test(document.name) || /\.pdf(\?|$)/i.test(document.url);
+  }
+
+  async viewPdf(document: ChildDocument): Promise<void> {
+    // Lazy-load the PDF viewer (pdf.js) only when a PDF is actually opened,
+    // so its bundle stays out of the main child-detail chunk.
+    const { PdfViewerModal } = await import(
+      '@app/shared/components/pdf-viewer/pdf-viewer.modal'
+    );
+    const modal = await this.modalCtrl.create({
+      component: PdfViewerModal,
+      componentProps: { src: document.url, name: document.name },
+    });
+    await modal.present();
   }
 
   async confirmDeleteDoc(document: ChildDocument): Promise<void> {

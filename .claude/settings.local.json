@@ -17,7 +17,9 @@
       "Read(//tmp/**)",
       "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npx ng build --configuration=development)",
       "Bash(echo \"EXIT: $?\")",
-      "Bash(NODE_OPTIONS=\"--max-old-space-size=6144\" npx ng build --configuration=development)"
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=6144\" npx ng build --configuration=development)",
+      "Bash(NODE_OPTIONS=--max-old-space-size=8192 npx ng build --configuration production --progress false)",
+      "Bash(NODE_OPTIONS=--max-old-space-size=8192 npx ng build --configuration development --progress false)"
     ]
   }
 }

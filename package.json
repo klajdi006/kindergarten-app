@@ -36,6 +36,7 @@
     "firebase": "^11.10.0",
     "firebase-admin": "^13.10.0",
     "ionicons": "^7.0.0",
+    "ngx-extended-pdf-viewer": "^27.0.0",
     "rxjs": "~7.8.0",
     "swiper": "^11.2.10",
     "tslib": "^2.3.0",

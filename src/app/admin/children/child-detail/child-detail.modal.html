@@ -125,9 +125,24 @@
         <ion-item>
           <ion-icon slot="start" name="document-outline" color="medium" aria-hidden="true"></ion-icon>
           <ion-label>
-            <a [href]="doc.url" target="_blank" rel="noopener" class="doc-link">{{ doc.name }}</a>
+            @if (isPdf(doc)) {
+              <a (click)="viewPdf(doc)" class="doc-link">{{ doc.name }}</a>
+            } @else {
+              <a [href]="doc.url" target="_blank" rel="noopener" class="doc-link">{{ doc.name }}</a>
+            }
             <p><small>{{ doc.uploadedAt | dateDmy }}</small></p>
           </ion-label>
+          @if (isPdf(doc)) {
+            <ion-button
+              slot="end"
+              fill="clear"
+              color="primary"
+              size="small"
+              (click)="viewPdf(doc)"
+              [attr.aria-label]="'common.view' | translate">
+              <ion-icon slot="icon-only" name="eye-outline"></ion-icon>
+            </ion-button>
+          }
           <ion-button
             slot="end"
             fill="clear"

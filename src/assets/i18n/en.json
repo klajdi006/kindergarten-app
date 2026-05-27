@@ -75,6 +75,8 @@
     "add": "Add",
     "edit": "Edit",
     "delete": "Delete",
+    "view": "View",
+    "download": "Download",
     "save": "Save",
     "cancel": "Cancel",
     "more": "More",
@@ -338,7 +340,8 @@
           "closed": "Kindergarten closed",
           "kgHours": "Open",
           "arrival": "Arrival",
-          "departure": "Departure"
+          "departure": "Departure",
+          "attendingDays": "Attending {{ count }} day(s) a week"
         },
         "errors": {
           "endBeforeStart": "The end date can't be before the start date.",

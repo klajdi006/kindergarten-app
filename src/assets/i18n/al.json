@@ -75,6 +75,8 @@
     "add": "Shto",
     "edit": "Modifiko",
     "delete": "Fshi",
+    "view": "Shiko",
+    "download": "Shkarko",
     "save": "Ruaj",
     "cancel": "Anulo",
     "more": "Më shumë",
@@ -338,7 +340,8 @@
           "closed": "Kopshti është mbyllur",
           "kgHours": "Hapur",
           "arrival": "Ardhja",
-          "departure": "Largimi"
+          "departure": "Largimi",
+          "attendingDays": "Po vjen {{ count }} ditë në javë"
         },
         "errors": {
           "endBeforeStart": "Data e mbarimit nuk mund të jetë para datës së fillimit.",

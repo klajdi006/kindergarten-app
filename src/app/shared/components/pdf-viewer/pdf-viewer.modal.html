@@ -1,0 +1,21 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ name }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" [scrollY]="false">
+  <ngx-extended-pdf-viewer
+    [src]="src"
+    [filenameForDownload]="name"
+    [textLayer]="true"
+    [showPrintButton]="false"
+    [showOpenFileButton]="false"
+    height="100%">
+  </ngx-extended-pdf-viewer>
+</ion-content>

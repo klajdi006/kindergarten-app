@@ -35,9 +35,9 @@ import {
   calendarOutline,
   documentOutline,
   downloadOutline,
+  eyeOutline,
   femaleOutline,
   happyOutline,
-  hourglassOutline,
   maleOutline,
   sunnyOutline,
   timeOutline,
@@ -57,7 +57,6 @@ import {
   DEFAULT_OPERATING_HOURS,
   OperatingHours,
   WEEK_DAYS,
-  WeekDay,
   WeeklySchedule,
   defaultScheduleFor,
   getOperatingHours,
@@ -65,6 +64,7 @@ import {
 } from '@app/data/schedule';
 import { Absence, Child, ChildDocument, Department } from '@app/data/types';
 import { AbsenceHistoryModal } from '@app/parent/children/absence-history/absence-history.modal';
+import { WeeklyScheduleModal } from '@app/parent/children/weekly-schedule/weekly-schedule.modal';
 import { completeRefresher } from '@app/shared/utils/refresher';
 import { SkeletonListComponent } from '@app/shared/components/skeleton-list/skeleton-list.component';
 
@@ -245,7 +245,11 @@ export class ParentChildDetailPage {
     getOperatingHours(this.kindergartens.current()),
   );
   readonly scheduleDraft = signal<WeeklySchedule>(defaultScheduleFor(DEFAULT_OPERATING_HOURS));
-  readonly scheduleDirty = signal(false);
+
+  /** Number of week days the child is set to attend (for the summary line). */
+  readonly attendingDays = computed(
+    () => this.weekDays.filter((d) => this.scheduleDraft()[d].attending).length,
+  );
 
   private readonly storedSchedule = toSignal(
     toObservable(this.childId).pipe(
@@ -262,9 +266,9 @@ export class ParentChildDetailPage {
       'calendar-outline': calendarOutline,
       'document-outline': documentOutline,
       'download-outline': downloadOutline,
+      'eye-outline': eyeOutline,
       'female-outline': femaleOutline,
       'happy-outline': happyOutline,
-      'hourglass-outline': hourglassOutline,
       'male-outline': maleOutline,
       'sunny-outline': sunnyOutline,
       'time-outline': timeOutline,
@@ -276,53 +280,28 @@ export class ParentChildDetailPage {
     effect(() => {
       const stored = this.storedSchedule();
       const hours = this.operatingHours();
-      if (!this.scheduleDirty()) {
-        this.scheduleDraft.set(getWeeklySchedule(stored, hours));
-      }
+      this.scheduleDraft.set(getWeeklySchedule(stored, hours));
     });
     setTimeout(() => this.loading.set(false), 1500);
   }
 
-  toggleAttending(day: WeekDay, event: CustomEvent): void {
-    const checked = !!(event.detail as { checked?: boolean }).checked;
-    const hours = this.operatingHours()[day];
-    if (!hours.open) return;
-    const next: WeeklySchedule = { ...this.scheduleDraft() };
-    const cur = next[day];
-    next[day] = checked
-      ? { attending: true, arrival: cur.arrival || hours.from, departure: cur.departure || hours.to }
-      : { ...cur, attending: false };
-    this.scheduleDraft.set(next);
-    this.scheduleDirty.set(true);
-  }
-
-  onScheduleTimeChange(day: WeekDay, field: 'arrival' | 'departure', event: CustomEvent): void {
-    const raw = (event.detail as { value?: string | null }).value;
-    if (typeof raw !== 'string') return;
-    const time = extractHm(raw);
-    if (!time) return;
-    const hours = this.operatingHours()[day];
-    if (!hours.open) return;
-    const clamped =
-      field === 'arrival'
-        ? time < hours.from
-          ? hours.from
-          : time
-        : time > hours.to
-          ? hours.to
-          : time;
-    const next: WeeklySchedule = { ...this.scheduleDraft() };
-    next[day] = { ...next[day], [field]: clamped };
-    this.scheduleDraft.set(next);
-    this.scheduleDirty.set(true);
-  }
-
-  async saveSchedule(): Promise<void> {
+  async openSchedule(): Promise<void> {
     const c = this.child();
     if (!c) return;
-    await this.schedules.update(c.id, this.scheduleDraft());
-    this.scheduleDirty.set(false);
-    await this.toast('parent.children.detail.scheduleSaved', 'success');
+    const modal = await this.modalCtrl.create({
+      component: WeeklyScheduleModal,
+      componentProps: {
+        operatingHours: this.operatingHours(),
+        schedule: this.scheduleDraft(),
+      },
+    });
+    await modal.present();
+    const { data, role } = await modal.onWillDismiss<WeeklySchedule>();
+    if (role === 'confirm' && data) {
+      this.scheduleDraft.set(data);
+      await this.schedules.update(c.id, data);
+      await this.toast('parent.children.detail.scheduleSaved', 'success');
+    }
   }
 
   async toggleSickToday(event: CustomEvent): Promise<void> {
@@ -401,6 +380,23 @@ export class ParentChildDetailPage {
     await alert.present();
   }
 
+  isPdf(document: ChildDocument): boolean {
+    return /\.pdf$/i.test(document.name) || /\.pdf(\?|$)/i.test(document.url);
+  }
+
+  async viewPdf(document: ChildDocument): Promise<void> {
+    // Lazy-load the PDF viewer (pdf.js) only when a PDF is actually opened,
+    // so its bundle stays out of the main child-detail chunk.
+    const { PdfViewerModal } = await import(
+      '@app/shared/components/pdf-viewer/pdf-viewer.modal'
+    );
+    const modal = await this.modalCtrl.create({
+      component: PdfViewerModal,
+      componentProps: { src: document.url, name: document.name },
+    });
+    await modal.present();
+  }
+
   async openHistory(): Promise<void> {
     const modal = await this.modalCtrl.create({
       component: AbsenceHistoryModal,
@@ -418,9 +414,4 @@ export class ParentChildDetailPage {
     });
     await toast.present();
   }
-}
-
-function extractHm(value: string): string | null {
-  const match = value.match(/(\d{2}:\d{2})/);
-  return match ? match[1] : null;
 }

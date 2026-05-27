@@ -70,10 +70,27 @@
           <ion-item>
             <ion-icon slot="start" name="document-outline" color="medium" aria-hidden="true"></ion-icon>
             <ion-label>
-              <a [href]="doc.url" target="_blank" rel="noopener" class="doc-link">{{ doc.name }}</a>
+              @if (isPdf(doc)) {
+                <a (click)="viewPdf(doc)" class="doc-link">{{ doc.name }}</a>
+              } @else {
+                <a [href]="doc.url" target="_blank" rel="noopener" class="doc-link">{{ doc.name }}</a>
+              }
               <p><small>{{ doc.uploadedAt | dateDmy }}</small></p>
             </ion-label>
-            <ion-icon slot="end" name="download-outline" color="primary" aria-hidden="true"></ion-icon>
+            @if (isPdf(doc)) {
+              <ion-button
+                slot="end"
+                fill="clear"
+                color="primary"
+                size="small"
+                (click)="viewPdf(doc)"
+                [attr.aria-label]="'common.view' | translate">
+                <ion-icon slot="icon-only" name="eye-outline"></ion-icon>
+              </ion-button>
+            }
+            <a [href]="doc.url" target="_blank" rel="noopener" slot="end" [attr.aria-label]="'common.download' | translate">
+              <ion-icon name="download-outline" color="primary" aria-hidden="true"></ion-icon>
+            </a>
           </ion-item>
         }
       </ion-list>
@@ -106,60 +123,12 @@
       <ion-label>{{ 'parent.children.detail.weeklySchedule' | translate }}</ion-label>
     </ion-list-header>
     <ion-list inset="true">
-      @for (day of weekDays; track day) {
-        @let kgDay = operatingHours()[day];
-        @let plan = scheduleDraft()[day];
-        @if (!kgDay.open) {
-          <ion-item lines="full">
-            <ion-icon slot="start" name="time-outline" color="medium" aria-hidden="true"></ion-icon>
-            <ion-label>
-              <h3>{{ 'days.' + day | translate }}</h3>
-              <p>{{ 'parent.children.detail.schedule.closed' | translate }}</p>
-            </ion-label>
-          </ion-item>
-        } @else {
-          <ion-item lines="full">
-            <ion-icon slot="start" name="time-outline" color="primary" aria-hidden="true"></ion-icon>
-            <ion-label>
-              <h3>{{ 'days.' + day | translate }}</h3>
-              <p>
-                {{ 'parent.children.detail.schedule.kgHours' | translate }}
-                {{ kgDay.from }} – {{ kgDay.to }}
-              </p>
-            </ion-label>
-            <ion-toggle
-              slot="end"
-              [checked]="plan.attending"
-              (ionChange)="toggleAttending(day, $any($event))">
-            </ion-toggle>
-          </ion-item>
-          @if (plan.attending) {
-            <ion-item>
-              <ion-icon slot="start" name="hourglass-outline" color="medium" aria-hidden="true"></ion-icon>
-              <ion-label>{{ 'parent.children.detail.schedule.arrival' | translate }}</ion-label>
-              <ion-datetime-button
-                slot="end"
-                [datetime]="'sch-' + day + '-arrival'">
-              </ion-datetime-button>
-            </ion-item>
-            <ion-item>
-              <ion-icon slot="start" name="hourglass-outline" color="medium" aria-hidden="true"></ion-icon>
-              <ion-label>{{ 'parent.children.detail.schedule.departure' | translate }}</ion-label>
-              <ion-datetime-button
-                slot="end"
-                [datetime]="'sch-' + day + '-departure'">
-              </ion-datetime-button>
-            </ion-item>
-          }
-        }
-      }
-      <ion-item
-        button="true"
-        detail="false"
-        lines="none"
-        [disabled]="!scheduleDirty()"
-        (click)="saveSchedule()">
-        <ion-label color="primary">{{ 'common.save' | translate }}</ion-label>
+      <ion-item button="true" detail="true" lines="none" (click)="openSchedule()">
+        <ion-icon slot="start" name="time-outline" color="primary" aria-hidden="true"></ion-icon>
+        <ion-label>
+          <h3>{{ 'parent.children.detail.weeklySchedule' | translate }}</h3>
+          <p>{{ 'parent.children.detail.schedule.attendingDays' | translate: { count: attendingDays() } }}</p>
+        </ion-label>
       </ion-item>
     </ion-list>
 
@@ -225,34 +194,6 @@
     </div>
   }
 
-  @for (day of weekDays; track day) {
-    @let kgDay = operatingHours()[day];
-    @let plan = scheduleDraft()[day];
-    @if (kgDay.open && plan.attending) {
-      <ion-modal [keepContentsMounted]="true">
-        <ng-template>
-          <ion-datetime
-            [id]="'sch-' + day + '-arrival'"
-            presentation="time"
-            minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
-            [value]="plan.arrival"
-            (ionChange)="onScheduleTimeChange(day, 'arrival', $any($event))">
-          </ion-datetime>
-        </ng-template>
-      </ion-modal>
-      <ion-modal [keepContentsMounted]="true">
-        <ng-template>
-          <ion-datetime
-            [id]="'sch-' + day + '-departure'"
-            presentation="time"
-            minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
-            [value]="plan.departure"
-            (ionChange)="onScheduleTimeChange(day, 'departure', $any($event))">
-          </ion-datetime>
-        </ng-template>
-      </ion-modal>
-    }
-  }
 </ion-content>
 
 <ion-modal [keepContentsMounted]="true">
