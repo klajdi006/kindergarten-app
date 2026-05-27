@@ -9,11 +9,11 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="photo-viewer-content">
+<ion-content [fullscreen]="true" [scrollY]="false" class="photo-viewer-content">
   <swiper-container
     class="photo-viewer-swiper"
     zoom="true"
-    [attr.initial-slide]="startIndex"
+    (swiperafterinit)="onInit($event)"
     (swiperslidechange)="onSlideChange($event)">
     @for (photo of photos; track photo.id) {
       <swiper-slide>

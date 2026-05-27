@@ -49,6 +49,19 @@ export class PhotoViewerModal {
     addIcons({ 'close-outline': closeOutline });
   }
 
+  /**
+   * Jump to the tapped photo once Swiper is initialized. Setting it here
+   * (rather than via the `initial-slide` attribute) avoids the attribute
+   * being read before Angular has rendered the slides.
+   */
+  onInit(event: Event): void {
+    const swiper = (event as CustomEvent).detail?.[0];
+    if (!swiper) return;
+    const idx = Math.min(Math.max(this.startIndex, 0), this.photos.length - 1);
+    swiper.slideTo(idx, 0, false);
+    this.currentIndex.set(idx);
+  }
+
   /** Swiper fires this with detail = [swiperInstance]. */
   onSlideChange(event: Event): void {
     const swiper = (event as CustomEvent).detail?.[0];
