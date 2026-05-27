@@ -145,7 +145,7 @@ export class AlbumsService {
     albumId: string,
     file: File,
     onProgress?: (fraction: number) => void,
-  ): Promise<void> {
+  ): Promise<string> {
     const uid = this.uid();
     const kgId = this.kgId();
     if (!uid || !kgId) return Promise.reject(new Error('Not signed in'));
@@ -162,7 +162,7 @@ export class AlbumsService {
       contentType: file.type || undefined,
     });
 
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<string>((resolve, reject) => {
       task.on(
         'state_changed',
         (snapshot) => {
@@ -189,7 +189,7 @@ export class AlbumsService {
               photoCount: increment(1),
             });
             onProgress?.(1);
-            resolve();
+            resolve(downloadUrl);
           } catch (err) {
             console.error('[albums] upload: firestore write failed', err);
             reject(err);

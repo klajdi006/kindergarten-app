@@ -10,6 +10,7 @@ import {
   IonFabButton,
   IonHeader,
   IonIcon,
+  IonSkeletonText,
   IonText,
   IonTitle,
   IonToolbar,
@@ -24,7 +25,7 @@ import {
   imagesOutline,
 } from 'ionicons/icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { of, switchMap } from 'rxjs';
+import { map, of, startWith, switchMap } from 'rxjs';
 import { AlbumsService } from '@app/data/albums.service';
 import { StaffService } from '@app/data/staff.service';
 import { Photo } from '@app/data/types';
@@ -36,6 +37,9 @@ interface PendingUpload {
   previewUrl: string;
   progress: number;
   failed: boolean;
+  /** Remote URL once the upload finishes; used to hide the duplicate real
+   *  photo until its image has preloaded, avoiding a swap flicker. */
+  finalUrl?: string;
 }
 
 @Component({
@@ -52,6 +56,7 @@ interface PendingUpload {
     IonText,
     IonFab,
     IonFabButton,
+    IonSkeletonText,
     TranslatePipe,
   ],
 })
@@ -77,12 +82,24 @@ export class EmployeeAlbumDetailPage {
     return id ? this.albums.byId(id)() : null;
   });
 
-  readonly photos = toSignal(
+  private readonly photosState = toSignal(
     toObservable(this.albumId).pipe(
-      switchMap((id) => (id ? this.albums.photosFor(id) : of<Photo[]>([]))),
+      switchMap((id) =>
+        id
+          ? this.albums.photosFor(id).pipe(
+              map((photos) => ({ photos, loading: false })),
+              startWith({ photos: [] as Photo[], loading: true }),
+            )
+          : of({ photos: [] as Photo[], loading: false }),
+      ),
     ),
-    { initialValue: [] as Photo[] },
+    { initialValue: { photos: [] as Photo[], loading: true } },
   );
+
+  readonly photos = computed(() => this.photosState().photos);
+  readonly loading = computed(() => this.photosState().loading);
+
+  protected readonly skeletonCells = Array.from({ length: 9 });
 
   readonly canEdit = computed(() => {
     const a = this.album();
@@ -93,6 +110,22 @@ export class EmployeeAlbumDetailPage {
 
   readonly uploads = signal<PendingUpload[]>([]);
   readonly uploading = computed(() => this.uploads().some((u) => !u.failed));
+
+  /**
+   * Real photos to show in the grid, minus any whose remote URL is still
+   * being represented by an in-flight upload cell. This prevents a brief
+   * duplicate (pending preview + real photo) and the swap flicker — the real
+   * photo only appears once its pending cell has preloaded and been removed.
+   */
+  readonly displayedPhotos = computed<Photo[]>(() => {
+    const pendingUrls = new Set(
+      this.uploads()
+        .map((u) => u.finalUrl)
+        .filter((u): u is string => !!u),
+    );
+    if (pendingUrls.size === 0) return this.photos();
+    return this.photos().filter((p) => !pendingUrls.has(p.downloadUrl));
+  });
 
   protected readonly imagesOutline = imagesOutline;
 
@@ -144,11 +177,17 @@ export class EmployeeAlbumDetailPage {
   private async uploadOne(albumId: string, file: File, entryId: string): Promise<void> {
     try {
       const toUpload = await compressImage(file);
-      await this.albums.uploadPhoto(albumId, toUpload, (fraction) => {
+      const downloadUrl = await this.albums.uploadPhoto(albumId, toUpload, (fraction) => {
         this.uploads.update((list) =>
           list.map((u) => (u.id === entryId ? { ...u, progress: fraction } : u)),
         );
       });
+      // Keep the pending preview visible (and the duplicate real photo hidden)
+      // until the remote image is decoded, then swap with no flicker.
+      this.uploads.update((list) =>
+        list.map((u) => (u.id === entryId ? { ...u, progress: 1, finalUrl: downloadUrl } : u)),
+      );
+      await this.preloadImage(downloadUrl);
       this.removeUpload(entryId);
     } catch {
       this.uploads.update((list) =>
@@ -168,6 +207,16 @@ export class EmployeeAlbumDetailPage {
     this.removeUpload(entryId);
   }
 
+  /** Resolve once the browser has the image cached/decoded (or on error). */
+  private preloadImage(url: string): Promise<void> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve();
+      img.onerror = () => resolve();
+      img.src = url;
+    });
+  }
+
   private removeUpload(entryId: string): void {
     this.uploads.update((list) => {
       const found = list.find((u) => u.id === entryId);
@@ -179,7 +228,7 @@ export class EmployeeAlbumDetailPage {
   async openViewer(index: number): Promise<void> {
     const modal = await this.modalCtrl.create({
       component: PhotoViewerModal,
-      componentProps: { photos: this.photos(), startIndex: index },
+      componentProps: { photos: this.displayedPhotos(), startIndex: index },
     });
     await modal.present();
   }

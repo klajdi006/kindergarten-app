@@ -32,11 +32,13 @@ import {
 } from 'rxjs';
 import { AppUser, UserDoc, UserRole } from '@app/auth/auth.types';
 import { DEFAULT_OPERATING_HOURS } from '@app/data/schedule';
+import { StorageService } from '@app/shared/services/storage.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly auth = inject(Auth);
   private readonly firestore = inject(Firestore);
+  private readonly storage = inject(StorageService);
 
   // ----- core observables -----
   readonly firebaseUser$ = authState(this.auth).pipe(
@@ -129,7 +131,7 @@ export class AuthService {
 
   async signOut(): Promise<void> {
     await signOut(this.auth);
-    localStorage.clear();
+    this.storage.clearExceptPreferences();
   }
 
   /**

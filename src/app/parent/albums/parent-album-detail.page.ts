@@ -7,6 +7,7 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
+  IonSkeletonText,
   IonText,
   IonTitle,
   IonToolbar,
@@ -15,7 +16,7 @@ import {
 import { addIcons } from 'ionicons';
 import { closeOutline, imagesOutline } from 'ionicons/icons';
 import { TranslatePipe } from '@ngx-translate/core';
-import { of, switchMap } from 'rxjs';
+import { map, of, startWith, switchMap } from 'rxjs';
 import { AlbumsService } from '@app/data/albums.service';
 import { Photo } from '@app/data/types';
 import { PhotoViewerModal } from '@app/shared/components/photo-viewer/photo-viewer.modal';
@@ -32,6 +33,7 @@ import { PhotoViewerModal } from '@app/shared/components/photo-viewer/photo-view
     IonContent,
     IonIcon,
     IonText,
+    IonSkeletonText,
     TranslatePipe,
   ],
 })
@@ -50,13 +52,24 @@ export class ParentAlbumDetailPage {
     return id ? this.albums.byId(id)() : null;
   });
 
-  readonly photos = toSignal(
+  private readonly photosState = toSignal(
     toObservable(this.albumId).pipe(
-      switchMap((id) => (id ? this.albums.photosFor(id) : of<Photo[]>([]))),
+      switchMap((id) =>
+        id
+          ? this.albums.photosFor(id).pipe(
+              map((photos) => ({ photos, loading: false })),
+              startWith({ photos: [] as Photo[], loading: true }),
+            )
+          : of({ photos: [] as Photo[], loading: false }),
+      ),
     ),
-    { initialValue: [] as Photo[] },
+    { initialValue: { photos: [] as Photo[], loading: true } },
   );
 
+  readonly photos = computed(() => this.photosState().photos);
+  readonly loading = computed(() => this.photosState().loading);
+
+  protected readonly skeletonCells = Array.from({ length: 9 });
   protected readonly imagesOutline = imagesOutline;
 
   constructor() {
