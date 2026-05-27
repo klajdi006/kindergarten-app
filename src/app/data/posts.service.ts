@@ -7,6 +7,7 @@ import {
   collectionData,
   deleteDoc,
   doc,
+  limit,
   orderBy,
   query,
   updateDoc,
@@ -37,6 +38,9 @@ export class PostsService {
 
   private readonly uid = computed(() => this.auth.currentUser()?.uid ?? null);
   private readonly kgId = computed(() => this.auth.kindergartenId());
+
+  /** Feeds and badge counts read the most recent posts only (bounded for cost/perf). */
+  private readonly RECENT_LIMIT = 200;
 
   private randomId(): string {
     return typeof crypto !== 'undefined' && 'randomUUID' in crypto
@@ -117,6 +121,7 @@ export class PostsService {
         collection(this.firestore, 'posts'),
         where('kindergartenId', '==', kgId),
         orderBy('createdAt', 'desc'),
+        limit(this.RECENT_LIMIT),
       );
       return collectionData(q, { idField: 'id' }) as Observable<Post[]>;
     }),
@@ -134,6 +139,7 @@ export class PostsService {
       collection(this.firestore, 'posts'),
       where('kindergartenId', '==', kgId),
       orderBy('createdAt', 'desc'),
+      limit(this.RECENT_LIMIT),
     );
     return collectionData(q, { idField: 'id' }) as Observable<Post[]>;
   }

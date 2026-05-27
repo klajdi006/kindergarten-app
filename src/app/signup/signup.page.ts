@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import {
   IonButton,
   IonButtons,
@@ -52,15 +52,16 @@ import { LanguageToggleComponent } from '@app/shared/components/language-toggle/
 export class SignupPage {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
-  private readonly router = inject(Router);
 
   readonly isLoading = this.auth.isLoading;
   readonly errorMessage = this.auth.errorMessage;
 
+  /** Set once the confirmation email has been queued. */
+  readonly sentToEmail = signal<string | null>(null);
+
   readonly form = this.fb.nonNullable.group({
     displayName: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
     kindergartenName: ['', [Validators.required]],
     address: ['', [Validators.required]],
   });
@@ -70,17 +71,16 @@ export class SignupPage {
       this.form.markAllAsTouched();
       return;
     }
-    const { email, password, displayName, kindergartenName, address } = this.form.getRawValue();
+    const { email, displayName, kindergartenName, address } = this.form.getRawValue();
     try {
-      await this.auth.signUpAdmin(
-        email.trim(),
-        password,
-        displayName.trim(),
-        kindergartenName.trim(),
-        address.trim(),
-      );
+      await this.auth.requestAdminSignup({
+        email: email.trim(),
+        displayName: displayName.trim(),
+        kindergartenName: kindergartenName.trim(),
+        address: address.trim(),
+      });
+      this.sentToEmail.set(email.trim());
       this.form.reset();
-      await this.router.navigateByUrl('/admin');
     } catch {
       // error already surfaced via auth.errorMessage signal
     }

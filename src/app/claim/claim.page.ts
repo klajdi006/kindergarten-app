@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
   IonButton,
   IonButtons,
@@ -57,7 +57,6 @@ export class ClaimPage {
   private readonly auth = inject(AuthService);
   private readonly parents = inject(ParentsService);
   private readonly staff = inject(StaffService);
-  private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
   readonly isLoading = signal(false);
@@ -100,7 +99,10 @@ export class ClaimPage {
         this.mode() === 'link'
           ? await this.completeViaLink(email, password)
           : await this.completeViaManual(email, password);
-      await this.router.navigateByUrl(target);
+      // Hard-load into the destination so the freshly created account boots
+      // with clean root-service state (a SPA navigation would carry over the
+      // pre-auth singletons and need a manual refresh).
+      window.location.assign(target);
     } catch (err) {
       console.error('[claim] submit failed:', err);
       if (!this.errorKey()) {
@@ -118,19 +120,25 @@ export class ClaimPage {
     if (staffRecord) {
       return this.finalizeStaffClaim(staffRecord, password, uid);
     }
+
     const parentRecord = await this.parents.findUnclaimedByEmail(email);
-    const displayName = parentRecord
-      ? `${parentRecord.firstName} ${parentRecord.lastName}`.trim()
-      : email.split('@')[0];
-    await this.auth.finalizeParentProfile(
-      password,
-      displayName,
-      parentRecord?.kindergartenId ?? '',
-    );
     if (parentRecord) {
+      const displayName = `${parentRecord.firstName} ${parentRecord.lastName}`.trim();
+      await this.auth.finalizeParentProfile(password, displayName, parentRecord.kindergartenId);
       await this.parents.markClaimed(parentRecord.id, uid);
+      return '/parent';
     }
-    return '/parent';
+
+    // No invite record → this may be a self-service admin sign-up awaiting
+    // confirmation. Materialize the kindergarten + admin account now.
+    const pendingAdmin = await this.auth.findPendingAdminSignup(email);
+    if (pendingAdmin) {
+      await this.auth.finalizeAdminSignup(password, pendingAdmin);
+      return '/admin';
+    }
+
+    this.errorKey.set('claim.errors.noInvite');
+    throw new Error('No invite');
   }
 
   private async completeViaManual(email: string, password: string): Promise<string> {

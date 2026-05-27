@@ -5,6 +5,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideFirebaseApp, initializeApp, getApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, initializeFirestore } from '@angular/fire/firestore';
+import { provideFunctions, getFunctions } from '@angular/fire/functions';
 import { provideMessaging, getMessaging } from '@angular/fire/messaging';
 import { provideStorage, getStorage } from '@angular/fire/storage';
 import { provideServiceWorker } from '@angular/service-worker';
@@ -30,6 +31,7 @@ bootstrapApplication(AppComponent, {
       initializeFirestore(getApp(), { experimentalAutoDetectLongPolling: true }),
     ),
     provideStorage(() => getStorage()),
+    provideFunctions(() => getFunctions(getApp())),
     provideMessaging(() => getMessaging()),
     provideTranslateService({
       fallbackLang: 'en',

@@ -1,10 +1,9 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, Injector, computed, inject, runInInjectionContext, signal } from '@angular/core';
 import {
   Auth,
   authState,
   createUserWithEmailAndPassword,
   isSignInWithEmailLink,
-  sendSignInLinkToEmail,
   signInWithEmailAndPassword,
   signInWithEmailLink,
   signOut,
@@ -15,11 +14,16 @@ import {
   Firestore,
   addDoc,
   collection,
+  deleteDoc,
   doc,
   docData,
+  getDocs,
+  query,
   setDoc,
   updateDoc,
+  where,
 } from '@angular/fire/firestore';
+import { Functions, httpsCallable } from '@angular/fire/functions';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   Observable,
@@ -30,7 +34,7 @@ import {
   shareReplay,
   switchMap,
 } from 'rxjs';
-import { AppUser, UserDoc, UserRole } from '@app/auth/auth.types';
+import { AppUser, PendingAdminSignup, UserDoc, UserRole } from '@app/auth/auth.types';
 import { DEFAULT_OPERATING_HOURS } from '@app/data/schedule';
 import { StorageService } from '@app/shared/services/storage.service';
 
@@ -38,6 +42,8 @@ import { StorageService } from '@app/shared/services/storage.service';
 export class AuthService {
   private readonly auth = inject(Auth);
   private readonly firestore = inject(Firestore);
+  private readonly functions = inject(Functions);
+  private readonly injector = inject(Injector);
   private readonly storage = inject(StorageService);
 
   // ----- core observables -----
@@ -132,44 +138,99 @@ export class AuthService {
   async signOut(): Promise<void> {
     await signOut(this.auth);
     this.storage.clearExceptPreferences();
+    // Hard-reload into /login so every root singleton (data services + their
+    // cached signals from this session) is torn down. A SPA navigation would
+    // leave the previous user's state in memory until a manual refresh.
+    window.location.assign('/login');
   }
 
   /**
-   * First-time admin sign-up. Creates the auth user, a new `kindergartens/{kgId}`
-   * doc (the tenant), a self `staff/{id}` record auto-claimed by this admin,
-   * and the `/users/{uid}` profile pointing at both.
+   * First step of admin sign-up. No account is created yet — this calls the
+   * requestAdminSignup function, which stores a pending signup and emails a
+   * claim link. The kindergarten + admin record are only created once the
+   * person proves the email via {@link finalizeAdminSignup} on the /claim page.
    */
-  async signUpAdmin(
-    email: string,
-    password: string,
-    displayName: string,
-    kindergartenName: string,
-    address: string,
-  ): Promise<void> {
+  async requestAdminSignup(input: {
+    email: string;
+    displayName: string;
+    kindergartenName: string;
+    address: string;
+  }): Promise<void> {
     this.loading.set(true);
     this.error.set(null);
     try {
-      const cred = await createUserWithEmailAndPassword(this.auth, email, password);
-      if (displayName) {
-        await updateProfile(cred.user, { displayName });
-      }
-      const uid = cred.user.uid;
-      const now = Date.now();
+      const lang = localStorage.getItem('kg.lang') === 'al' ? 'al' : 'en';
+      await runInInjectionContext(this.injector, () => {
+        const call = httpsCallable<
+          {
+            email: string;
+            displayName: string;
+            kindergartenName: string;
+            address: string;
+            lang: string;
+            origin: string;
+          },
+          { ok: boolean }
+        >(this.functions, 'requestAdminSignup');
+        return call({
+          email: input.email.trim().toLowerCase(),
+          displayName: input.displayName.trim(),
+          kindergartenName: input.kindergartenName.trim(),
+          address: input.address.trim(),
+          lang,
+          origin: window.location.origin,
+        });
+      });
+    } catch (err) {
+      const message = (err as Error)?.message || this.toFriendlyError(err);
+      this.error.set(message);
+      throw new Error(message);
+    } finally {
+      this.loading.set(false);
+    }
+  }
 
-      // Create the kindergarten doc (the tenant).
+  /** Look up the pending admin signup for an email (post email-link sign-in). */
+  async findPendingAdminSignup(email: string): Promise<PendingAdminSignup | null> {
+    const snap = await getDocs(
+      query(
+        collection(this.firestore, 'pendingAdminSignups'),
+        where('email', '==', email.trim().toLowerCase()),
+      ),
+    );
+    const d = snap.docs[0];
+    return d ? ({ id: d.id, ...(d.data() as Omit<PendingAdminSignup, 'id'>) }) : null;
+  }
+
+  /**
+   * Completes admin sign-up after the claim link sign-in: sets the password and
+   * creates the kindergarten + self admin staff record + /users profile, then
+   * removes the pending signup. The caller must already be signed in via link.
+   */
+  async finalizeAdminSignup(password: string, pending: PendingAdminSignup): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!user) throw new Error('Not signed in');
+    this.loading.set(true);
+    this.error.set(null);
+    try {
+      const uid = user.uid;
+      const now = Date.now();
+      const displayName = pending.displayName.trim();
+      if (displayName) await updateProfile(user, { displayName });
+      if (password) await updatePassword(user, password);
+
       const kgRef = await addDoc(collection(this.firestore, 'kindergartens'), {
-        name: kindergartenName.trim() || `${displayName.trim()}'s kindergarten`,
-        address: address.trim() || null,
+        name: pending.kindergartenName.trim() || `${displayName}'s kindergarten`,
+        address: pending.address.trim() || null,
         operatingHours: DEFAULT_OPERATING_HOURS,
         createdByUid: uid,
         createdAt: now,
       });
 
-      // Create the self staff record, auto-claimed.
       const staffRef = await addDoc(collection(this.firestore, 'staff'), {
         firstName: displayName.split(' ').slice(0, -1).join(' ') || displayName,
         lastName: displayName.split(' ').slice(-1).join(' ') || '',
-        email: cred.user.email ?? email,
+        email: user.email ?? pending.email,
         phone: null,
         role: 'admin',
         departmentIds: [],
@@ -179,9 +240,8 @@ export class AuthService {
         createdAt: now,
       });
 
-      // Profile doc.
       const profile: UserDoc = {
-        email: cred.user.email ?? email,
+        email: user.email ?? pending.email,
         displayName: displayName || null,
         role: 'admin',
         kindergartenId: kgRef.id,
@@ -189,7 +249,9 @@ export class AuthService {
         createdAt: now,
       };
       await setDoc(doc(this.firestore, 'users', uid), profile);
+      await deleteDoc(doc(this.firestore, 'pendingAdminSignups', pending.id));
     } catch (err) {
+      console.error('[auth] finalizeAdminSignup failed:', err);
       const message = this.toFriendlyError(err);
       this.error.set(message);
       throw new Error(message);
@@ -297,15 +359,21 @@ export class AuthService {
   }
 
   /**
-   * Send a passwordless sign-in link. Used for both parent and staff invites —
-   * the /claim page detects which kind of record the email belongs to.
+   * Send a branded passwordless claim invite. Delegates to the sendClaimInvite
+   * Cloud Function, which generates the /claim sign-in link server-side and
+   * emails it via the Trigger Email extension (the built-in Firebase email-link
+   * template can't be customized). Used for both parent and staff invites — the
+   * /claim page detects which kind of record the email belongs to.
    */
   async sendInviteEmail(email: string): Promise<void> {
     const trimmed = email.trim().toLowerCase();
-    const continueUrl = `${window.location.origin}/claim?email=${encodeURIComponent(trimmed)}`;
-    await sendSignInLinkToEmail(this.auth, trimmed, {
-      url: continueUrl,
-      handleCodeInApp: true,
+    const lang = localStorage.getItem('kg.lang') === 'al' ? 'al' : 'en';
+    await runInInjectionContext(this.injector, () => {
+      const call = httpsCallable<
+        { email: string; lang: string; origin: string },
+        { ok: boolean }
+      >(this.functions, 'sendClaimInvite');
+      return call({ email: trimmed, lang, origin: window.location.origin });
     });
   }
 

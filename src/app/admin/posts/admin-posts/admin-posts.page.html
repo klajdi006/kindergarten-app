@@ -46,7 +46,7 @@
       </div>
     } @else {
       @for (post of posts.all(); track post.id) {
-        <ion-card>
+        <ion-card button="true" (click)="openView(post)">
           <ion-card-header>
             <ion-card-subtitle>
               @if (post.departmentId) {
@@ -61,8 +61,10 @@
             </ion-card-subtitle>
             <ion-card-title>{{ post.title }}</ion-card-title>
           </ion-card-header>
+          <app-post-media-preview [post]="post" section="images" />
           <ion-card-content class="post-body">
             {{ post.description }}
+            <app-post-media-preview [post]="post" section="files" />
           </ion-card-content>
         </ion-card>
       }

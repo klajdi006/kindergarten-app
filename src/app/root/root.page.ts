@@ -72,8 +72,8 @@ export class RootPage {
 
   async signOut(): Promise<void> {
     this.cancelStuckTimer();
+    // auth.signOut() hard-reloads into /login.
     await this.auth.signOut();
-    await this.router.navigateByUrl('/login');
   }
 
   private cancelStuckTimer(): void {

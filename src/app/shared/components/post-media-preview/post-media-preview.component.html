@@ -1,17 +1,20 @@
-@if (thumbs().length > 0) {
-  <div class="post-thumb-row">
-    @for (url of thumbs(); track url; let i = $index) {
-      <div class="post-thumb" (click)="openImage(i, $event)">
-        <img [src]="url" loading="lazy" alt="" />
-        @if (i === thumbs().length - 1 && extra() > 0) {
-          <div class="post-thumb-more">+{{ extra() }}</div>
-        }
-      </div>
-    }
-  </div>
+@if (showImages()) {
+  @if (images().length === 1) {
+    <div class="post-image-frame" (click)="openImage(0, $event)">
+      <img [src]="images()[0]" loading="lazy" alt="" />
+    </div>
+  } @else {
+    <swiper-container class="post-image-frame post-image-swiper" pagination="true">
+      @for (url of images(); track url; let i = $index) {
+        <swiper-slide (click)="openImage(i, $event)">
+          <img [src]="url" loading="lazy" alt="" />
+        </swiper-slide>
+      }
+    </swiper-container>
+  }
 }
 
-@if (attachments().length > 0) {
+@if (showFiles()) {
   <div class="post-file-links">
     @for (att of attachments(); track att.path) {
       <a

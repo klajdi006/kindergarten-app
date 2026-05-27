@@ -1,7 +1,6 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import {
   IonContent,
   IonHeader,
@@ -76,7 +75,6 @@ export class SettingsPage {
   readonly kindergartens = inject(KindergartensService);
   readonly lang = inject(LanguageService);
   readonly theme = inject(ThemeService);
-  private readonly router = inject(Router);
   private readonly modalCtrl = inject(ModalController);
   private readonly push = inject(PushService);
   private readonly toastCtrl = inject(ToastController);
@@ -215,7 +213,7 @@ export class SettingsPage {
   }
 
   async signOut(): Promise<void> {
+    // auth.signOut() hard-reloads into /login, so no SPA navigation needed.
     await this.auth.signOut();
-    await this.router.navigateByUrl('/login');
   }
 }

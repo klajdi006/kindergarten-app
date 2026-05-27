@@ -29,13 +29,19 @@
       "kindergartenName": "Emri i kopshtit",
       "address": "Adresa e kopshtit"
     },
-    "submit": "Krijo llogarinë",
+    "submit": "Vazhdo",
     "validation": {
       "nameRequired": "Ju lutem shkruani emrin tuaj.",
       "invalidEmail": "Shkruani një email të vlefshëm.",
       "passwordMin": "Fjalëkalimi duhet të ketë të paktën 6 karaktere.",
       "kindergartenNameRequired": "Ju lutem shkruani emrin e kopshtit.",
       "addressRequired": "Ju lutem shkruani adresën e kopshtit."
+    },
+    "checkEmail": {
+      "title": "Kontrolloni email-in",
+      "message": "Dërguam një lidhje konfirmimi te {{ email }}. Hapeni për të vendosur fjalëkalimin dhe për të përfunduar krijimin e kopshtit.",
+      "hint": "Lidhja mund të vonohet pak — kontrolloni edhe dosjen e spam-it.",
+      "backToLogin": "Kthehu te hyrja"
     },
     "haveAccount": "Keni tashmë një llogari?",
     "signInLink": "Hyr"

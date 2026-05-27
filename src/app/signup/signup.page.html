@@ -16,6 +16,18 @@
           <p>{{ 'signup.subtitle' | translate }}</p>
         </div>
 
+        @if (sentToEmail(); as sentEmail) {
+          <div class="ion-text-center ion-padding">
+            <h2>{{ 'signup.checkEmail.title' | translate }}</h2>
+            <p>{{ 'signup.checkEmail.message' | translate: { email: sentEmail } }}</p>
+            <ion-text color="medium">
+              <p><small>{{ 'signup.checkEmail.hint' | translate }}</small></p>
+            </ion-text>
+            <ion-button fill="clear" routerLink="/login">
+              {{ 'signup.checkEmail.backToLogin' | translate }}
+            </ion-button>
+          </div>
+        } @else {
         <form [formGroup]="form" (ngSubmit)="submit()">
           <ion-list inset="true">
                 <ion-item>
@@ -45,21 +57,6 @@
                 @if (form.controls.email.touched && form.controls.email.invalid) {
                   <ion-note color="danger" class="ion-padding-start">
                     {{ 'signup.validation.invalidEmail' | translate }}
-                  </ion-note>
-                }
-
-                <ion-item>
-                  <ion-input
-                    [label]="'signup.fields.password' | translate"
-                    labelPlacement="floating"
-                    type="password"
-                    autocomplete="new-password"
-                    formControlName="password">
-                  </ion-input>
-                </ion-item>
-                @if (form.controls.password.touched && form.controls.password.invalid) {
-                  <ion-note color="danger" class="ion-padding-start">
-                    {{ 'signup.validation.passwordMin' | translate }}
                   </ion-note>
                 }
 
@@ -120,6 +117,7 @@
             <a routerLink="/login">{{ 'signup.signInLink' | translate }}</a>
           </p>
         </ion-text>
+        }
       </ion-col>
     </ion-row>
   </ion-grid>

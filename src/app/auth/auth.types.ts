@@ -21,3 +21,18 @@ export interface UserDoc {
   fcmTokens?: Record<string, string>;
   createdAt: number;
 }
+
+/**
+ * A staged admin sign-up, created by the requestAdminSignup function and
+ * removed once the kindergarten + admin account are materialized on claim.
+ */
+export interface PendingAdminSignup {
+  id: string;
+  email: string;
+  displayName: string;
+  kindergartenName: string;
+  address: string;
+  lang: string;
+  createdAt: number;
+  lastInviteSentAt?: number;
+}

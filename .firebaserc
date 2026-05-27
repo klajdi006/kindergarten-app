@@ -1,5 +1,13 @@
 {
   "projects": {
     "default": "e-kindergaten-app"
+  },
+  "targets": {},
+  "etags": {
+    "e-kindergaten-app": {
+      "extensionInstances": {
+        "firestore-send-email": "0d11811d5562af89e58fe618c588b73b2fb7d50f8d9016b12741a9d2db6822f9"
+      }
+    }
   }
 }

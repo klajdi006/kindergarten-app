@@ -19,7 +19,11 @@
       "Bash(echo \"EXIT: $?\")",
       "Bash(NODE_OPTIONS=\"--max-old-space-size=6144\" npx ng build --configuration=development)",
       "Bash(NODE_OPTIONS=--max-old-space-size=8192 npx ng build --configuration production --progress false)",
-      "Bash(NODE_OPTIONS=--max-old-space-size=8192 npx ng build --configuration development --progress false)"
+      "Bash(NODE_OPTIONS=--max-old-space-size=8192 npx ng build --configuration development --progress false)",
+      "Bash(echo \"FN_EXIT=$?\")",
+      "Bash(ls extensions/)",
+      "Bash(grep -rn \"LOCATION\\\\|eur3\\\\|europe\" extensions/ firebase.json)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ]
   }
 }

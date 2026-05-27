@@ -1,35 +1,36 @@
-/* Inline image preview strip on post cards. */
-.post-thumb-row {
-  display: flex;
-  gap: 6px;
-  margin-top: 8px;
+/* Full-width image carousel on post cards. */
+:host {
+  display: block;
 }
-.post-thumb {
-  position: relative;
-  flex: 1 1 0;
-  max-width: 33%;
-  aspect-ratio: 1 / 1;
-  border-radius: 8px;
-  overflow: hidden;
+
+/* A fixed-aspect frame gives Swiper a definite height to render into. */
+.post-image-frame {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
   background: var(--ion-color-step-100);
-  cursor: pointer;
 }
-.post-thumb img {
+.post-image-frame img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
-.post-thumb-more {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  font-weight: 700;
-  font-size: 1.1rem;
+
+/* Single (non-swiper) image is tappable. */
+:host > .post-image-frame:not(.post-image-swiper) {
+  cursor: pointer;
+}
+
+.post-image-swiper {
+  --swiper-pagination-color: #fff;
+  --swiper-pagination-bullet-inactive-color: #fff;
+  --swiper-pagination-bullet-inactive-opacity: 0.6;
+}
+.post-image-swiper swiper-slide {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
 }
 
 /* File attachments shown as inline links on post cards. */

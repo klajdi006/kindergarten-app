@@ -90,9 +90,10 @@
             }
           </ion-card-title>
         </ion-card-header>
+        <app-post-media-preview [post]="post" section="images" />
         <ion-card-content class="post-content">
           {{ post.description }}
-          <app-post-media-preview [post]="post" />
+          <app-post-media-preview [post]="post" section="files" />
         </ion-card-content>
       </ion-card>
     }

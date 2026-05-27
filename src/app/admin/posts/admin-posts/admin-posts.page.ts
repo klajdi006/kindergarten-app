@@ -34,6 +34,8 @@ import { PostsService } from '@app/data/posts.service';
 import { Post } from '@app/data/types';
 import { PostFormModal, PostFormResult } from '@app/admin/posts/post-form/post-form.modal';
 import { PostDetailModal, PostUpdateResult } from '@app/admin/posts/post-detail/post-detail.modal';
+import { PostViewModal } from '@app/shared/components/post-view/post-view.modal';
+import { PostMediaPreviewComponent } from '@app/shared/components/post-media-preview/post-media-preview.component';
 import { completeRefresher } from '@app/shared/utils/refresher';
 import { SkeletonListComponent } from '@app/shared/components/skeleton-list/skeleton-list.component';
 
@@ -71,6 +73,7 @@ type PostDetailDismiss =
     TranslatePipe,
     DateDmyPipe,
     SkeletonListComponent,
+    PostMediaPreviewComponent,
   ],
 })
 export class AdminPostsPage {
@@ -135,6 +138,18 @@ export class AdminPostsPage {
 
   canEdit(post: Post): boolean {
     return post.authorUid === this.auth.currentUser()?.uid;
+  }
+
+  /** Open the read-only post view (same modal parents and employees use). */
+  async openView(post: Post): Promise<void> {
+    const modal = await this.modalCtrl.create({
+      component: PostViewModal,
+      componentProps: {
+        post,
+        departmentName: post.departmentId ? this.departmentLabel(post.departmentId) : null,
+      },
+    });
+    await modal.present();
   }
 
   async openDetail(post: Post): Promise<void> {
