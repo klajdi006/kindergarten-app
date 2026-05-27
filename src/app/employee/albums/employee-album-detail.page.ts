@@ -194,8 +194,12 @@ export class EmployeeAlbumDetailPage {
         {
           text: this.t.instant('common.delete'),
           role: 'destructive',
-          handler: () => {
-            this.albums.removePhoto(photo);
+          handler: async () => {
+            try {
+              await this.albums.removePhoto(photo);
+            } catch (err) {
+              console.error('[albums] removePhoto failed', err);
+            }
           },
         },
       ],

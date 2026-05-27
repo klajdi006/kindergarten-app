@@ -203,11 +203,21 @@ export class AlbumsService {
     try {
       await deleteObject(ref(this.storage, photo.storagePath));
     } catch (err) {
-      console.warn('[albums] could not delete storage object:', err);
+      console.warn('[albums] removePhoto: storage delete failed (non-fatal)', err);
     }
-    await deleteDoc(doc(this.firestore, 'photos', photo.id));
-    await updateDoc(doc(this.firestore, 'albums', photo.albumId), {
-      photoCount: increment(-1),
-    });
+    try {
+      await deleteDoc(doc(this.firestore, 'photos', photo.id));
+    } catch (err) {
+      console.error('[albums] removePhoto: photo doc delete denied', err);
+      throw err;
+    }
+    try {
+      await updateDoc(doc(this.firestore, 'albums', photo.albumId), {
+        photoCount: increment(-1),
+      });
+    } catch (err) {
+      console.error('[albums] removePhoto: album photoCount update denied', err);
+      throw err;
+    }
   }
 }
