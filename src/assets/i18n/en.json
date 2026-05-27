@@ -324,6 +324,7 @@
       "detail": {
         "profile": "Profile",
         "documents": "Documents",
+        "noDocuments": "No documents attached.",
         "today": "Today",
         "sickToday": "Sick today",
         "planHoliday": "Plan a holiday",

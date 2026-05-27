@@ -61,40 +61,46 @@
       }
     </ion-list>
 
-    @if (documents().length > 0) {
-      <ion-list-header>
-        <ion-label>{{ 'parent.children.detail.documents' | translate }}</ion-label>
-      </ion-list-header>
-      <ion-list inset="true">
-        @for (doc of documents(); track doc.id) {
-          <ion-item>
-            <ion-icon slot="start" name="document-outline" color="medium" aria-hidden="true"></ion-icon>
-            <ion-label>
-              @if (isPdf(doc)) {
-                <a (click)="viewPdf(doc)" class="doc-link">{{ doc.name }}</a>
-              } @else {
-                <a [href]="doc.url" target="_blank" rel="noopener" class="doc-link">{{ doc.name }}</a>
-              }
-              <p><small>{{ doc.uploadedAt | dateDmy }}</small></p>
-            </ion-label>
+    <ion-list-header>
+      <ion-label>{{ 'parent.children.detail.documents' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list inset="true">
+      @if (documents().length === 0) {
+        <ion-item lines="none">
+          <ion-icon slot="start" name="document-outline" color="medium" aria-hidden="true"></ion-icon>
+          <ion-text color="medium">
+            <p><small>{{ 'parent.children.detail.noDocuments' | translate }}</small></p>
+          </ion-text>
+        </ion-item>
+      }
+      @for (doc of documents(); track doc.id) {
+        <ion-item>
+          <ion-icon slot="start" name="document-outline" color="medium" aria-hidden="true"></ion-icon>
+          <ion-label>
             @if (isPdf(doc)) {
-              <ion-button
-                slot="end"
-                fill="clear"
-                color="primary"
-                size="small"
-                (click)="viewPdf(doc)"
-                [attr.aria-label]="'common.view' | translate">
-                <ion-icon slot="icon-only" name="eye-outline"></ion-icon>
-              </ion-button>
+              <a (click)="viewPdf(doc)" class="doc-link">{{ doc.name }}</a>
+            } @else {
+              <a [href]="doc.url" target="_blank" rel="noopener" class="doc-link">{{ doc.name }}</a>
             }
-            <a [href]="doc.url" target="_blank" rel="noopener" slot="end" [attr.aria-label]="'common.download' | translate">
-              <ion-icon name="download-outline" color="primary" aria-hidden="true"></ion-icon>
-            </a>
-          </ion-item>
-        }
-      </ion-list>
-    }
+            <p><small>{{ doc.uploadedAt | dateDmy }}</small></p>
+          </ion-label>
+          @if (isPdf(doc)) {
+            <ion-button
+              slot="end"
+              fill="clear"
+              color="primary"
+              size="small"
+              (click)="viewPdf(doc)"
+              [attr.aria-label]="'common.view' | translate">
+              <ion-icon slot="icon-only" name="eye-outline"></ion-icon>
+            </ion-button>
+          }
+          <a [href]="doc.url" target="_blank" rel="noopener" slot="end" [attr.aria-label]="'common.download' | translate">
+            <ion-icon name="download-outline" color="primary" aria-hidden="true"></ion-icon>
+          </a>
+        </ion-item>
+      }
+    </ion-list>
 
     <ion-list-header>
       <ion-label>{{ 'parent.children.detail.today' | translate }}</ion-label>

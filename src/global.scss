@@ -157,7 +157,7 @@
 /* Document download link (per-child documents, used by admin + parent). */
 .doc-link {
   color: var(--ion-color-primary);
-  text-decoration: none;
+  text-decoration: underline;
   font-weight: 500;
   cursor: pointer;
 }

@@ -324,6 +324,7 @@
       "detail": {
         "profile": "Profili",
         "documents": "Dokumentet",
+        "noDocuments": "Nuk ka dokumente të bashkëngjitura.",
         "today": "Sot",
         "sickToday": "I/e sëmurë sot",
         "planHoliday": "Planifiko pushim",
