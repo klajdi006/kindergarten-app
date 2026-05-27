@@ -25,6 +25,10 @@ messaging.onBackgroundMessage((payload) => {
     body: payload.notification?.body || payload.data?.body || '',
     icon: '/assets/icon/favicon.png',
     data: payload.data || {},
+    // Tagging collapses multiple notifications with the same tag (e.g. a
+    // burst of photos to one album) into a single on-screen notification.
+    tag: payload.data?.tag || undefined,
+    renotify: false,
   };
   self.registration.showNotification(title, options);
 });

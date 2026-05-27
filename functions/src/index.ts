@@ -83,6 +83,15 @@ interface AlbumDoc {
   createdByUid?: string;
 }
 
+interface PhotoDoc {
+  albumId: string;
+  storagePath: string;
+  downloadUrl: string;
+  kindergartenId: string;
+  uploadedByUid: string;
+  uploadedAt: number;
+}
+
 /**
  * Read each uid's /users/{uid}.fcmTokens map and flatten into a list of
  * { token, uid, deviceId } records — deduped by token. Tolerates legacy
@@ -347,6 +356,69 @@ export const onAlbumCreate = onDocumentCreated('albums/{id}', async (event) => {
       title: 'New album',
       body: album.name,
       url: '/albums',
+    },
+  });
+});
+
+// ===========================================================================
+// 5) New photo in an album → notify dept employees + parents in that dept.
+// Tag the web-push notification by albumId so multiple uploads to the same
+// album collapse to a single on-screen notification.
+// ===========================================================================
+export const onPhotoCreate = onDocumentCreated('photos/{id}', async (event) => {
+  const photo = event.data?.data() as PhotoDoc | undefined;
+  if (!photo) return;
+
+  const albumSnap = await db.collection('albums').doc(photo.albumId).get();
+  if (!albumSnap.exists) return;
+  const album = albumSnap.data() as AlbumDoc;
+
+  // Employees with access to this album's department.
+  const staffSnap = await db
+    .collection('staff')
+    .where('kindergartenId', '==', album.kindergartenId)
+    .where('role', '==', 'employee')
+    .get();
+  const staffUids: string[] = [];
+  for (const s of staffSnap.docs) {
+    const data = s.data() as StaffDoc;
+    if (!data.claimedByUid || data.claimedByUid === photo.uploadedByUid) continue;
+    if (data.allDepartments || data.departmentIds.includes(album.departmentId)) {
+      staffUids.push(data.claimedByUid);
+    }
+  }
+
+  // Parents whose children are in this album's department.
+  const childrenSnap = await db
+    .collection('children')
+    .where('kindergartenId', '==', album.kindergartenId)
+    .where('departmentId', '==', album.departmentId)
+    .get();
+  const eligibleChildIds = new Set(childrenSnap.docs.map((d) => d.id));
+
+  const parentsSnap = await db
+    .collection('parents')
+    .where('kindergartenId', '==', album.kindergartenId)
+    .get();
+  const parentUids = parentsSnap.docs
+    .map((d) => d.data() as ParentDoc)
+    .filter((p) => p.childIds.some((cid) => eligibleChildIds.has(cid)))
+    .map((p) => p.claimedByUid)
+    .filter((u): u is string => !!u && u !== photo.uploadedByUid);
+
+  const recipients = Array.from(new Set([...staffUids, ...parentUids]));
+  const infos = await tokensForUids(recipients);
+
+  await sendMulticast(infos, {
+    data: {
+      type: 'album',
+      albumId: photo.albumId,
+      title: album.name,
+      body: 'New photo added',
+      url: '/albums',
+      // Web push collapses notifications with the same tag — burst uploads
+      // turn into one notification on screen.
+      tag: `album-${photo.albumId}`,
     },
   });
 });

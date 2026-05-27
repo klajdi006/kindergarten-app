@@ -19,7 +19,7 @@ import {
   deleteObject,
   getDownloadURL,
   ref,
-  uploadBytes,
+  uploadBytesResumable,
 } from '@angular/fire/storage';
 import { Observable, of, switchMap } from 'rxjs';
 import { AuthService } from '@app/auth/auth.service';
@@ -136,10 +136,19 @@ export class AlbumsService {
     }
   }
 
-  async uploadPhoto(albumId: string, file: File): Promise<void> {
+  /**
+   * Upload one photo. `onProgress` receives the byte-transfer fraction (0..1)
+   * for per-file progress UI. Resolves once the photo doc is written and the
+   * album's photoCount is bumped.
+   */
+  uploadPhoto(
+    albumId: string,
+    file: File,
+    onProgress?: (fraction: number) => void,
+  ): Promise<void> {
     const uid = this.uid();
     const kgId = this.kgId();
-    if (!uid || !kgId) throw new Error('Not signed in');
+    if (!uid || !kgId) return Promise.reject(new Error('Not signed in'));
 
     const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
     const photoId =
@@ -147,45 +156,47 @@ export class AlbumsService {
         ? crypto.randomUUID()
         : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     const storagePath = `albums/${albumId}/${photoId}.${ext}`;
-
     const storageRef = ref(this.storage, storagePath);
-    try {
-      await uploadBytes(storageRef, file, { contentType: file.type || undefined });
-    } catch (err) {
-      console.error('[albums] upload step 1: storage put denied', err);
-      throw err;
-    }
 
-    let downloadUrl: string;
-    try {
-      downloadUrl = await getDownloadURL(storageRef);
-    } catch (err) {
-      console.error('[albums] upload step 2: getDownloadURL failed', err);
-      throw err;
-    }
+    const task = uploadBytesResumable(storageRef, file, {
+      contentType: file.type || undefined,
+    });
 
-    try {
-      await addDoc(collection(this.firestore, 'photos'), {
-        albumId,
-        storagePath,
-        downloadUrl,
-        kindergartenId: kgId,
-        uploadedByUid: uid,
-        uploadedAt: Date.now(),
-      });
-    } catch (err) {
-      console.error('[albums] upload step 3: photos addDoc denied', err);
-      throw err;
-    }
-
-    try {
-      await updateDoc(doc(this.firestore, 'albums', albumId), {
-        photoCount: increment(1),
-      });
-    } catch (err) {
-      console.error('[albums] upload step 4: album photoCount update denied', err);
-      throw err;
-    }
+    return new Promise<void>((resolve, reject) => {
+      task.on(
+        'state_changed',
+        (snapshot) => {
+          if (snapshot.totalBytes > 0) {
+            onProgress?.(snapshot.bytesTransferred / snapshot.totalBytes);
+          }
+        },
+        (err) => {
+          console.error('[albums] upload: storage put failed', err);
+          reject(err);
+        },
+        async () => {
+          try {
+            const downloadUrl = await getDownloadURL(storageRef);
+            await addDoc(collection(this.firestore, 'photos'), {
+              albumId,
+              storagePath,
+              downloadUrl,
+              kindergartenId: kgId,
+              uploadedByUid: uid,
+              uploadedAt: Date.now(),
+            });
+            await updateDoc(doc(this.firestore, 'albums', albumId), {
+              photoCount: increment(1),
+            });
+            onProgress?.(1);
+            resolve();
+          } catch (err) {
+            console.error('[albums] upload: firestore write failed', err);
+            reject(err);
+          }
+        },
+      );
+    });
   }
 
   async removePhoto(photo: Photo): Promise<void> {

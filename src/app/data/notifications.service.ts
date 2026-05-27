@@ -85,10 +85,11 @@ export class NotificationsService {
   readonly staffUnreadPostsCount = computed(() => {
     const me = this.staff.currentStaff();
     if (!me) return 0;
+    const uid = this.uid();
     const baseline = me.lastSeenPostsAt ?? me.createdAt;
     const seen = new Set(me.seenPostIds ?? []);
     return this.posts.all().filter(
-      (p) => p.createdAt > baseline && !seen.has(p.id),
+      (p) => p.createdAt > baseline && !seen.has(p.id) && p.authorUid !== uid,
     ).length;
   });
 
@@ -97,6 +98,7 @@ export class NotificationsService {
     if (!me) return false;
     const post = this.posts.all().find((p) => p.id === postId);
     if (!post) return false;
+    if (post.authorUid === this.uid()) return false;
     const baseline = me.lastSeenPostsAt ?? me.createdAt;
     if (post.createdAt <= baseline) return false;
     return !(me.seenPostIds ?? []).includes(postId);

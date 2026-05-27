@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -10,7 +10,6 @@ import {
   IonFabButton,
   IonHeader,
   IonIcon,
-  IonProgressBar,
   IonText,
   IonTitle,
   IonToolbar,
@@ -18,13 +17,25 @@ import {
   ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { closeOutline, cloudUploadOutline, imagesOutline } from 'ionicons/icons';
+import {
+  alertCircleOutline,
+  closeOutline,
+  cloudUploadOutline,
+  imagesOutline,
+} from 'ionicons/icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { of, switchMap } from 'rxjs';
 import { AlbumsService } from '@app/data/albums.service';
 import { StaffService } from '@app/data/staff.service';
 import { Photo } from '@app/data/types';
 import { PhotoViewerModal } from '@app/shared/components/photo-viewer/photo-viewer.modal';
+
+interface PendingUpload {
+  id: string;
+  previewUrl: string;
+  progress: number;
+  failed: boolean;
+}
 
 @Component({
   selector: 'app-employee-album-detail',
@@ -40,7 +51,6 @@ import { PhotoViewerModal } from '@app/shared/components/photo-viewer/photo-view
     IonText,
     IonFab,
     IonFabButton,
-    IonProgressBar,
     TranslatePipe,
   ],
 })
@@ -52,6 +62,9 @@ export class EmployeeAlbumDetailPage {
   private readonly toastCtrl = inject(ToastController);
   private readonly t = inject(TranslateService);
   readonly albums = inject(AlbumsService);
+
+  /** Circumference of the SVG progress ring (r=16). */
+  protected readonly RING_C = 2 * Math.PI * 16;
 
   readonly albumId = toSignal(
     this.route.paramMap.pipe(switchMap((p) => of(p.get('id')))),
@@ -77,8 +90,8 @@ export class EmployeeAlbumDetailPage {
     return s.allDepartments || s.departmentIds.includes(a.departmentId);
   });
 
-  readonly uploading = signal(false);
-  readonly uploadProgress = signal(0);
+  readonly uploads = signal<PendingUpload[]>([]);
+  readonly uploading = computed(() => this.uploads().some((u) => !u.failed));
 
   protected readonly imagesOutline = imagesOutline;
 
@@ -87,10 +100,24 @@ export class EmployeeAlbumDetailPage {
       'cloud-upload-outline': cloudUploadOutline,
       'images-outline': imagesOutline,
       'close-outline': closeOutline,
+      'alert-circle-outline': alertCircleOutline,
+    });
+    // Revoke any leftover object URLs when leaving the page.
+    inject(DestroyRef).onDestroy(() => {
+      for (const u of this.uploads()) URL.revokeObjectURL(u.previewUrl);
     });
   }
 
-  async onFilesPicked(event: Event): Promise<void> {
+  /** Stroke dash offset for the ring given a 0..1 progress. */
+  ringOffset(progress: number): number {
+    return this.RING_C * (1 - progress);
+  }
+
+  pct(progress: number): number {
+    return Math.round(progress * 100);
+  }
+
+  onFilesPicked(event: Event): void {
     const input = event.target as HTMLInputElement;
     const files = input.files ? Array.from(input.files) : [];
     input.value = '';
@@ -98,15 +125,33 @@ export class EmployeeAlbumDetailPage {
     const id = this.albumId();
     if (!id) return;
 
-    this.uploading.set(true);
-    this.uploadProgress.set(0);
+    for (const file of files) {
+      const entry: PendingUpload = {
+        id:
+          typeof crypto !== 'undefined' && 'randomUUID' in crypto
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        previewUrl: URL.createObjectURL(file),
+        progress: 0,
+        failed: false,
+      };
+      this.uploads.update((list) => [entry, ...list]);
+      void this.uploadOne(id, file, entry.id);
+    }
+  }
+
+  private async uploadOne(albumId: string, file: File, entryId: string): Promise<void> {
     try {
-      for (let i = 0; i < files.length; i++) {
-        await this.albums.uploadPhoto(id, files[i]);
-        this.uploadProgress.set((i + 1) / files.length);
-      }
-    } catch (err) {
-      console.warn('[albums] upload failed', err);
+      await this.albums.uploadPhoto(albumId, file, (fraction) => {
+        this.uploads.update((list) =>
+          list.map((u) => (u.id === entryId ? { ...u, progress: fraction } : u)),
+        );
+      });
+      this.removeUpload(entryId);
+    } catch {
+      this.uploads.update((list) =>
+        list.map((u) => (u.id === entryId ? { ...u, failed: true } : u)),
+      );
       const toast = await this.toastCtrl.create({
         message: this.t.instant('admin.albums.uploadFailed'),
         duration: 3000,
@@ -114,10 +159,19 @@ export class EmployeeAlbumDetailPage {
         position: 'bottom',
       });
       await toast.present();
-    } finally {
-      this.uploading.set(false);
-      this.uploadProgress.set(0);
     }
+  }
+
+  dismissFailed(entryId: string): void {
+    this.removeUpload(entryId);
+  }
+
+  private removeUpload(entryId: string): void {
+    this.uploads.update((list) => {
+      const found = list.find((u) => u.id === entryId);
+      if (found) URL.revokeObjectURL(found.previewUrl);
+      return list.filter((u) => u.id !== entryId);
+    });
   }
 
   async openViewer(index: number): Promise<void> {
