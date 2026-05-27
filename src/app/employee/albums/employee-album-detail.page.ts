@@ -29,6 +29,7 @@ import { AlbumsService } from '@app/data/albums.service';
 import { StaffService } from '@app/data/staff.service';
 import { Photo } from '@app/data/types';
 import { PhotoViewerModal } from '@app/shared/components/photo-viewer/photo-viewer.modal';
+import { compressImage } from '@app/shared/utils/image';
 
 interface PendingUpload {
   id: string;
@@ -142,7 +143,8 @@ export class EmployeeAlbumDetailPage {
 
   private async uploadOne(albumId: string, file: File, entryId: string): Promise<void> {
     try {
-      await this.albums.uploadPhoto(albumId, file, (fraction) => {
+      const toUpload = await compressImage(file);
+      await this.albums.uploadPhoto(albumId, toUpload, (fraction) => {
         this.uploads.update((list) =>
           list.map((u) => (u.id === entryId ? { ...u, progress: fraction } : u)),
         );
