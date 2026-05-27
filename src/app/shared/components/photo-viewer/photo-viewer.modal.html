@@ -10,11 +10,17 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="photo-viewer-content">
-  <div #track class="photo-viewer-track" (scroll)="onScroll()">
+  <swiper-container
+    class="photo-viewer-swiper"
+    zoom="true"
+    [attr.initial-slide]="startIndex"
+    (swiperslidechange)="onSlideChange($event)">
     @for (photo of photos; track photo.id) {
-      <div class="photo-viewer-slide">
-        <img [src]="photo.downloadUrl" loading="lazy" alt="" />
-      </div>
+      <swiper-slide>
+        <div class="swiper-zoom-container">
+          <img [src]="photo.downloadUrl" loading="lazy" alt="" />
+        </div>
+      </swiper-slide>
     }
-  </div>
+  </swiper-container>
 </ion-content>
