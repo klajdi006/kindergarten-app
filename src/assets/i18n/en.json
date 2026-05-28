@@ -487,7 +487,8 @@
   },
   "pwa": {
     "install": {
-      "description": "Install the app on your device for a better experience and quick access."
+      "description": "Install the app on your device for a better experience and quick access.",
+      "appDescription": "Aplikacion per menaxhim kopshti"
     },
     "update": {
       "title": "Update available",

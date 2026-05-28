@@ -487,7 +487,8 @@
   },
   "pwa": {
     "install": {
-      "description": "Instaloni aplikacionin në pajisjen tuaj për një përvojë më të mirë dhe qasje të shpejtë."
+      "description": "Instaloni aplikacionin në pajisjen tuaj për një përvojë më të mirë dhe qasje të shpejtë.",
+      "appDescription": "Aplikacion per menaxhim kopshti"
     },
     "update": {
       "title": "Përditësim i disponueshëm",

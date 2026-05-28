@@ -24,8 +24,13 @@ export class AppComponent {
   private readonly translate = inject(TranslateService);
 
   readonly pwaInstallDescription = toSignal(this.translate.onLangChange.pipe(
-      startWith(this.translate.currentLang),
-      map(() => this.translate.instant('pwa.install.description'))
+    startWith(this.translate.currentLang),
+    map(() => this.translate.instant('pwa.install.description')),
+  ));
+
+  readonly pwaAppDescription = toSignal(this.translate.onLangChange.pipe(
+    startWith(this.translate.currentLang),
+    map(() => this.translate.instant('pwa.install.appDescription')),
   ));
 
   constructor() {
