@@ -54,14 +54,14 @@ export class AuthService {
   readonly userDoc$: Observable<UserDoc | null> = this.firebaseUser$.pipe(
     switchMap((user) => {
       if (!user) return of<UserDoc | null>(null);
-      return (
-        docData(doc(this.firestore, 'users', user.uid)) as Observable<UserDoc | undefined>
-      ).pipe(
-        map((d) => d ?? null),
-        catchError((err) => {
-          console.warn('[auth] could not read user profile:', err);
-          return of<UserDoc | null>(null);
-        }),
+      return runInInjectionContext(this.injector, () =>
+        (docData(doc(this.firestore, 'users', user.uid)) as Observable<UserDoc | undefined>).pipe(
+          map((d) => d ?? null),
+          catchError((err) => {
+            console.warn('[auth] could not read user profile:', err);
+            return of<UserDoc | null>(null);
+          }),
+        ),
       );
     }),
     shareReplay({ bufferSize: 1, refCount: true }),

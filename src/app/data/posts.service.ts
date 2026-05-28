@@ -1,4 +1,4 @@
-import { Injectable, computed, inject } from '@angular/core';
+import { Injectable, Injector, computed, inject, runInInjectionContext } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
   Firestore,
@@ -35,6 +35,7 @@ export class PostsService {
   private readonly firestore = inject(Firestore);
   private readonly storage = inject(Storage);
   private readonly auth = inject(AuthService);
+  private readonly injector = inject(Injector);
 
   private readonly uid = computed(() => this.auth.currentUser()?.uid ?? null);
   private readonly kgId = computed(() => this.auth.kindergartenId());
@@ -117,13 +118,15 @@ export class PostsService {
   readonly all$ = toObservable(this.kgId).pipe(
     switchMap((kgId) => {
       if (!kgId) return of<Post[]>([]);
-      const q = query(
-        collection(this.firestore, 'posts'),
-        where('kindergartenId', '==', kgId),
-        orderBy('createdAt', 'desc'),
-        limit(this.RECENT_LIMIT),
-      );
-      return collectionData(q, { idField: 'id' }) as Observable<Post[]>;
+      return runInInjectionContext(this.injector, () => {
+        const q = query(
+          collection(this.firestore, 'posts'),
+          where('kindergartenId', '==', kgId),
+          orderBy('createdAt', 'desc'),
+          limit(this.RECENT_LIMIT),
+        );
+        return collectionData(q, { idField: 'id' }) as Observable<Post[]>;
+      });
     }),
   );
 
@@ -135,13 +138,15 @@ export class PostsService {
   }
 
   forKindergarten(kgId: string): Observable<Post[]> {
-    const q = query(
-      collection(this.firestore, 'posts'),
-      where('kindergartenId', '==', kgId),
-      orderBy('createdAt', 'desc'),
-      limit(this.RECENT_LIMIT),
-    );
-    return collectionData(q, { idField: 'id' }) as Observable<Post[]>;
+    return runInInjectionContext(this.injector, () => {
+      const q = query(
+        collection(this.firestore, 'posts'),
+        where('kindergartenId', '==', kgId),
+        orderBy('createdAt', 'desc'),
+        limit(this.RECENT_LIMIT),
+      );
+      return collectionData(q, { idField: 'id' }) as Observable<Post[]>;
+    });
   }
 
   async add(input: {

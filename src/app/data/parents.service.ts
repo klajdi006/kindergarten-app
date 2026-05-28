@@ -1,4 +1,4 @@
-import { Injectable, computed, inject } from '@angular/core';
+import { Injectable, Injector, computed, inject, runInInjectionContext } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
   Firestore,
@@ -25,6 +25,7 @@ export class ParentsService {
   private readonly firestore = inject(Firestore);
   private readonly auth = inject(AuthService);
   private readonly childrenService = inject(ChildrenService);
+  private readonly injector = inject(Injector);
 
   private readonly uid = computed(() => this.auth.currentUser()?.uid ?? null);
   private readonly kgId = computed(() => this.auth.kindergartenId());
@@ -33,13 +34,15 @@ export class ParentsService {
     toObservable(this.kgId).pipe(
       switchMap((kgId) => {
         if (!kgId) return of<Parent[]>([]);
-        const q = query(
-          collection(this.firestore, 'parents'),
-          where('kindergartenId', '==', kgId),
-          orderBy('lastName'),
-          orderBy('firstName'),
-        );
-        return collectionData(q, { idField: 'id' }) as Observable<Parent[]>;
+        return runInInjectionContext(this.injector, () => {
+          const q = query(
+            collection(this.firestore, 'parents'),
+            where('kindergartenId', '==', kgId),
+            orderBy('lastName'),
+            orderBy('firstName'),
+          );
+          return collectionData(q, { idField: 'id' }) as Observable<Parent[]>;
+        });
       }),
     ),
     { initialValue: [] as Parent[] },
@@ -51,13 +54,15 @@ export class ParentsService {
     toObservable(this.uid).pipe(
       switchMap((uid) => {
         if (!uid) return of<Parent | null>(null);
-        const q = query(
-          collection(this.firestore, 'parents'),
-          where('claimedByUid', '==', uid),
-        );
-        return (collectionData(q, { idField: 'id' }) as Observable<Parent[]>).pipe(
-          map((docs) => (docs.length > 0 ? docs[0] : null)),
-        );
+        return runInInjectionContext(this.injector, () => {
+          const q = query(
+            collection(this.firestore, 'parents'),
+            where('claimedByUid', '==', uid),
+          );
+          return (collectionData(q, { idField: 'id' }) as Observable<Parent[]>).pipe(
+            map((docs) => (docs.length > 0 ? docs[0] : null)),
+          );
+        });
       }),
     ),
     { initialValue: null as Parent | null },
