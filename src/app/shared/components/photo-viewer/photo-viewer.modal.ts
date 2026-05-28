@@ -18,7 +18,11 @@ import {
 import { addIcons } from 'ionicons';
 import { closeOutline } from 'ionicons/icons';
 import { register } from 'swiper/element/bundle';
-import { Photo } from '@app/data/types';
+
+export interface ViewablePhoto {
+  id: string;
+  downloadUrl: string;
+}
 
 // Registers the <swiper-container> / <swiper-slide> custom elements. Idempotent.
 register();
@@ -40,7 +44,7 @@ register();
 export class PhotoViewerModal {
   private readonly modalCtrl = inject(ModalController);
 
-  @Input({ required: true }) photos!: Photo[];
+  @Input({ required: true }) photos!: ViewablePhoto[];
   @Input() startIndex = 0;
 
   readonly currentIndex = signal(0);

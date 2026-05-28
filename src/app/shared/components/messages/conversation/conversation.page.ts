@@ -27,6 +27,7 @@ import {
   IonTextarea,
   IonTitle,
   IonToolbar,
+  ModalController,
   ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -44,6 +45,7 @@ import { AuthService } from '@app/auth/auth.service';
 import { ConversationsService } from '@app/data/conversations.service';
 import { Message, MessageAttachment } from '@app/data/types';
 import { isIosPwa } from '@app/shared/utils/platform';
+import { PhotoViewerModal } from '@app/shared/components/photo-viewer/photo-viewer.modal';
 
 interface PendingAttachment {
   file: File;
@@ -80,6 +82,7 @@ export class ConversationPage {
   private readonly fb = inject(FormBuilder);
   private readonly toastCtrl = inject(ToastController);
   private readonly actionSheetCtrl = inject(ActionSheetController);
+  private readonly modalCtrl = inject(ModalController);
   private readonly t = inject(TranslateService);
   readonly conversations = inject(ConversationsService);
 
@@ -309,6 +312,15 @@ export class ConversationPage {
     const removed = this.pendingFiles()[idx];
     if (removed.localUrl) URL.revokeObjectURL(removed.localUrl);
     this.pendingFiles.update((prev) => prev.filter((_, i) => i !== idx));
+  }
+
+  async openPhotoViewer(msg: Message, clickedIndex: number): Promise<void> {
+    const photos = this.images(msg).map((att, i) => ({ id: `${i}`, downloadUrl: att.url }));
+    const modal = await this.modalCtrl.create({
+      component: PhotoViewerModal,
+      componentProps: { photos, startIndex: clickedIndex },
+    });
+    await modal.present();
   }
 
   private scrollToBottom(duration: number): void {

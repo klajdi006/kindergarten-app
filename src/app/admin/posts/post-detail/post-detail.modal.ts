@@ -34,7 +34,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Department, Photo, Post, PostAttachment } from '@app/data/types';
 import { PostsService } from '@app/data/posts.service';
 import { DateDmyPipe } from '@app/shared/pipes/date-dmy.pipe';
-import { PhotoViewerModal } from '@app/shared/components/photo-viewer/photo-viewer.modal';
+import { PhotoViewerModal, ViewablePhoto } from '@app/shared/components/photo-viewer/photo-viewer.modal';
 
 export interface PostUpdateResult {
   title: string;
@@ -267,10 +267,10 @@ export class PostDetailModal implements OnInit {
     if (!img.url) return;
     const ready = this.images().filter((i) => i.url);
     const startIndex = Math.max(0, ready.findIndex((i) => i.id === img.id));
-    const photos: Photo[] = ready.map((i, n) => ({
+    const photos: ViewablePhoto[] = ready.map((i, n) => ({
       id: `${n}`,
       downloadUrl: i.url as string,
-    })) as Photo[];
+    }));
     const modal = await this.modalCtrl.create({
       component: PhotoViewerModal,
       componentProps: { photos, startIndex },

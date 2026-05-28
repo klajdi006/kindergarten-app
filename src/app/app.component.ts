@@ -2,7 +2,7 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, effect, inject, signal } from '@angu
 import { toSignal } from '@angular/core/rxjs-interop';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import '@khmyznikov/pwa-install';
-import {TranslatePipe, TranslateService} from '@ngx-translate/core';
+import {TranslateService} from '@ngx-translate/core';
 import { AuthService } from '@app/auth/auth.service';
 import { NotificationRouterService } from '@app/data/notification-router.service';
 import { PushService } from '@app/data/push.service';
@@ -14,7 +14,7 @@ import {map, startWith} from "rxjs";
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  imports: [IonApp, IonRouterOutlet, TranslatePipe],
+  imports: [IonApp, IonRouterOutlet],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppComponent {

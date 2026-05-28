@@ -3,8 +3,8 @@ import { IonIcon, ModalController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { attachOutline } from 'ionicons/icons';
 import { register } from 'swiper/element/bundle';
-import { Photo, Post, PostAttachment } from '@app/data/types';
-import { PhotoViewerModal } from '@app/shared/components/photo-viewer/photo-viewer.modal';
+import { Post, PostAttachment } from '@app/data/types';
+import { PhotoViewerModal, ViewablePhoto } from '@app/shared/components/photo-viewer/photo-viewer.modal';
 
 // Registers <swiper-container> / <swiper-slide>. Idempotent.
 register();
@@ -42,10 +42,10 @@ export class PostMediaPreviewComponent {
 
   async openImage(index: number, event: Event): Promise<void> {
     event.stopPropagation();
-    const photos: Photo[] = this.images().map((url, i) => ({
+    const photos: ViewablePhoto[] = this.images().map((url, i) => ({
       id: `${i}`,
       downloadUrl: url,
-    })) as Photo[];
+    }));
     const modal = await this.modalCtrl.create({
       component: PhotoViewerModal,
       componentProps: { photos, startIndex: index },

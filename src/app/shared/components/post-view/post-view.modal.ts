@@ -23,8 +23,8 @@ import {
 } from 'ionicons/icons';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DateDmyPipe } from '@app/shared/pipes/date-dmy.pipe';
-import { Photo, Post } from '@app/data/types';
-import { PhotoViewerModal } from '@app/shared/components/photo-viewer/photo-viewer.modal';
+import { Post } from '@app/data/types';
+import { PhotoViewerModal, ViewablePhoto } from '@app/shared/components/photo-viewer/photo-viewer.modal';
 
 @Component({
   selector: 'app-post-view-modal',
@@ -63,10 +63,10 @@ export class PostViewModal {
   }
 
   async openImage(index: number): Promise<void> {
-    const photos: Photo[] = this.post.imageUrls.map((url, i) => ({
+    const photos: ViewablePhoto[] = this.post.imageUrls.map((url, i) => ({
       id: `${i}`,
       downloadUrl: url,
-    })) as Photo[];
+    }));
     const modal = await this.modalCtrl.create({
       component: PhotoViewerModal,
       componentProps: { photos, startIndex: index },

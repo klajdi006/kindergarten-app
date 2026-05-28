@@ -57,10 +57,8 @@
               <div class="bubble bubble-out">
                 @if (images(msg).length > 0) {
                   <div class="attachment-images">
-                    @for (att of images(msg); track att.url) {
-                      <a [href]="att.url" target="_blank" rel="noopener">
-                        <img [src]="att.url" [alt]="att.name" class="msg-image">
-                      </a>
+                    @for (att of images(msg); track att.url; let idx = $index) {
+                      <img [src]="att.url" [alt]="att.name" class="msg-image" (click)="openPhotoViewer(msg, idx)">
                     }
                   </div>
                 }
@@ -89,10 +87,8 @@
               <div class="bubble bubble-in">
                 @if (images(msg).length > 0) {
                   <div class="attachment-images">
-                    @for (att of images(msg); track att.url) {
-                      <a [href]="att.url" target="_blank" rel="noopener">
-                        <img [src]="att.url" [alt]="att.name" class="msg-image">
-                      </a>
+                    @for (att of images(msg); track att.url; let idx = $index) {
+                      <img [src]="att.url" [alt]="att.name" class="msg-image" (click)="openPhotoViewer(msg, idx)">
                     }
                   </div>
                 }
