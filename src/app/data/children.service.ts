@@ -31,18 +31,20 @@ export class ChildrenService {
     toObservable(computed(() => (this.auth.role() === 'parent' ? null : this.kgId()))).pipe(
       switchMap((kgId) => {
         if (!kgId) return of<Child[]>([]);
-        const q = query(
-          collection(this.firestore, 'children'),
-          where('kindergartenId', '==', kgId),
-          orderBy('lastName'),
-          orderBy('firstName'),
-        );
-        return (collectionData(q, { idField: 'id' }) as Observable<Child[]>).pipe(
-          catchError((err) => {
-            console.warn('children.all listener denied', err);
-            return of<Child[]>([]);
-          }),
-        );
+        return runInInjectionContext(this.injector, () => {
+          const q = query(
+            collection(this.firestore, 'children'),
+            where('kindergartenId', '==', kgId),
+            orderBy('lastName'),
+            orderBy('firstName'),
+          );
+          return (collectionData(q, { idField: 'id' }) as Observable<Child[]>).pipe(
+            catchError((err) => {
+              console.warn('children.all listener denied', err);
+              return of<Child[]>([]);
+            }),
+          );
+        });
       }),
     ),
     { initialValue: [] as Child[] },
@@ -130,20 +132,22 @@ export class ChildrenService {
    * uses an `in` query on `departmentId` (Firestore limit: 30 values).
    */
   forStaff(staff: Staff): Observable<Child[]> {
-    if (staff.allDepartments) {
+    return runInInjectionContext(this.injector, () => {
+      if (staff.allDepartments) {
+        const q = query(
+          collection(this.firestore, 'children'),
+          where('kindergartenId', '==', staff.kindergartenId),
+        );
+        return collectionData(q, { idField: 'id' }) as Observable<Child[]>;
+      }
+      if (staff.departmentIds.length === 0) return of<Child[]>([]);
       const q = query(
         collection(this.firestore, 'children'),
         where('kindergartenId', '==', staff.kindergartenId),
+        where('departmentId', 'in', staff.departmentIds),
       );
       return collectionData(q, { idField: 'id' }) as Observable<Child[]>;
-    }
-    if (staff.departmentIds.length === 0) return of<Child[]>([]);
-    const q = query(
-      collection(this.firestore, 'children'),
-      where('kindergartenId', '==', staff.kindergartenId),
-      where('departmentId', 'in', staff.departmentIds),
-    );
-    return collectionData(q, { idField: 'id' }) as Observable<Child[]>;
+    });
   }
 
   async linkParent(childId: string, parentId: string): Promise<void> {

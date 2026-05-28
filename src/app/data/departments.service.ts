@@ -1,4 +1,4 @@
-import { Injectable, computed, inject } from '@angular/core';
+import { Injectable, Injector, computed, inject, runInInjectionContext } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
   Firestore,
@@ -20,6 +20,7 @@ import { Department } from '@app/data/types';
 export class DepartmentsService {
   private readonly firestore = inject(Firestore);
   private readonly auth = inject(AuthService);
+  private readonly injector = inject(Injector);
 
   private readonly kgId = computed(() => this.auth.kindergartenId());
 
@@ -27,12 +28,14 @@ export class DepartmentsService {
     toObservable(this.kgId).pipe(
       switchMap((kgId) => {
         if (!kgId) return of<Department[]>([]);
-        const q = query(
-          collection(this.firestore, 'departments'),
-          where('kindergartenId', '==', kgId),
-          orderBy('name'),
-        );
-        return collectionData(q, { idField: 'id' }) as Observable<Department[]>;
+        return runInInjectionContext(this.injector, () => {
+          const q = query(
+            collection(this.firestore, 'departments'),
+            where('kindergartenId', '==', kgId),
+            orderBy('name'),
+          );
+          return collectionData(q, { idField: 'id' }) as Observable<Department[]>;
+        });
       }),
     ),
     { initialValue: [] as Department[] },
@@ -41,12 +44,14 @@ export class DepartmentsService {
   readonly count = computed(() => this.all().length);
 
   forKindergarten(kgId: string): Observable<Department[]> {
-    const q = query(
-      collection(this.firestore, 'departments'),
-      where('kindergartenId', '==', kgId),
-      orderBy('name'),
-    );
-    return collectionData(q, { idField: 'id' }) as Observable<Department[]>;
+    return runInInjectionContext(this.injector, () => {
+      const q = query(
+        collection(this.firestore, 'departments'),
+        where('kindergartenId', '==', kgId),
+        orderBy('name'),
+      );
+      return collectionData(q, { idField: 'id' }) as Observable<Department[]>;
+    });
   }
 
   async add(input: { name: string; ageMin: number; ageMax: number }): Promise<void> {

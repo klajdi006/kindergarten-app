@@ -1,4 +1,4 @@
-import { Injectable, computed, inject } from '@angular/core';
+import { Injectable, Injector, computed, inject, runInInjectionContext } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
   Firestore,
@@ -30,6 +30,7 @@ export class AlbumsService {
   private readonly firestore = inject(Firestore);
   private readonly storage = inject(Storage);
   private readonly auth = inject(AuthService);
+  private readonly injector = inject(Injector);
 
   private readonly uid = computed(() => this.auth.currentUser()?.uid ?? null);
   private readonly kgId = computed(() => this.auth.kindergartenId());
@@ -37,12 +38,14 @@ export class AlbumsService {
   readonly all$ = toObservable(this.kgId).pipe(
     switchMap((kgId) => {
       if (!kgId) return of<Album[]>([]);
-      const q = query(
-        collection(this.firestore, 'albums'),
-        where('kindergartenId', '==', kgId),
-        orderBy('createdAt', 'desc'),
-      );
-      return collectionData(q, { idField: 'id' }) as Observable<Album[]>;
+      return runInInjectionContext(this.injector, () => {
+        const q = query(
+          collection(this.firestore, 'albums'),
+          where('kindergartenId', '==', kgId),
+          orderBy('createdAt', 'desc'),
+        );
+        return collectionData(q, { idField: 'id' }) as Observable<Album[]>;
+      });
     }),
   );
 
@@ -60,16 +63,18 @@ export class AlbumsService {
   photosFor(albumId: string): Observable<Photo[]> {
     const kgId = this.kgId();
     if (!kgId) return of<Photo[]>([]);
-    // The /photos read rule checks resource.data.kindergartenId, so the
-    // query must constrain that field — otherwise Firestore's rules-aware
-    // queries reject the listener (AngularFire then silently emits []).
-    const q = query(
-      collection(this.firestore, 'photos'),
-      where('albumId', '==', albumId),
-      where('kindergartenId', '==', kgId),
-      orderBy('uploadedAt', 'desc'),
-    );
-    return collectionData(q, { idField: 'id' }) as Observable<Photo[]>;
+    return runInInjectionContext(this.injector, () => {
+      // The /photos read rule checks resource.data.kindergartenId, so the
+      // query must constrain that field — otherwise Firestore's rules-aware
+      // queries reject the listener (AngularFire then silently emits []).
+      const q = query(
+        collection(this.firestore, 'photos'),
+        where('albumId', '==', albumId),
+        where('kindergartenId', '==', kgId),
+        orderBy('uploadedAt', 'desc'),
+      );
+      return collectionData(q, { idField: 'id' }) as Observable<Photo[]>;
+    });
   }
 
   async add(input: { name: string; departmentId: string }): Promise<void> {

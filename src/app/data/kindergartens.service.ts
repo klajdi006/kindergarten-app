@@ -1,4 +1,4 @@
-import { Injectable, computed, inject } from '@angular/core';
+import { Injectable, Injector, computed, inject, runInInjectionContext } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
   Firestore,
@@ -15,6 +15,7 @@ import { Kindergarten } from '@app/data/types';
 export class KindergartensService {
   private readonly firestore = inject(Firestore);
   private readonly auth = inject(AuthService);
+  private readonly injector = inject(Injector);
 
   private readonly kgId = computed(() => this.auth.kindergartenId());
 
@@ -22,11 +23,13 @@ export class KindergartensService {
     toObservable(this.kgId).pipe(
       switchMap((id) => {
         if (!id) return of<Kindergarten | null>(null);
-        return (
-          docData(doc(this.firestore, 'kindergartens', id), { idField: 'id' }) as Observable<
-            Kindergarten | undefined
-          >
-        ).pipe(switchMap((d) => of(d ?? null)));
+        return runInInjectionContext(this.injector, () =>
+          (
+            docData(doc(this.firestore, 'kindergartens', id), { idField: 'id' }) as Observable<
+              Kindergarten | undefined
+            >
+          ).pipe(switchMap((d) => of(d ?? null))),
+        );
       }),
     ),
     { initialValue: null as Kindergarten | null },

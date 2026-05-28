@@ -28,17 +28,19 @@ export class AbsencesService {
     toObservable(computed(() => (this.auth.role() === 'parent' ? null : this.kgId()))).pipe(
       switchMap((kgId) => {
         if (!kgId) return of<Absence[]>([]);
-        const q = query(
-          collection(this.firestore, 'absences'),
-          where('kindergartenId', '==', kgId),
-          orderBy('startDate', 'desc'),
-        );
-        return (collectionData(q, { idField: 'id' }) as Observable<Absence[]>).pipe(
-          catchError((err) => {
-            console.warn('absences.all listener denied', err);
-            return of<Absence[]>([]);
-          }),
-        );
+        return runInInjectionContext(this.injector, () => {
+          const q = query(
+            collection(this.firestore, 'absences'),
+            where('kindergartenId', '==', kgId),
+            orderBy('startDate', 'desc'),
+          );
+          return (collectionData(q, { idField: 'id' }) as Observable<Absence[]>).pipe(
+            catchError((err) => {
+              console.warn('absences.all listener denied', err);
+              return of<Absence[]>([]);
+            }),
+          );
+        });
       }),
     ),
     { initialValue: [] as Absence[] },

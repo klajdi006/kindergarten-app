@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Injector, inject, runInInjectionContext } from '@angular/core';
 import { Firestore, doc, docData, setDoc } from '@angular/fire/firestore';
 import { Observable, map } from 'rxjs';
 import { AuthService } from '@app/auth/auth.service';
@@ -8,12 +8,15 @@ import { ChildHealth } from '@app/data/types';
 export class HealthService {
   private readonly firestore = inject(Firestore);
   private readonly auth = inject(AuthService);
+  private readonly injector = inject(Injector);
 
   forChild(childId: string): Observable<ChildHealth | null> {
-    const ref = doc(this.firestore, 'children', childId, 'health', 'profile');
-    return (docData(ref) as Observable<ChildHealth | undefined>).pipe(
-      map((data) => data ?? null),
-    );
+    return runInInjectionContext(this.injector, () => {
+      const ref = doc(this.firestore, 'children', childId, 'health', 'profile');
+      return (docData(ref) as Observable<ChildHealth | undefined>).pipe(
+        map((data) => data ?? null),
+      );
+    });
   }
 
   async save(childId: string, profile: Omit<ChildHealth, 'updatedAt' | 'updatedByUid'>): Promise<void> {

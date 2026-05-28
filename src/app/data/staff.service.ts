@@ -1,4 +1,4 @@
-import { Injectable, computed, inject } from '@angular/core';
+import { Injectable, Injector, computed, inject, runInInjectionContext } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
   Firestore,
@@ -32,6 +32,7 @@ export interface StaffInput {
 export class StaffService {
   private readonly firestore = inject(Firestore);
   private readonly auth = inject(AuthService);
+  private readonly injector = inject(Injector);
 
   private readonly kgId = computed(() => this.auth.kindergartenId());
   private readonly uid = computed(() => this.auth.currentUser()?.uid ?? null);
@@ -40,13 +41,15 @@ export class StaffService {
     toObservable(this.kgId).pipe(
       switchMap((kgId) => {
         if (!kgId) return of<Staff[]>([]);
-        const q = query(
-          collection(this.firestore, 'staff'),
-          where('kindergartenId', '==', kgId),
-          orderBy('lastName'),
-          orderBy('firstName'),
-        );
-        return collectionData(q, { idField: 'id' }) as Observable<Staff[]>;
+        return runInInjectionContext(this.injector, () => {
+          const q = query(
+            collection(this.firestore, 'staff'),
+            where('kindergartenId', '==', kgId),
+            orderBy('lastName'),
+            orderBy('firstName'),
+          );
+          return collectionData(q, { idField: 'id' }) as Observable<Staff[]>;
+        });
       }),
     ),
     { initialValue: [] as Staff[] },
@@ -64,13 +67,15 @@ export class StaffService {
     toObservable(this.uid).pipe(
       switchMap((uid) => {
         if (!uid) return of<Staff | null>(null);
-        const q = query(
-          collection(this.firestore, 'staff'),
-          where('claimedByUid', '==', uid),
-        );
-        return (collectionData(q, { idField: 'id' }) as Observable<Staff[]>).pipe(
-          map((docs) => (docs.length > 0 ? docs[0] : null)),
-        );
+        return runInInjectionContext(this.injector, () => {
+          const q = query(
+            collection(this.firestore, 'staff'),
+            where('claimedByUid', '==', uid),
+          );
+          return (collectionData(q, { idField: 'id' }) as Observable<Staff[]>).pipe(
+            map((docs) => (docs.length > 0 ? docs[0] : null)),
+          );
+        });
       }),
     ),
     { initialValue: null as Staff | null },

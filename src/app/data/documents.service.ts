@@ -1,4 +1,4 @@
-import { Injectable, computed, inject } from '@angular/core';
+import { Injectable, Injector, computed, inject, runInInjectionContext } from '@angular/core';
 import {
   Firestore,
   addDoc,
@@ -29,6 +29,7 @@ export class DocumentsService {
   private readonly firestore = inject(Firestore);
   private readonly storage = inject(Storage);
   private readonly auth = inject(AuthService);
+  private readonly injector = inject(Injector);
 
   private readonly uid = computed(() => this.auth.currentUser()?.uid ?? null);
   private readonly kgId = computed(() => this.auth.kindergartenId());
@@ -42,22 +43,24 @@ export class DocumentsService {
     const kgId = this.kgId();
     const uid = this.uid();
     if (!kgId || !uid) return of<ChildDocument[]>([]);
-    const col = collection(this.firestore, 'documents');
-    const q =
-      this.auth.role() === 'admin'
-        ? query(
-            col,
-            where('childId', '==', childId),
-            where('kindergartenId', '==', kgId),
-            orderBy('uploadedAt', 'desc'),
-          )
-        : query(
-            col,
-            where('childId', '==', childId),
-            where('allowedParentUids', 'array-contains', uid),
-            orderBy('uploadedAt', 'desc'),
-          );
-    return collectionData(q, { idField: 'id' }) as Observable<ChildDocument[]>;
+    return runInInjectionContext(this.injector, () => {
+      const col = collection(this.firestore, 'documents');
+      const q =
+        this.auth.role() === 'admin'
+          ? query(
+              col,
+              where('childId', '==', childId),
+              where('kindergartenId', '==', kgId),
+              orderBy('uploadedAt', 'desc'),
+            )
+          : query(
+              col,
+              where('childId', '==', childId),
+              where('allowedParentUids', 'array-contains', uid),
+              orderBy('uploadedAt', 'desc'),
+            );
+      return collectionData(q, { idField: 'id' }) as Observable<ChildDocument[]>;
+    });
   }
 
   /** Auth uids of the child's claimed parents (those who can sign in). */
