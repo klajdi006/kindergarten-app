@@ -1,3 +1,9 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ 'admin.posts.title' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
 <ion-content>
   <ion-refresher slot="fixed" (ionRefresh)="onRefresh($any($event))">
     <ion-refresher-content></ion-refresher-content>

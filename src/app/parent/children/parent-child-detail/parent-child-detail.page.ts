@@ -171,21 +171,21 @@ export class ParentChildDetailPage {
     { initialValue: null as ChildHealth | null },
   );
 
+  readonly healthSummary = computed(() => {
+    const h = this.healthProfile();
+    if (!h) return null;
+    const parts: string[] = [];
+    if (h.allergies.length) parts.push(h.allergies.join(', '));
+    if (h.medications.length) parts.push(`${h.medications.length} ${this.t.instant('health.medications').toLowerCase()}`);
+    if (h.emergencyContacts.length) parts.push(`${h.emergencyContacts.length} ${this.t.instant('health.emergencyContacts').toLowerCase()}`);
+    return parts.length ? parts.join(' · ') : null;
+  });
+
   readonly linkedParents = computed<Parent[]>(() => {
     const c = this.child();
     if (!c) return [];
     const all = this.parents.all();
     return c.parentIds.map((id) => all.find((p) => p.id === id)).filter((p): p is Parent => !!p);
-  });
-
-  readonly healthSummary = computed(() => {
-    const h = this.healthProfile();
-    if (!h) return null;
-    const parts: string[] = [];
-    if (h.allergies.length) parts.push(`${h.allergies.length}`);
-    if (h.medications.length) parts.push(`${h.medications.length}`);
-    if (h.emergencyContacts.length) parts.push(`${h.emergencyContacts.length}`);
-    return parts.length ? parts.join(' · ') : null;
   });
 
   readonly departmentName = computed(() => {

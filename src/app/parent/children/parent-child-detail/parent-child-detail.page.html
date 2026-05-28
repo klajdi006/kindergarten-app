@@ -156,7 +156,7 @@
         <ion-label>
           <h3>{{ 'health.title' | translate }}</h3>
           @if (healthSummary(); as s) {
-            <p>{{ s }}</p>
+            <p><small>{{ s }}</small></p>
           } @else {
             <p><small>{{ 'health.noInfo' | translate }}</small></p>
           }
