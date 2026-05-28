@@ -55,6 +55,7 @@ import { SchedulesService } from '@app/data/schedules.service';
 import { StaffService } from '@app/data/staff.service';
 import { Absence, Child, Post } from '@app/data/types';
 import { EmployeeChildDetailModal } from '@app/employee/children/employee-child-detail/employee-child-detail.modal';
+import { PostViewModal } from '@app/shared/components/post-view/post-view.modal';
 import { DateDmyPipe } from '@app/shared/pipes/date-dmy.pipe';
 import { completeRefresher } from '@app/shared/utils/refresher';
 import { SkeletonListComponent } from '@app/shared/components/skeleton-list/skeleton-list.component';
@@ -245,6 +246,14 @@ export class EmployeeHomePage {
       default:
         return 'happy-outline';
     }
+  }
+
+  async openPost(post: Post): Promise<void> {
+    const modal = await this.modalCtrl.create({
+      component: PostViewModal,
+      componentProps: { post, departmentName: this.departmentName(post.departmentId) || null },
+    });
+    await modal.present();
   }
 
   async openChild(child: Child): Promise<void> {

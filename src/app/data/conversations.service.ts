@@ -11,9 +11,16 @@ import {
   updateDoc,
   where,
 } from '@angular/fire/firestore';
+import {
+  Storage,
+  getDownloadURL,
+  ref,
+  uploadBytesResumable,
+} from '@angular/fire/storage';
 import { Observable, of, switchMap } from 'rxjs';
 import { AuthService } from '@app/auth/auth.service';
-import { Conversation, ConversationRole, Message } from '@app/data/types';
+import { Conversation, ConversationRole, Message, MessageAttachment } from '@app/data/types';
+import { compressImage } from '@app/shared/utils/image';
 
 export interface ChatParticipant {
   uid: string;
@@ -24,6 +31,7 @@ export interface ChatParticipant {
 @Injectable({ providedIn: 'root' })
 export class ConversationsService {
   private readonly firestore = inject(Firestore);
+  private readonly storage = inject(Storage);
   private readonly auth = inject(AuthService);
 
   private readonly uid = computed(() => this.auth.currentUser()?.uid ?? null);
@@ -144,28 +152,59 @@ export class ConversationsService {
     });
   }
 
-  async sendMessage(conversationId: string, text: string): Promise<void> {
+  async sendMessage(
+    conversationId: string,
+    text: string,
+    attachments: MessageAttachment[] = [],
+  ): Promise<void> {
     const uid = this.uid();
     const myName = this.auth.currentUser()?.displayName ?? null;
     if (!uid) throw new Error('Not signed in');
     const trimmed = text.trim();
-    if (!trimmed) return;
+    if (!trimmed && attachments.length === 0) return;
 
     const now = Date.now();
+    const msgData: Record<string, unknown> = {
+      authorUid: uid,
+      authorName: myName,
+      text: trimmed,
+      createdAt: now,
+    };
+    if (attachments.length > 0) msgData['attachments'] = attachments;
+
     await addDoc(
       collection(this.firestore, 'conversations', conversationId, 'messages'),
-      {
-        authorUid: uid,
-        authorName: myName,
-        text: trimmed,
-        createdAt: now,
-      },
+      msgData,
     );
+    const preview = trimmed || attachments[0].name;
     await updateDoc(doc(this.firestore, 'conversations', conversationId), {
-      lastMessage: trimmed,
+      lastMessage: preview,
       lastMessageAt: now,
       lastMessageAuthorUid: uid,
       [`lastReadAt.${uid}`]: now,
     });
+  }
+
+  async uploadAttachments(files: File[], conversationId: string): Promise<MessageAttachment[]> {
+    return Promise.all(files.map((file) => this.uploadOneAttachment(file, conversationId)));
+  }
+
+  private async uploadOneAttachment(file: File, conversationId: string): Promise<MessageAttachment> {
+    const isImage = file.type.startsWith('image/');
+    const toUpload = isImage ? await compressImage(file) : file;
+    const id = typeof crypto !== 'undefined' && 'randomUUID' in crypto
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    const storagePath = `conversations/${conversationId}/${id}${ext ? '.' + ext : ''}`;
+    const storageRef = ref(this.storage, storagePath);
+    const task = uploadBytesResumable(storageRef, toUpload, {
+      contentType: toUpload.type || undefined,
+    });
+    await new Promise<void>((resolve, reject) =>
+      task.on('state_changed', undefined, reject, () => resolve()),
+    );
+    const url = await getDownloadURL(task.snapshot.ref);
+    return { url, name: file.name, type: isImage ? 'image' : 'file', storagePath };
   }
 }

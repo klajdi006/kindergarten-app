@@ -1,6 +1,7 @@
 import {
   Component,
   DestroyRef,
+  ElementRef,
   ViewChild,
   computed,
   effect,
@@ -10,9 +11,10 @@ import {
 import { Capacitor } from '@capacitor/core';
 import { Keyboard } from '@capacitor/keyboard';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
+  ActionSheetController,
   IonBackButton,
   IonButton,
   IonButtons,
@@ -28,13 +30,27 @@ import {
   ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { sendOutline } from 'ionicons/icons';
+import {
+  attachOutline,
+  cameraOutline,
+  closeCircleOutline,
+  documentOutline,
+  imageOutline,
+  sendOutline,
+} from 'ionicons/icons';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { of, switchMap } from 'rxjs';
 import { AuthService } from '@app/auth/auth.service';
 import { ConversationsService } from '@app/data/conversations.service';
-import { Message } from '@app/data/types';
+import { Message, MessageAttachment } from '@app/data/types';
 import { isIosPwa } from '@app/shared/utils/platform';
+
+interface PendingAttachment {
+  file: File;
+  localUrl: string;
+  name: string;
+  attachType: 'image' | 'file';
+}
 
 @Component({
   selector: 'app-conversation',
@@ -63,10 +79,14 @@ export class ConversationPage {
   private readonly auth = inject(AuthService);
   private readonly fb = inject(FormBuilder);
   private readonly toastCtrl = inject(ToastController);
+  private readonly actionSheetCtrl = inject(ActionSheetController);
   private readonly t = inject(TranslateService);
   readonly conversations = inject(ConversationsService);
 
-  /** /[shell]/messages — strip the trailing :id segment. */
+  @ViewChild('imageInput') private readonly imageInputRef?: ElementRef<HTMLInputElement>;
+  @ViewChild('cameraInput') private readonly cameraInputRef?: ElementRef<HTMLInputElement>;
+  @ViewChild('fileInput') private readonly fileInputRef?: ElementRef<HTMLInputElement>;
+
   readonly listUrl = computed(() => {
     const url = this.router.url;
     const idx = url.lastIndexOf('/');
@@ -94,12 +114,12 @@ export class ConversationPage {
 
   readonly myUid = computed(() => this.auth.currentUser()?.uid ?? null);
 
-  readonly form = this.fb.nonNullable.group({
-    text: ['', [Validators.required]],
-  });
+  readonly form = this.fb.nonNullable.group({ text: [''] });
 
   readonly sending = signal(false);
+  readonly pendingFiles = signal<PendingAttachment[]>([]);
   readonly loading = signal(true);
+
   protected readonly skeletonBubbles = [
     { mine: false, width: '70%' },
     { mine: true, width: '55%' },
@@ -115,7 +135,15 @@ export class ConversationPage {
   private didInitialScroll = false;
 
   constructor() {
-    addIcons({ 'send-outline': sendOutline });
+    addIcons({
+      'send-outline': sendOutline,
+      'attach-outline': attachOutline,
+      'camera-outline': cameraOutline,
+      'image-outline': imageOutline,
+      'document-outline': documentOutline,
+      'close-circle-outline': closeCircleOutline,
+    });
+
     effect(() => {
       const id = this.conversationId();
       if (id) void this.conversations.markRead(id);
@@ -174,24 +202,45 @@ export class ConversationPage {
     return this.conversation()?.isGroup ?? false;
   }
 
-  /** Hide the author name when it matches the previous message's author. */
   showAuthor(index: number): boolean {
     if (index === 0) return true;
     const list = this.messages();
     return list[index].authorUid !== list[index - 1].authorUid;
   }
 
+  hasAttachments(msg: Message): boolean {
+    return (msg.attachments?.length ?? 0) > 0;
+  }
+
+  images(msg: Message): MessageAttachment[] {
+    return msg.attachments?.filter((a) => a.type === 'image') ?? [];
+  }
+
+  files(msg: Message): MessageAttachment[] {
+    return msg.attachments?.filter((a) => a.type === 'file') ?? [];
+  }
+
   async send(): Promise<void> {
-    if (this.form.invalid || this.sending()) return;
     const text = this.form.controls.text.value.trim();
-    if (!text) return;
+    const files = this.pendingFiles();
+    if ((!text && files.length === 0) || this.sending()) return;
     const cid = this.conversationId();
     if (!cid) return;
 
     this.sending.set(true);
     this.form.reset({ text: '' });
+
+    let uploaded: MessageAttachment[] = [];
     try {
-      await this.conversations.sendMessage(cid, text);
+      if (files.length > 0) {
+        uploaded = await this.conversations.uploadAttachments(
+          files.map((f) => f.file),
+          cid,
+        );
+        for (const f of files) if (f.localUrl) URL.revokeObjectURL(f.localUrl);
+        this.pendingFiles.set([]);
+      }
+      await this.conversations.sendMessage(cid, text, uploaded);
     } catch {
       this.form.controls.text.setValue(text);
       const toast = await this.toastCtrl.create({
@@ -209,8 +258,57 @@ export class ConversationPage {
   onKeyDown(event: KeyboardEvent): void {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      this.send();
+      void this.send();
     }
+  }
+
+  async openAttachPicker(): Promise<void> {
+    const sheet = await this.actionSheetCtrl.create({
+      buttons: [
+        {
+          text: this.t.instant('messages.attachCamera'),
+          icon: 'camera-outline',
+          handler: () => {
+            this.cameraInputRef?.nativeElement.click();
+          },
+        },
+        {
+          text: this.t.instant('messages.attachImage'),
+          icon: 'image-outline',
+          handler: () => {
+            this.imageInputRef?.nativeElement.click();
+          },
+        },
+        {
+          text: this.t.instant('messages.attachFile'),
+          icon: 'document-outline',
+          handler: () => {
+            this.fileInputRef?.nativeElement.click();
+          },
+        },
+        { text: this.t.instant('common.cancel'), role: 'cancel' },
+      ],
+    });
+    await sheet.present();
+  }
+
+  onFilePick(event: Event, type: 'image' | 'file'): void {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files ?? []);
+    const pending: PendingAttachment[] = files.map((file) => ({
+      file,
+      localUrl: type === 'image' ? URL.createObjectURL(file) : '',
+      name: file.name,
+      attachType: type,
+    }));
+    this.pendingFiles.update((prev) => [...prev, ...pending]);
+    input.value = '';
+  }
+
+  removeAttachment(idx: number): void {
+    const removed = this.pendingFiles()[idx];
+    if (removed.localUrl) URL.revokeObjectURL(removed.localUrl);
+    this.pendingFiles.update((prev) => prev.filter((_, i) => i !== idx));
   }
 
   private scrollToBottom(duration: number): void {

@@ -1,5 +1,4 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import {
   IonBadge,
   IonCard,
@@ -40,6 +39,7 @@ import { PostsService } from '@app/data/posts.service';
 import { StaffService } from '@app/data/staff.service';
 import { Child, Post } from '@app/data/types';
 import { completeRefresher } from '@app/shared/utils/refresher';
+import { PostViewModal } from '@app/shared/components/post-view/post-view.modal';
 import { TabHeaderComponent } from '@app/shared/components/tab-header/tab-header.component';
 import { DateDmyPipe } from '@app/shared/pipes/date-dmy.pipe';
 
@@ -48,7 +48,6 @@ import { DateDmyPipe } from '@app/shared/pipes/date-dmy.pipe';
   templateUrl: 'admin-home.page.html',
   styleUrl: './admin-home.page.scss',
   imports: [
-    RouterLink,
     DecimalPipe,
     IonContent,
     IonRefresher,
@@ -91,6 +90,14 @@ export class AdminHomePage {
 
   async openUnassignedChildren(): Promise<void> {
     const modal = await this.modalCtrl.create({ component: UnassignedChildrenModal });
+    await modal.present();
+  }
+
+  async openPost(post: Post): Promise<void> {
+    const modal = await this.modalCtrl.create({
+      component: PostViewModal,
+      componentProps: { post, departmentName: this.departmentName(post.departmentId) || null },
+    });
     await modal.present();
   }
 

@@ -113,8 +113,12 @@
       "posts": "Postimet",
       "staff": "Stafi"
     },
-    "people": { "title": "Anëtarët" },
-    "content": { "title": "Përmbajtja" },
+    "people": {
+      "title": "Anëtarët"
+    },
+    "content": {
+      "title": "Përmbajtja"
+    },
     "posts": {
       "title": "Postimet",
       "empty": "Nuk ka ende postime. Trokit + për të shkruar njoftimin e parë.",
@@ -432,7 +436,12 @@
     "noPeople": "Nuk ka njerëz për t'i shkruar ende.",
     "noMessages": "Nuk ka ende mesazhe.",
     "groupTitle": "Titulli i grupit",
-    "groupTitlePlaceholder": "Opsional"
+    "groupTitlePlaceholder": "Opsional",
+    "attach": "Bashkëngjit",
+    "attachCamera": "Bëj një foto",
+    "attachImage": "Zgjidh nga galeria",
+    "attachFile": "Bashkëngjit skedar",
+    "removeAttachment": "Hiq bashkëngjitjen"
   },
   "employee": {
     "tabs": {

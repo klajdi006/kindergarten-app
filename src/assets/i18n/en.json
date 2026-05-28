@@ -113,8 +113,12 @@
       "posts": "Posts",
       "staff": "Staff"
     },
-    "people": { "title": "Members" },
-    "content": { "title": "Content" },
+    "people": {
+      "title": "Members"
+    },
+    "content": {
+      "title": "Content"
+    },
     "posts": {
       "title": "Posts",
       "empty": "No posts yet. Tap + to write your first announcement.",
@@ -432,7 +436,12 @@
     "noPeople": "No one to message yet.",
     "noMessages": "No messages yet.",
     "groupTitle": "Group title",
-    "groupTitlePlaceholder": "Optional"
+    "groupTitlePlaceholder": "Optional",
+    "attach": "Attach",
+    "attachCamera": "Take photo",
+    "attachImage": "Choose from gallery",
+    "attachFile": "Attach file",
+    "removeAttachment": "Remove attachment"
   },
   "employee": {
     "tabs": {

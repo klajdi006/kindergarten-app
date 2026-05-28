@@ -64,6 +64,124 @@
   display: block;
 }
 
+/* Attachment preview bar above the composer */
+.attachment-preview-bar {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.preview-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--ion-color-light);
+  border-radius: 0.75rem;
+  padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+  min-width: 0;
+  flex-shrink: 0;
+  max-width: 160px;
+}
+
+.preview-thumb {
+  width: 2.5rem;
+  height: 2.5rem;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  flex-shrink: 0;
+}
+
+.preview-file-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  color: var(--ion-color-medium);
+}
+
+.preview-name {
+  font-size: 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.preview-remove {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: var(--ion-color-medium);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* Attachment rendering inside message bubbles */
+.attachment-images {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.msg-image {
+  width: 100%;
+  max-width: 220px;
+  border-radius: 0.5rem;
+  display: block;
+  object-fit: cover;
+}
+
+.attachment-files {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.file-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-size: 0.8rem;
+  overflow: hidden;
+}
+
+.file-chip-out {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--ion-color-primary-contrast);
+}
+
+.file-chip-in {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--ion-color-light-contrast);
+}
+
+.file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attach-button {
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  height: 2rem;
+  width: 2rem;
+  min-height: 0;
+  margin: 0;
+  font-size: 1.15rem;
+}
+
 .composer {
   display: flex;
   align-items: flex-end;

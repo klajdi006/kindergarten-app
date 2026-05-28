@@ -7,11 +7,33 @@
   </ion-toolbar>
 </ion-header>
 
+<!-- Hidden file inputs -->
+<input
+  #imageInput
+  type="file"
+  accept="image/*"
+  multiple
+  hidden
+  (change)="onFilePick($event, 'image')">
+<input
+  #cameraInput
+  type="file"
+  accept="image/*"
+  capture="environment"
+  hidden
+  (change)="onFilePick($event, 'image')">
+<input
+  #fileInput
+  type="file"
+  accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  multiple
+  hidden
+  (change)="onFilePick($event, 'file')">
+
 <ion-content>
   <div class="messages-scroll">
     @if (loading()) {
-      <div
-        class="ion-padding-horizontal ion-padding-vertical skeleton-wrap">
+      <div class="ion-padding-horizontal ion-padding-vertical skeleton-wrap">
         @for (b of skeletonBubbles; track $index) {
           <div [style.align-self]="b.mine ? 'flex-end' : 'flex-start'" class="bubble-row">
             <ion-skeleton-text
@@ -28,13 +50,33 @@
         </ion-text>
       </div>
     } @else {
-      <div
-        class="ion-padding-horizontal ion-padding-vertical messages-wrap">
+      <div class="ion-padding-horizontal ion-padding-vertical messages-wrap">
         @for (msg of messages(); track msg.id; let i = $index) {
           @if (isMine(msg)) {
             <div class="bubble-mine">
               <div class="bubble bubble-out">
-                {{ msg.text }}
+                @if (images(msg).length > 0) {
+                  <div class="attachment-images">
+                    @for (att of images(msg); track att.url) {
+                      <a [href]="att.url" target="_blank" rel="noopener">
+                        <img [src]="att.url" [alt]="att.name" class="msg-image">
+                      </a>
+                    }
+                  </div>
+                }
+                @if (files(msg).length > 0) {
+                  <div class="attachment-files">
+                    @for (att of files(msg); track att.url) {
+                      <a [href]="att.url" target="_blank" rel="noopener" class="file-chip file-chip-out">
+                        <ion-icon name="document-outline"></ion-icon>
+                        <span class="file-name">{{ att.name }}</span>
+                      </a>
+                    }
+                  </div>
+                }
+                @if (msg.text) {
+                  <span>{{ msg.text }}</span>
+                }
               </div>
             </div>
           } @else {
@@ -45,7 +87,28 @@
                 </ion-text>
               }
               <div class="bubble bubble-in">
-                {{ msg.text }}
+                @if (images(msg).length > 0) {
+                  <div class="attachment-images">
+                    @for (att of images(msg); track att.url) {
+                      <a [href]="att.url" target="_blank" rel="noopener">
+                        <img [src]="att.url" [alt]="att.name" class="msg-image">
+                      </a>
+                    }
+                  </div>
+                }
+                @if (files(msg).length > 0) {
+                  <div class="attachment-files">
+                    @for (att of files(msg); track att.url) {
+                      <a [href]="att.url" target="_blank" rel="noopener" class="file-chip file-chip-in">
+                        <ion-icon name="document-outline"></ion-icon>
+                        <span class="file-name">{{ att.name }}</span>
+                      </a>
+                    }
+                  </div>
+                }
+                @if (msg.text) {
+                  <span>{{ msg.text }}</span>
+                }
               </div>
             </div>
           }
@@ -56,11 +119,39 @@
 </ion-content>
 
 <ion-footer [class.ios-pwa-footer]="iosPwa" [class.keyboard-open]="keyboardOpen()">
+  <!-- Pending attachment previews -->
+  @if (pendingFiles().length > 0) {
+    <div class="attachment-preview-bar">
+      @for (p of pendingFiles(); track $index; let i = $index) {
+        <div class="preview-chip">
+          @if (p.attachType === 'image') {
+            <img [src]="p.localUrl" [alt]="p.name" class="preview-thumb">
+          } @else {
+            <ion-icon name="document-outline" class="preview-file-icon"></ion-icon>
+          }
+          <span class="preview-name">{{ p.name }}</span>
+          <button class="preview-remove" (click)="removeAttachment(i)" [attr.aria-label]="'messages.removeAttachment' | translate">
+            <ion-icon name="close-circle-outline"></ion-icon>
+          </button>
+        </div>
+      }
+    </div>
+  }
+
   <ion-toolbar>
     <form
       [formGroup]="form"
       (ngSubmit)="send()"
       class="composer">
+      <ion-button
+        type="button"
+        fill="clear"
+        shape="round"
+        [attr.aria-label]="'messages.attach' | translate"
+        class="attach-button"
+        (click)="openAttachPicker()">
+        <ion-icon slot="icon-only" name="attach-outline"></ion-icon>
+      </ion-button>
       <ion-textarea
         formControlName="text"
         autoGrow="true"
@@ -74,7 +165,7 @@
       <ion-button
         type="submit"
         shape="round"
-        [disabled]="form.invalid || sending()"
+        [disabled]="sending() || (!form.controls.text.value.trim() && pendingFiles().length === 0)"
         [attr.aria-label]="'messages.send' | translate"
         class="send-button">
         <ion-icon slot="icon-only" name="send-outline" class="send-icon"></ion-icon>

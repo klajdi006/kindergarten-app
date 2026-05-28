@@ -184,10 +184,18 @@ export interface Conversation {
   createdByUid: Id;
 }
 
+export interface MessageAttachment {
+  url: string;
+  name: string;
+  type: 'image' | 'file';
+  storagePath: string;
+}
+
 export interface Message {
   id: Id;
   authorUid: Id;
   authorName: string | null;
   text: string;
+  attachments?: MessageAttachment[];
   createdAt: number;
 }
