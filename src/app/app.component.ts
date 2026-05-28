@@ -1,5 +1,6 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, effect, inject } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import '@khmyznikov/pwa-install';
 import { AuthService } from '@app/auth/auth.service';
 import { NotificationRouterService } from '@app/data/notification-router.service';
 import { PushService } from '@app/data/push.service';
@@ -11,6 +12,7 @@ import { PwaUpdateService } from '@app/shared/services/pwa-update.service';
   selector: 'app-root',
   templateUrl: 'app.component.html',
   imports: [IonApp, IonRouterOutlet],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppComponent {
   private readonly auth = inject(AuthService);
@@ -27,7 +29,7 @@ export class AppComponent {
       const u = this.auth.currentUser();
       if (u && refreshedFor !== u.uid) {
         refreshedFor = u.uid;
-        void this.push.refreshSilently();
+        void this.push.enable();
       }
     });
 
