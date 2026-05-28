@@ -23,7 +23,8 @@
       "Bash(echo \"FN_EXIT=$?\")",
       "Bash(ls extensions/)",
       "Bash(grep -rn \"LOCATION\\\\|eur3\\\\|europe\" extensions/ firebase.json)",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:www.npmjs.com)"
     ]
   }
 }

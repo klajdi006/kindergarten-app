@@ -65,7 +65,7 @@
           </ion-select-option>
         </ion-select>
       </ion-item>
-      <ion-item lines="none">
+      <ion-item>
         <ion-select
           [label]="'admin.children.fields.department' | translate"
           labelPlacement="floating"
@@ -78,6 +78,15 @@
             <ion-select-option [value]="dept.id">{{ dept.name }}</ion-select-option>
           }
         </ion-select>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-input
+          [label]="'admin.children.fields.tariff' | translate"
+          labelPlacement="stacked"
+          type="number"
+          min="0"
+          formControlName="tariff">
+        </ion-input>
       </ion-item>
     </ion-list>
 

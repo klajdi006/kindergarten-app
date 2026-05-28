@@ -82,7 +82,6 @@ interface PendingFile {
     IonSelectOption,
     IonNote,
     IonIcon,
-    IonText,
     IonLabel,
     TranslatePipe,
   ],

@@ -168,6 +168,9 @@
       "greeting": "Përshëndetje, {{ name }}",
       "fallbackName": "admin",
       "stats": {
+        "enrolled": "Fëmijët",
+        "employees": "Punonjësit",
+        "revenue": "Të ardhura",
         "total": "Regjistruar",
         "present": "Prezent",
         "sick": "Sëmurë",
@@ -245,7 +248,8 @@
         "lastName": "Mbiemri",
         "birthDate": "Datëlindja",
         "gender": "Gjinia",
-        "department": "Departamenti"
+        "department": "Departamenti",
+        "tariff": "Tarifa mujore"
       },
       "gender": {
         "male": "Mashkull",
@@ -329,6 +333,7 @@
       "notFound": "Fëmija nuk u gjet.",
       "detail": {
         "profile": "Profili",
+        "tariff": "Tarifa mujore",
         "documents": "Dokumentet",
         "noDocuments": "Nuk ka dokumente të bashkëngjitura.",
         "today": "Sot",

@@ -13,44 +13,27 @@
     </ion-text>
   </div>
 
-  <!-- Today snapshot -->
-  <div class="ion-padding-horizontal stats-grid">
+  <!-- Business snapshot -->
+  <div class="stats-grid ion-padding-horizontal ion-padding-top">
     <ion-card class="stat-card">
       <ion-card-content class="stat-card-content">
-        <div class="stat-label">
-          {{ 'admin.home.stats.total' | translate }}
-        </div>
-        <div class="stat-value">{{ stats().total }}</div>
+        <ion-icon name="people-outline" color="primary" class="stat-icon" aria-hidden="true"></ion-icon>
+        <div class="stat-value">{{ enrolledCount() }}</div>
+        <div class="stat-label">{{ 'admin.home.stats.enrolled' | translate }}</div>
       </ion-card-content>
     </ion-card>
     <ion-card class="stat-card">
       <ion-card-content class="stat-card-content">
-        <div class="stat-label">
-          {{ 'admin.home.stats.present' | translate }}
-        </div>
-        <div class="stat-value stat-value-success">
-          {{ stats().present }}
-        </div>
+        <ion-icon name="briefcase-outline" color="tertiary" class="stat-icon" aria-hidden="true"></ion-icon>
+        <div class="stat-value">{{ employeeCount() }}</div>
+        <div class="stat-label">{{ 'admin.home.stats.employees' | translate }}</div>
       </ion-card-content>
     </ion-card>
     <ion-card class="stat-card">
       <ion-card-content class="stat-card-content">
-        <div class="stat-label">
-          {{ 'admin.home.stats.sick' | translate }}
-        </div>
-        <div class="stat-value stat-value-danger">
-          {{ stats().sick }}
-        </div>
-      </ion-card-content>
-    </ion-card>
-    <ion-card class="stat-card">
-      <ion-card-content class="stat-card-content">
-        <div class="stat-label">
-          {{ 'admin.home.stats.holiday' | translate }}
-        </div>
-        <div class="stat-value stat-value-warning">
-          {{ stats().holiday }}
-        </div>
+        <ion-icon name="cash-outline" color="success" class="stat-icon" aria-hidden="true"></ion-icon>
+        <div class="stat-value stat-value-success">{{ monthlyRevenue() | number:'1.0-0' }}</div>
+        <div class="stat-label">{{ 'admin.home.stats.revenue' | translate }}</div>
       </ion-card-content>
     </ion-card>
   </div>

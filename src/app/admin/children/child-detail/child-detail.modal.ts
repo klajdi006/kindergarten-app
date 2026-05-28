@@ -138,6 +138,7 @@ export class ChildDetailModal implements OnInit {
     birthDate: ['', [Validators.required]],
     gender: ['', [Validators.required]],
     departmentId: [''],
+    tariff: [0, [Validators.required, Validators.min(0)]],
   });
 
   readonly saving = signal(false);
@@ -165,6 +166,7 @@ export class ChildDetailModal implements OnInit {
             birthDate: c.birthDate,
             gender: c.gender,
             departmentId: c.departmentId ?? '',
+            tariff: c.tariff ?? 0,
           },
           { emitEvent: false },
         );
@@ -182,6 +184,7 @@ export class ChildDetailModal implements OnInit {
         birthDate: c.birthDate,
         gender: c.gender ?? '',
         departmentId: c.departmentId ?? '',
+        tariff: c.tariff ?? 0,
       });
       this.form.markAsPristine();
     }
@@ -228,13 +231,14 @@ export class ChildDetailModal implements OnInit {
     }
     this.saving.set(true);
     try {
-      const { firstName, lastName, birthDate, gender, departmentId } = this.form.getRawValue();
+      const { firstName, lastName, birthDate, gender, departmentId, tariff } = this.form.getRawValue();
       await this.children.update(c.id, {
         firstName,
         lastName,
         birthDate: (birthDate ?? '').slice(0, 10),
         gender: gender as ChildGender,
         departmentId: departmentId || null,
+        tariff: Number(tariff) || 0,
       });
       this.form.markAsPristine();
     } finally {

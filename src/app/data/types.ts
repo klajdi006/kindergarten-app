@@ -50,6 +50,7 @@ export interface Child {
   departmentId: Id | null;
   parentIds: Id[];
   kindergartenId: Id;
+  tariff: number;
   createdAt: number;
 }
 

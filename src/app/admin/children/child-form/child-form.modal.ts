@@ -32,6 +32,7 @@ export interface ChildFormResult {
   birthDate: string;
   gender: ChildGender;
   departmentId: string | null;
+  tariff: number;
 }
 
 @Component({
@@ -75,6 +76,7 @@ export class ChildFormModal implements OnInit {
     birthDate: ['', [Validators.required]],
     gender: ['', [Validators.required]],
     departmentId: [''],
+    tariff: [0, [Validators.required, Validators.min(0)]],
   });
 
   readonly todayIso = todayIso();
@@ -91,6 +93,7 @@ export class ChildFormModal implements OnInit {
         birthDate: this.child.birthDate,
         gender: this.child.gender,
         departmentId: this.child.departmentId ?? '',
+        tariff: this.child.tariff ?? 0,
       });
     }
   }
@@ -112,13 +115,14 @@ export class ChildFormModal implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
-    const { firstName, lastName, birthDate, gender, departmentId } = this.form.getRawValue();
+    const { firstName, lastName, birthDate, gender, departmentId, tariff } = this.form.getRawValue();
     const result: ChildFormResult = {
       firstName,
       lastName,
       birthDate: (birthDate ?? '').slice(0, 10),
       gender: gender as ChildGender,
       departmentId: departmentId || null,
+      tariff: Number(tariff) || 0,
     };
     this.modalCtrl.dismiss(result, 'confirm');
   }

@@ -64,6 +64,7 @@ export class ChildrenService {
     birthDate: string;
     gender: ChildGender;
     departmentId: string | null;
+    tariff: number;
   }): Promise<void> {
     const kgId = this.kgId();
     if (!kgId) throw new Error('No kindergarten');
@@ -75,6 +76,7 @@ export class ChildrenService {
       departmentId: input.departmentId,
       parentIds: [],
       kindergartenId: kgId,
+      tariff: input.tariff,
       createdAt: Date.now(),
     });
   }
@@ -87,6 +89,7 @@ export class ChildrenService {
       birthDate: string;
       gender: ChildGender;
       departmentId: string | null;
+      tariff: number;
     },
   ): Promise<void> {
     await updateDoc(doc(this.firestore, 'children', id), {
@@ -95,6 +98,7 @@ export class ChildrenService {
       birthDate: input.birthDate,
       gender: input.gender,
       departmentId: input.departmentId,
+      tariff: input.tariff,
     });
   }
 

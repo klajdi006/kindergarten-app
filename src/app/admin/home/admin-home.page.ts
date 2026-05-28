@@ -19,27 +19,26 @@ import {
 import { addIcons } from 'ionicons';
 import {
   alertCircleOutline,
-  bandageOutline,
+  briefcaseOutline,
   businessOutline,
+  cashOutline,
   giftOutline,
-  happyOutline,
   mailOutline,
   megaphoneOutline,
   peopleOutline,
-  sunnyOutline,
 } from 'ionicons/icons';
+import { DecimalPipe } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PendingParentsModal } from '@app/admin/parents/pending-parents/pending-parents.modal';
 import { PendingStaffModal } from '@app/admin/staff/pending-staff/pending-staff.modal';
 import { UnassignedChildrenModal } from '@app/admin/children/unassigned-children/unassigned-children.modal';
 import { AuthService } from '@app/auth/auth.service';
-import { AbsencesService } from '@app/data/absences.service';
 import { ChildrenService } from '@app/data/children.service';
 import { DepartmentsService } from '@app/data/departments.service';
 import { ParentsService } from '@app/data/parents.service';
 import { PostsService } from '@app/data/posts.service';
 import { StaffService } from '@app/data/staff.service';
-import { Child, Department, Post } from '@app/data/types';
+import { Child, Post } from '@app/data/types';
 import { completeRefresher } from '@app/shared/utils/refresher';
 import { TabHeaderComponent } from '@app/shared/components/tab-header/tab-header.component';
 import { DateDmyPipe } from '@app/shared/pipes/date-dmy.pipe';
@@ -50,6 +49,7 @@ import { DateDmyPipe } from '@app/shared/pipes/date-dmy.pipe';
   styleUrl: './admin-home.page.scss',
   imports: [
     RouterLink,
+    DecimalPipe,
     IonContent,
     IonRefresher,
     IonRefresherContent,
@@ -74,7 +74,6 @@ export class AdminHomePage {
   readonly children = inject(ChildrenService);
   readonly departments = inject(DepartmentsService);
   readonly staff = inject(StaffService);
-  readonly absences = inject(AbsencesService);
   readonly posts = inject(PostsService);
   private readonly modalCtrl = inject(ModalController);
 
@@ -95,24 +94,11 @@ export class AdminHomePage {
     await modal.present();
   }
 
-  readonly today = computed(() => {
-    const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
-  });
-
-  readonly stats = computed(() => {
-    const total = this.children.count();
-    const today = this.today();
-    const todayAbsences = this.absences
-      .all()
-      .filter((a) => a.startDate <= today && a.endDate >= today);
-    const sick = todayAbsences.filter((a) => a.type === 'sick').length;
-    const holiday = todayAbsences.filter((a) => a.type === 'holiday').length;
-    return { total, present: total - sick - holiday, sick, holiday };
-  });
+  readonly enrolledCount = computed(() => this.children.count());
+  readonly employeeCount = computed(() => this.staff.employees().length);
+  readonly monthlyRevenue = computed(() =>
+    this.children.all().reduce((sum, c) => sum + (c.tariff ?? 0), 0),
+  );
 
   readonly pendingParents = computed(
     () => this.parents.all().filter((p) => p.claimedByUid === null).length,
@@ -152,7 +138,11 @@ export class AdminHomePage {
         return wraps ? doy >= todayDoy || doy <= horizonDoy : doy >= todayDoy && doy <= horizonDoy;
       })
       .slice()
-      .sort((a, b) => sortableDoy(new Date(a.birthDate), todayDoy) - sortableDoy(new Date(b.birthDate), todayDoy))
+      .sort(
+        (a, b) =>
+          sortableDoy(new Date(a.birthDate), todayDoy) -
+          sortableDoy(new Date(b.birthDate), todayDoy),
+      )
       .slice(0, 5);
   });
 
@@ -163,20 +153,18 @@ export class AdminHomePage {
     return this.departments.all().find((d) => d.id === deptId)?.name ?? '';
   }
 
-  protected readonly bandageOutline = bandageOutline;
-  protected readonly happyOutline = happyOutline;
-  protected readonly peopleOutline = peopleOutline;
-  protected readonly sunnyOutline = sunnyOutline;
-
   readonly loading = signal(true);
 
   constructor() {
     addIcons({
       'mail-outline': mailOutline,
       'alert-circle-outline': alertCircleOutline,
+      'briefcase-outline': briefcaseOutline,
       'business-outline': businessOutline,
+      'cash-outline': cashOutline,
       'gift-outline': giftOutline,
       'megaphone-outline': megaphoneOutline,
+      'people-outline': peopleOutline,
     });
     effect(() => {
       if (

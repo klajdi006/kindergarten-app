@@ -54,9 +54,18 @@
         <ion-label>{{ 'admin.children.gender.' + c.gender | translate }}</ion-label>
       </ion-item>
       @if (departmentName(); as dn) {
-        <ion-item lines="none">
+        <ion-item>
           <ion-icon slot="start" name="business-outline" color="medium" aria-hidden="true"></ion-icon>
           <ion-label>{{ dn }}</ion-label>
+        </ion-item>
+      }
+      @if (c.tariff > 0) {
+        <ion-item lines="none">
+          <ion-icon slot="start" name="cash-outline" color="medium" aria-hidden="true"></ion-icon>
+          <ion-label>
+            <h3>{{ 'parent.children.detail.tariff' | translate }}</h3>
+            <p>{{ c.tariff }}</p>
+          </ion-label>
         </ion-item>
       }
     </ion-list>

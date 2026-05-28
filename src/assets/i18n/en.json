@@ -168,6 +168,9 @@
       "greeting": "Hello, {{ name }}",
       "fallbackName": "admin",
       "stats": {
+        "enrolled": "Children",
+        "employees": "Employees",
+        "revenue": "Revenue",
         "total": "Enrolled",
         "present": "Present",
         "sick": "Sick",
@@ -245,7 +248,8 @@
         "lastName": "Last name",
         "birthDate": "Birth date",
         "gender": "Gender",
-        "department": "Department"
+        "department": "Department",
+        "tariff": "Monthly tariff"
       },
       "gender": {
         "male": "Male",
@@ -329,6 +333,7 @@
       "notFound": "Child not found.",
       "detail": {
         "profile": "Profile",
+        "tariff": "Monthly tariff",
         "documents": "Documents",
         "noDocuments": "No documents attached.",
         "today": "Today",

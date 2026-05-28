@@ -4,9 +4,15 @@ import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { getMessaging, MulticastMessage } from 'firebase-admin/messaging';
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import { HttpsError, onCall } from 'firebase-functions/v2/https';
-import { logger } from 'firebase-functions/v2';
+import { logger, setGlobalOptions } from 'firebase-functions/v2';
 
 initializeApp();
+
+// Pin all functions to europe-west3. Firestore triggers already deploy there
+// (co-located with the database); this also brings the callable functions
+// (requestAdminSignup, sendClaimInvite) into the same region instead of the
+// us-central1 default.
+setGlobalOptions({ region: 'europe-west3' });
 const db = getFirestore();
 
 interface UserDoc {
