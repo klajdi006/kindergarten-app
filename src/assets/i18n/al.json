@@ -486,6 +486,9 @@
     }
   },
   "pwa": {
+    "install": {
+      "description": "Instaloni aplikacionin në pajisjen tuaj për një përvojë më të mirë dhe qasje të shpejtë."
+    },
     "update": {
       "title": "Përditësim i disponueshëm",
       "message": "Një version i ri i aplikacionit është gati. Të rifreskohet për ta përditësuar?",

@@ -1,6 +1,7 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, effect, inject } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, computed, effect, inject } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import '@khmyznikov/pwa-install';
+import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '@app/auth/auth.service';
 import { NotificationRouterService } from '@app/data/notification-router.service';
 import { PushService } from '@app/data/push.service';
@@ -18,10 +19,16 @@ export class AppComponent {
   private readonly auth = inject(AuthService);
   private readonly push = inject(PushService);
   private readonly notifRouter = inject(NotificationRouterService);
+  private readonly translate = inject(TranslateService);
+  private readonly language = inject(LanguageService);
+
+  readonly pwaInstallDescription = computed(() => {
+    this.language.current(); // track language changes
+    return this.translate.instant('pwa.install.description');
+  });
 
   constructor() {
     inject(ThemeService);
-    inject(LanguageService);
     inject(PwaUpdateService);
 
     let refreshedFor: string | null = null;

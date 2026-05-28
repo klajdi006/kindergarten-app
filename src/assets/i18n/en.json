@@ -486,6 +486,9 @@
     }
   },
   "pwa": {
+    "install": {
+      "description": "Install the app on your device for a better experience and quick access."
+    },
     "update": {
       "title": "Update available",
       "message": "A new version of the app is ready. Reload to update?",
