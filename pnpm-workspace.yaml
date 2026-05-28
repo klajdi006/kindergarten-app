@@ -1,0 +1,21 @@
+packages:
+  # include packages in subfolders (change as required)
+  - 'apps/**'
+  - 'packages/**'
+  # if required, exclude directories
+  - '!**/test/**'
+allowBuilds:
+  '@firebase/util': false
+  '@parcel/watcher': false
+  esbuild: false
+  lmdb: false
+  msgpackr-extract: false
+  protobufjs: false
+  sharp: false
+minimumReleaseAgeExclude:
+  - '@angular-devkit/architect@0.2102.13'
+  - '@angular-devkit/core@21.2.13'
+  - '@angular-devkit/schematics@21.2.13'
+  - '@angular/build@21.2.13'
+  - '@angular/cli@21.2.13'
+  - '@schematics/angular@21.2.13'
