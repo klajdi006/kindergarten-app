@@ -1,8 +1,8 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, effect, inject } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import '@khmyznikov/pwa-install';
-import { TranslateService } from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 import { AuthService } from '@app/auth/auth.service';
 import { NotificationRouterService } from '@app/data/notification-router.service';
 import { PushService } from '@app/data/push.service';
@@ -14,7 +14,7 @@ import {map, startWith} from "rxjs";
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  imports: [IonApp, IonRouterOutlet],
+  imports: [IonApp, IonRouterOutlet, TranslatePipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppComponent {
@@ -22,6 +22,8 @@ export class AppComponent {
   private readonly push = inject(PushService);
   private readonly notifRouter = inject(NotificationRouterService);
   private readonly translate = inject(TranslateService);
+
+  readonly pwaReady = signal(false);
 
   readonly pwaInstallDescription = toSignal(this.translate.onLangChange.pipe(
     startWith(this.translate.currentLang),
@@ -34,6 +36,7 @@ export class AppComponent {
   ));
 
   constructor() {
+    setTimeout(() => this.pwaReady.set(true), 1000);
     inject(ThemeService);
     inject(LanguageService);
     inject(PwaUpdateService);

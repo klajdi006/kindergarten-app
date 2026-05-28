@@ -1,4 +1,6 @@
 <ion-app>
   <ion-router-outlet></ion-router-outlet>
 </ion-app>
-<pwa-install manifest-url="/manifest.webmanifest" [attr.install-description]="pwaInstallDescription()" [attr.description]="pwaAppDescription()"></pwa-install>
+@if (pwaReady()) {
+  <pwa-install manifest-url="/manifest.webmanifest" [attr.install-description]="pwaInstallDescription()" [attr.description]="pwaAppDescription()"></pwa-install>
+}
