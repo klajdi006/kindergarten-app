@@ -33,7 +33,6 @@
         <ion-select
           [label]="'admin.albums.fields.department' | translate"
           labelPlacement="floating"
-          interface="popover"
           formControlName="departmentId">
           @for (dept of departments; track dept.id) {
             <ion-select-option [value]="dept.id">{{ dept.name }}</ion-select-option>

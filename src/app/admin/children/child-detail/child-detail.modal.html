@@ -69,7 +69,6 @@
         <ion-select
           [label]="'admin.children.fields.department' | translate"
           labelPlacement="floating"
-          interface="popover"
           formControlName="departmentId">
           <ion-select-option value="">
             {{ 'admin.children.unassigned' | translate }}
@@ -195,6 +194,103 @@
       </ion-item>
     </ion-list>
     <input type="file" multiple hidden #docInput (change)="onDocsPicked($event)" />
+
+    <ion-list-header>
+      <ion-label>{{ 'health.title' | translate }}</ion-label>
+    </ion-list-header>
+    @if (healthProfile(); as h) {
+      @if (h.emergencyContacts.length > 0) {
+        <ion-list inset="true">
+          @for (contact of h.emergencyContacts; track $index) {
+            <ion-item [lines]="$last ? 'none' : 'full'">
+              <ion-icon slot="start" name="people-outline" color="medium" aria-hidden="true"></ion-icon>
+              <ion-label>
+                <h3>{{ contact.name }}</h3>
+                <p>{{ contact.relationship }}@if (contact.relationship && contact.phone) { · }{{ contact.phone }}</p>
+              </ion-label>
+            </ion-item>
+          }
+        </ion-list>
+      }
+      @if (h.allergies.length > 0) {
+        <ion-list inset="true">
+          @for (allergy of h.allergies; track $index) {
+            <ion-item [lines]="$last ? 'none' : 'full'">
+              <ion-icon slot="start" name="alert-circle-outline" color="warning" aria-hidden="true"></ion-icon>
+              <ion-label>{{ allergy }}</ion-label>
+            </ion-item>
+          }
+        </ion-list>
+      }
+      @if (h.medications.length > 0) {
+        <ion-list inset="true">
+          @for (med of h.medications; track $index) {
+            <ion-item [lines]="$last ? 'none' : 'full'">
+              <ion-icon slot="start" name="flask-outline" color="medium" aria-hidden="true"></ion-icon>
+              <ion-label>
+                <h3>{{ med.name }}</h3>
+                <p>{{ med.dosage }}@if (med.dosage && med.frequency) { · }{{ med.frequency }}</p>
+              </ion-label>
+            </ion-item>
+          }
+        </ion-list>
+      }
+      @if (h.bloodType || h.doctorName || h.medicalConditions || h.notes) {
+        <ion-list inset="true">
+          @if (h.bloodType) {
+            <ion-item>
+              <ion-icon slot="start" name="medkit-outline" color="medium" aria-hidden="true"></ion-icon>
+              <ion-label>
+                <h3>{{ 'health.bloodType' | translate }}</h3>
+                <p>{{ h.bloodType }}</p>
+              </ion-label>
+            </ion-item>
+          }
+          @if (h.doctorName) {
+            <ion-item>
+              <ion-icon slot="start" name="medkit-outline" color="medium" aria-hidden="true"></ion-icon>
+              <ion-label>
+                <h3>{{ h.doctorName }}</h3>
+                @if (h.doctorPhone) { <p>{{ h.doctorPhone }}</p> }
+              </ion-label>
+            </ion-item>
+          }
+          @if (h.medicalConditions) {
+            <ion-item>
+              <ion-label>
+                <h3>{{ 'health.conditions' | translate }}</h3>
+                <p>{{ h.medicalConditions }}</p>
+              </ion-label>
+            </ion-item>
+          }
+          @if (h.notes) {
+            <ion-item lines="none">
+              <ion-label>
+                <h3>{{ 'health.notes' | translate }}</h3>
+                <p>{{ h.notes }}</p>
+              </ion-label>
+            </ion-item>
+          }
+        </ion-list>
+      }
+      @if (h.emergencyContacts.length === 0 && h.allergies.length === 0 && h.medications.length === 0 && !h.bloodType && !h.doctorName && !h.medicalConditions && !h.notes) {
+        <ion-list inset="true">
+          <ion-item lines="none">
+            <ion-text color="medium">
+              <p><small>{{ 'health.noInfo' | translate }}</small></p>
+            </ion-text>
+          </ion-item>
+        </ion-list>
+      }
+    } @else {
+      <ion-list inset="true">
+        <ion-item lines="none">
+          <ion-text color="medium">
+            <p><small>{{ 'health.noInfo' | translate }}</small></p>
+          </ion-text>
+        </ion-item>
+      </ion-list>
+    }
 
     <ion-list-header>
       <ion-label>{{ 'admin.parents.detail.danger' | translate }}</ion-label>

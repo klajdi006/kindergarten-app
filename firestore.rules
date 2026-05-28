@@ -106,6 +106,17 @@ service cloud.firestore {
         allow write: if isParent()
                           && inMyKg(get(/databases/$(database)/documents/children/$(id)).data.kindergartenId);
       }
+
+      // Health profile subcollection (one doc per child: 'profile').
+      // All kg members can read (staff need allergies + emergency contacts on site).
+      // Only parents can write — same posture as /schedule until parentRecordId is
+      // added to UserDoc, which would allow checking uid() in child.parentIds.
+      match /health/{healthId} {
+        allow read: if isSignedIn()
+                          && inMyKg(get(/databases/$(database)/documents/children/$(id)).data.kindergartenId);
+        allow write: if isParent()
+                          && inMyKg(get(/databases/$(database)/documents/children/$(id)).data.kindergartenId);
+      }
     }
 
     // ---------- parents ----------

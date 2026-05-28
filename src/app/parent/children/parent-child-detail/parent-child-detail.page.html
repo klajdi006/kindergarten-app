@@ -148,6 +148,23 @@
     </ion-list>
 
     <ion-list-header>
+      <ion-label>{{ 'health.title' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list inset="true">
+      <ion-item button="true" detail="true" lines="none" (click)="openHealthProfile()">
+        <ion-icon slot="start" name="medkit-outline" color="primary" aria-hidden="true"></ion-icon>
+        <ion-label>
+          <h3>{{ 'health.title' | translate }}</h3>
+          @if (healthSummary(); as s) {
+            <p>{{ s }}</p>
+          } @else {
+            <p><small>{{ 'health.noInfo' | translate }}</small></p>
+          }
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+    <ion-list-header>
       <ion-label>{{ 'parent.children.detail.planHoliday' | translate }}</ion-label>
     </ion-list-header>
     <ion-list inset="true">

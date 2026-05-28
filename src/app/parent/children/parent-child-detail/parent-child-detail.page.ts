@@ -40,6 +40,7 @@ import {
   femaleOutline,
   happyOutline,
   maleOutline,
+  medkitOutline,
   sunnyOutline,
   timeOutline,
   trashOutline,
@@ -51,6 +52,7 @@ import { AbsencesService } from '@app/data/absences.service';
 import { ChildrenService } from '@app/data/children.service';
 import { DepartmentsService } from '@app/data/departments.service';
 import { DocumentsService } from '@app/data/documents.service';
+import { HealthService } from '@app/data/health.service';
 import { KindergartensService } from '@app/data/kindergartens.service';
 import { ParentsService } from '@app/data/parents.service';
 import { SchedulesService } from '@app/data/schedules.service';
@@ -63,8 +65,9 @@ import {
   getOperatingHours,
   getWeeklySchedule,
 } from '@app/data/schedule';
-import { Absence, Child, ChildDocument, Department } from '@app/data/types';
+import { Absence, Child, ChildDocument, ChildHealth, Department, Parent } from '@app/data/types';
 import { AbsenceHistoryModal } from '@app/parent/children/absence-history/absence-history.modal';
+import { HealthProfileModal } from '@app/parent/children/health-profile/health-profile.modal';
 import { WeeklyScheduleModal } from '@app/parent/children/weekly-schedule/weekly-schedule.modal';
 import { completeRefresher } from '@app/shared/utils/refresher';
 import { SkeletonListComponent } from '@app/shared/components/skeleton-list/skeleton-list.component';
@@ -108,6 +111,7 @@ export class ParentChildDetailPage {
   private readonly kindergartens = inject(KindergartensService);
   private readonly schedules = inject(SchedulesService);
   private readonly documentsService = inject(DocumentsService);
+  private readonly healthService = inject(HealthService);
   private readonly fb = inject(FormBuilder);
   private readonly t = inject(TranslateService);
   private readonly alertCtrl = inject(AlertController);
@@ -159,6 +163,30 @@ export class ParentChildDetailPage {
     ),
     { initialValue: [] as ChildDocument[] },
   );
+
+  readonly healthProfile = toSignal(
+    toObservable(this.childId).pipe(
+      switchMap((id) => (id ? this.healthService.forChild(id) : of<ChildHealth | null>(null))),
+    ),
+    { initialValue: null as ChildHealth | null },
+  );
+
+  readonly linkedParents = computed<Parent[]>(() => {
+    const c = this.child();
+    if (!c) return [];
+    const all = this.parents.all();
+    return c.parentIds.map((id) => all.find((p) => p.id === id)).filter((p): p is Parent => !!p);
+  });
+
+  readonly healthSummary = computed(() => {
+    const h = this.healthProfile();
+    if (!h) return null;
+    const parts: string[] = [];
+    if (h.allergies.length) parts.push(`${h.allergies.length}`);
+    if (h.medications.length) parts.push(`${h.medications.length}`);
+    if (h.emergencyContacts.length) parts.push(`${h.emergencyContacts.length}`);
+    return parts.length ? parts.join(' · ') : null;
+  });
 
   readonly departmentName = computed(() => {
     const deptId = this.child()?.departmentId;
@@ -272,6 +300,7 @@ export class ParentChildDetailPage {
       'female-outline': femaleOutline,
       'happy-outline': happyOutline,
       'male-outline': maleOutline,
+      'medkit-outline': medkitOutline,
       'sunny-outline': sunnyOutline,
       'time-outline': timeOutline,
       'trash-outline': trashOutline,
@@ -285,6 +314,16 @@ export class ParentChildDetailPage {
       this.scheduleDraft.set(getWeeklySchedule(stored, hours));
     });
     setTimeout(() => this.loading.set(false), 1500);
+  }
+
+  async openHealthProfile(): Promise<void> {
+    const c = this.child();
+    if (!c) return;
+    const modal = await this.modalCtrl.create({
+      component: HealthProfileModal,
+      componentProps: { childId: c.id, linkedParents: this.linkedParents() },
+    });
+    await modal.present();
   }
 
   async openSchedule(): Promise<void> {

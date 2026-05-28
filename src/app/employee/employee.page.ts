@@ -16,6 +16,7 @@ import {
   homeOutline,
   imagesOutline,
   newspaperOutline,
+  peopleOutline,
   settingsOutline,
 } from 'ionicons/icons';
 import { filter, map } from 'rxjs';
@@ -42,6 +43,7 @@ export class EmployeePage {
   constructor() {
     addIcons({
       'home-outline': homeOutline,
+      'people-outline': peopleOutline,
       'newspaper-outline': newspaperOutline,
       'images-outline': imagesOutline,
       'chatbubbles-outline': chatbubblesOutline,

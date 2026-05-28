@@ -54,12 +54,40 @@ export interface Child {
   createdAt: number;
 }
 
+export interface EmergencyContact {
+  name: string;
+  relationship: string;
+  phone: string;
+}
+
+export interface Medication {
+  name: string;
+  dosage: string;
+  frequency: string;
+}
+
+export interface ChildHealth {
+  allergies: string[];
+  medications: Medication[];
+  emergencyContacts: EmergencyContact[];
+  bloodType: string | null;
+  medicalConditions: string | null;
+  doctorName: string | null;
+  doctorPhone: string | null;
+  notes: string | null;
+  updatedAt: number;
+  updatedByUid: string;
+}
+
+export type ParentGender = 'male' | 'female';
+
 export interface Parent {
   id: Id;
   firstName: string;
   lastName: string;
   email: string;
   phone: string | null;
+  gender: ParentGender | null;
   childIds: Id[];
   claimedByUid: Id | null;
   kindergartenId: Id;

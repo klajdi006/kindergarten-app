@@ -1,0 +1,234 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'health.title' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button strong="true" [disabled]="saving()" (click)="save()">
+        {{ 'common.save' | translate }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <!-- Emergency Contacts -->
+  <ion-list-header>
+    <ion-label>{{ 'health.emergencyContacts' | translate }}</ion-label>
+  </ion-list-header>
+  <ion-list inset="true">
+    @if (linkedParents.length > 0) {
+      <ion-item lines="full">
+        <ion-label color="medium"><small>{{ 'health.quickAddParent' | translate }}</small></ion-label>
+      </ion-item>
+      @for (p of linkedParents; track p.id) {
+        <ion-item button="true" detail="false" (click)="prefillFromParent(p)">
+          <ion-icon slot="start" name="person-outline" color="primary" aria-hidden="true"></ion-icon>
+          <ion-label color="primary">
+            {{ p.firstName }} {{ p.lastName }}
+            @if (p.gender) {
+              <ion-note> · {{ 'admin.parents.gender.' + p.gender | translate }}</ion-note>
+            }
+          </ion-label>
+        </ion-item>
+      }
+      <ion-item lines="full">
+        <ion-label color="medium"><small>{{ 'health.orAddManually' | translate }}</small></ion-label>
+      </ion-item>
+    }
+    @for (contact of contacts(); track $index) {
+      <ion-item>
+        <ion-icon slot="start" name="people-outline" color="medium" aria-hidden="true"></ion-icon>
+        <ion-label>
+          <h3>{{ contact.name }}</h3>
+          <p>{{ contact.relationship }}@if (contact.relationship && contact.phone) { · }{{ contact.phone }}</p>
+        </ion-label>
+        <ion-button
+          slot="end"
+          fill="clear"
+          color="medium"
+          size="small"
+          (click)="removeContact($index)"
+          [attr.aria-label]="'common.delete' | translate">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+    }
+    <div [formGroup]="newContactForm">
+      <ion-item>
+        <ion-input
+          [label]="'health.contact.name' | translate"
+          labelPlacement="stacked"
+          formControlName="name">
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          [label]="'health.contact.relationship' | translate"
+          labelPlacement="stacked"
+          formControlName="relationship">
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          [label]="'health.contact.phone' | translate"
+          labelPlacement="stacked"
+          type="tel"
+          formControlName="phone">
+        </ion-input>
+      </ion-item>
+    </div>
+    <ion-item button="true" detail="false" lines="none" (click)="addContact()">
+      <ion-icon slot="start" name="add-outline" color="primary" aria-hidden="true"></ion-icon>
+      <ion-label color="primary">{{ 'health.addContact' | translate }}</ion-label>
+    </ion-item>
+  </ion-list>
+
+  <!-- Allergies -->
+  <ion-list-header>
+    <ion-label>{{ 'health.allergies' | translate }}</ion-label>
+  </ion-list-header>
+  <ion-list inset="true">
+    @for (allergy of allergies(); track $index) {
+      <ion-item>
+        <ion-icon slot="start" name="alert-circle-outline" color="warning" aria-hidden="true"></ion-icon>
+        <ion-label>{{ allergy }}</ion-label>
+        <ion-button
+          slot="end"
+          fill="clear"
+          color="medium"
+          size="small"
+          (click)="removeAllergy($index)"
+          [attr.aria-label]="'common.delete' | translate">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+    }
+    <ion-item>
+      <ion-input
+        [label]="'health.addAllergy' | translate"
+        labelPlacement="stacked"
+        [placeholder]="'health.allergyPlaceholder' | translate"
+        [value]="allergyInput()"
+        (ionInput)="onAllergyInput($event)"
+        (keyup.enter)="addAllergy()">
+      </ion-input>
+      <ion-button
+        slot="end"
+        fill="clear"
+        [disabled]="!allergyInput().trim()"
+        (click)="addAllergy()"
+        [attr.aria-label]="'common.add' | translate">
+        <ion-icon slot="icon-only" name="add-outline" color="primary"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <!-- Medications -->
+  <ion-list-header>
+    <ion-label>{{ 'health.medications' | translate }}</ion-label>
+  </ion-list-header>
+  <ion-list inset="true">
+    @for (med of medications(); track $index) {
+      <ion-item>
+        <ion-icon slot="start" name="flask-outline" color="medium" aria-hidden="true"></ion-icon>
+        <ion-label>
+          <h3>{{ med.name }}</h3>
+          <p>{{ med.dosage }}@if (med.dosage && med.frequency) { · }{{ med.frequency }}</p>
+        </ion-label>
+        <ion-button
+          slot="end"
+          fill="clear"
+          color="medium"
+          size="small"
+          (click)="removeMedication($index)"
+          [attr.aria-label]="'common.delete' | translate">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+    }
+    <div [formGroup]="newMedicationForm">
+      <ion-item>
+        <ion-input
+          [label]="'health.medication.name' | translate"
+          labelPlacement="stacked"
+          formControlName="name">
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          [label]="'health.medication.dosage' | translate"
+          labelPlacement="stacked"
+          formControlName="dosage">
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          [label]="'health.medication.frequency' | translate"
+          labelPlacement="stacked"
+          formControlName="frequency">
+        </ion-input>
+      </ion-item>
+    </div>
+    <ion-item button="true" detail="false" lines="none" (click)="addMedication()">
+      <ion-icon slot="start" name="add-outline" color="primary" aria-hidden="true"></ion-icon>
+      <ion-label color="primary">{{ 'health.addMedication' | translate }}</ion-label>
+    </ion-item>
+  </ion-list>
+
+  <!-- Medical Information -->
+  <ion-list-header>
+    <ion-label>{{ 'health.medicalInfo' | translate }}</ion-label>
+  </ion-list-header>
+  <ion-list [formGroup]="form" inset="true">
+    <ion-item>
+      <ion-input
+        [label]="'health.bloodType' | translate"
+        labelPlacement="stacked"
+        formControlName="bloodType">
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input
+        [label]="'health.doctorName' | translate"
+        labelPlacement="stacked"
+        formControlName="doctorName">
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input
+        [label]="'health.doctorPhone' | translate"
+        labelPlacement="stacked"
+        type="tel"
+        formControlName="doctorPhone">
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-textarea
+        [label]="'health.conditions' | translate"
+        labelPlacement="stacked"
+        formControlName="medicalConditions"
+        [autoGrow]="true">
+      </ion-textarea>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-textarea
+        [label]="'health.notes' | translate"
+        labelPlacement="stacked"
+        formControlName="notes"
+        [autoGrow]="true">
+      </ion-textarea>
+    </ion-item>
+  </ion-list>
+
+  <ion-list inset="true">
+    <ion-item lines="none">
+      <ion-note>{{ 'health.subtitle' | translate }}</ion-note>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

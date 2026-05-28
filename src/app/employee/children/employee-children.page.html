@@ -1,0 +1,38 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{ 'employee.children.title' | translate }}</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar
+      [placeholder]="'employee.children.searchPlaceholder' | translate"
+      [value]="searchQuery()"
+      (ionInput)="onSearch($event)">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  @if (loading()) {
+    <app-skeleton-list [count]="6" [avatar]="false" />
+  } @else if (filtered().length === 0) {
+    <div class="ion-padding ion-text-center">
+      <ion-text color="medium">
+        <p>{{ searchQuery() ? ('employee.children.noMatch' | translate) : ('employee.children.empty' | translate) }}</p>
+      </ion-text>
+    </div>
+  } @else {
+    <ion-list>
+      @for (child of filtered(); track child.id) {
+        <ion-item button="true" detail="true" (click)="openChild(child)">
+          <ion-icon slot="start" name="happy-outline" color="primary" aria-hidden="true"></ion-icon>
+          <ion-label>
+            <h3>{{ child.firstName }} {{ child.lastName }}</h3>
+            @if (departmentName(child.departmentId); as dn) {
+              <p>{{ dn }}</p>
+            }
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+</ion-content>

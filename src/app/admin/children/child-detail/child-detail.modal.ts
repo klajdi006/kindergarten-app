@@ -33,12 +33,16 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
+  alertCircleOutline,
   closeCircleOutline,
   closeOutline,
   cloudUploadOutline,
   documentOutline,
   downloadOutline,
   eyeOutline,
+  flaskOutline,
+  medkitOutline,
+  peopleOutline,
   personAddOutline,
   trashOutline,
 } from 'ionicons/icons';
@@ -51,8 +55,9 @@ import {
 import { ChildrenService } from '@app/data/children.service';
 import { DepartmentsService } from '@app/data/departments.service';
 import { DocumentsService } from '@app/data/documents.service';
+import { HealthService } from '@app/data/health.service';
 import { ParentsService } from '@app/data/parents.service';
-import { Child, ChildDocument, ChildGender, Parent } from '@app/data/types';
+import { Child, ChildDocument, ChildGender, ChildHealth, Parent } from '@app/data/types';
 import { DateDmyPipe } from '@app/shared/pipes/date-dmy.pipe';
 
 interface DocUpload {
@@ -102,6 +107,7 @@ export class ChildDetailModal implements OnInit {
   readonly parents = inject(ParentsService);
   readonly departments = inject(DepartmentsService);
   readonly documentsService = inject(DocumentsService);
+  readonly healthService = inject(HealthService);
 
   @Input({ required: true }) childId!: string;
 
@@ -112,6 +118,13 @@ export class ChildDetailModal implements OnInit {
       switchMap((id) => (id ? this.documentsService.forChild(id) : of<ChildDocument[]>([]))),
     ),
     { initialValue: [] as ChildDocument[] },
+  );
+
+  readonly healthProfile = toSignal(
+    toObservable(this.childIdSig).pipe(
+      switchMap((id) => (id ? this.healthService.forChild(id) : of<ChildHealth | null>(null))),
+    ),
+    { initialValue: null as ChildHealth | null },
   );
 
   readonly docUploads = signal<DocUpload[]>([]);
@@ -155,6 +168,10 @@ export class ChildDetailModal implements OnInit {
       'cloud-upload-outline': cloudUploadOutline,
       'download-outline': downloadOutline,
       'eye-outline': eyeOutline,
+      'medkit-outline': medkitOutline,
+      'alert-circle-outline': alertCircleOutline,
+      'people-outline': peopleOutline,
+      'flask-outline': flaskOutline,
     });
     effect(() => {
       const c = this.child();

@@ -10,6 +10,8 @@ import {
   IonItem,
   IonList,
   IonNote,
+  IonSelect,
+  IonSelectOption,
   IonText,
   IonTitle,
   IonToolbar,
@@ -24,6 +26,7 @@ export interface ParentFormResult {
   lastName: string;
   email: string;
   phone: string;
+  gender: 'male' | 'female' | null;
 }
 
 @Component({
@@ -42,6 +45,8 @@ export interface ParentFormResult {
     IonItem,
     IonInput,
     IonNote,
+    IonSelect,
+    IonSelectOption,
     IonText,
     TranslatePipe,
   ],
@@ -55,6 +60,7 @@ export class ParentFormModal {
     lastName: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
     phone: [''],
+    gender: ['' as 'male' | 'female' | ''],
   });
 
   constructor() {
@@ -70,6 +76,10 @@ export class ParentFormModal {
       this.form.markAllAsTouched();
       return;
     }
-    this.modalCtrl.dismiss(this.form.getRawValue() as ParentFormResult, 'confirm');
+    const { firstName, lastName, email, phone, gender } = this.form.getRawValue();
+    this.modalCtrl.dismiss(
+      { firstName, lastName, email, phone, gender: gender || null } satisfies ParentFormResult,
+      'confirm',
+    );
   }
 }

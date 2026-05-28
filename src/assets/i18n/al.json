@@ -201,9 +201,14 @@
         "lastName": "Mbiemri",
         "email": "Email",
         "phone": "Telefoni",
+        "gender": "Roli",
         "child": "Fëmija"
       },
       "noChildren": "Nuk ka fëmijë të caktuar.",
+      "gender": {
+        "male": "Babai",
+        "female": "Nëna"
+      },
       "assignChild": "Cakto fëmijë",
       "assignChildren": "Cakto fëmijë",
       "assign": "Cakto",
@@ -375,6 +380,40 @@
       "confirmDelete": "Të hiqet kjo mungesë?"
     }
   },
+  "health": {
+    "title": "Profili Shëndetësor",
+    "subtitle": "I dukshëm nga stafi i kopshtit",
+    "emergencyContacts": "Kontaktet e Urgjencës",
+    "noEmergencyContacts": "Nuk ka kontakte urgjence.",
+    "addContact": "Shto kontakt urgjence",
+    "contact": {
+      "name": "Emri i kontaktit",
+      "relationship": "Lidhja familjare",
+      "phone": "Numri i telefonit"
+    },
+    "allergies": "Alergjitë",
+    "noAllergies": "Nuk ka alergji të regjistruara.",
+    "addAllergy": "Shto alergjinë",
+    "allergyPlaceholder": "p.sh. Kikiriku, Penicilina",
+    "medications": "Medikamentet",
+    "noMedications": "Nuk ka medikamente të regjistruara.",
+    "addMedication": "Shto medikament",
+    "medication": {
+      "name": "Emri i medikamentit",
+      "dosage": "Doza",
+      "frequency": "Frekuenca"
+    },
+    "medicalInfo": "Informacioni Mjekësor",
+    "bloodType": "Grupi i gjakut",
+    "doctorName": "Emri i mjekut",
+    "doctorPhone": "Telefoni i mjekut",
+    "conditions": "Gjendje mjekësore",
+    "notes": "Shënime",
+    "noInfo": "Nuk ka informacion shëndetësor.",
+    "saved": "Profili shëndetësor u ruajt.",
+    "quickAddParent": "Shto shpejt nga prindërit",
+    "orAddManually": "Ose shto manualisht"
+  },
   "messages": {
     "title": "Mesazhet",
     "empty": "Nuk ka ende biseda. Trokit + për të nisur një.",
@@ -398,8 +437,20 @@
   "employee": {
     "tabs": {
       "home": "Kreu",
+      "children": "Fëmijët",
       "posts": "Postimet",
       "settings": "Cilësimet"
+    },
+    "children": {
+      "title": "Fëmijët",
+      "searchPlaceholder": "Kërko fëmijë",
+      "empty": "Nuk ka fëmijë në departamentet tuaja.",
+      "noMatch": "Asnjë fëmijë nuk përputhet me kërkimin.",
+      "detail": {
+        "profile": "Profili",
+        "born": "Lindur",
+        "years": "{{ years }} vjeç"
+      }
     },
     "home": {
       "title": "Sot",

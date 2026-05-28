@@ -21,6 +21,7 @@ import {
   IonText,
   IonTitle,
   IonToolbar,
+  ModalController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -53,6 +54,7 @@ import {
 import { SchedulesService } from '@app/data/schedules.service';
 import { StaffService } from '@app/data/staff.service';
 import { Absence, Child, Post } from '@app/data/types';
+import { EmployeeChildDetailModal } from '@app/employee/children/employee-child-detail/employee-child-detail.modal';
 import { DateDmyPipe } from '@app/shared/pipes/date-dmy.pipe';
 import { completeRefresher } from '@app/shared/utils/refresher';
 import { SkeletonListComponent } from '@app/shared/components/skeleton-list/skeleton-list.component';
@@ -93,6 +95,7 @@ interface RosterRow {
 export class EmployeeHomePage {
   readonly auth = inject(AuthService);
   readonly staff = inject(StaffService);
+  private readonly modalCtrl = inject(ModalController);
   readonly children = inject(ChildrenService);
   readonly departments = inject(DepartmentsService);
   readonly absences = inject(AbsencesService);
@@ -242,6 +245,14 @@ export class EmployeeHomePage {
       default:
         return 'happy-outline';
     }
+  }
+
+  async openChild(child: Child): Promise<void> {
+    const modal = await this.modalCtrl.create({
+      component: EmployeeChildDetailModal,
+      componentProps: { child },
+    });
+    await modal.present();
   }
 
   colorForStatus(status: RosterRow['status']): string {

@@ -201,9 +201,14 @@
         "lastName": "Last name",
         "email": "Email",
         "phone": "Phone",
+        "gender": "Role",
         "child": "Child"
       },
       "noChildren": "No children assigned.",
+      "gender": {
+        "male": "Father",
+        "female": "Mother"
+      },
       "assignChild": "Assign child",
       "assignChildren": "Assign children",
       "assign": "Assign",
@@ -375,6 +380,40 @@
       "confirmDelete": "Remove this absence?"
     }
   },
+  "health": {
+    "title": "Health Profile",
+    "subtitle": "Visible to kindergarten staff",
+    "emergencyContacts": "Emergency Contacts",
+    "noEmergencyContacts": "No emergency contacts added.",
+    "addContact": "Add emergency contact",
+    "contact": {
+      "name": "Contact name",
+      "relationship": "Relationship",
+      "phone": "Phone number"
+    },
+    "allergies": "Allergies",
+    "noAllergies": "No allergies recorded.",
+    "addAllergy": "Add allergy",
+    "allergyPlaceholder": "e.g. Peanuts, Penicillin",
+    "medications": "Medications",
+    "noMedications": "No medications recorded.",
+    "addMedication": "Add medication",
+    "medication": {
+      "name": "Medication name",
+      "dosage": "Dosage",
+      "frequency": "Frequency"
+    },
+    "medicalInfo": "Medical Information",
+    "bloodType": "Blood type",
+    "doctorName": "Doctor name",
+    "doctorPhone": "Doctor phone",
+    "conditions": "Medical conditions",
+    "notes": "Notes",
+    "noInfo": "No health information added yet.",
+    "saved": "Health profile saved.",
+    "quickAddParent": "Quick-add from parents",
+    "orAddManually": "Or add manually"
+  },
   "messages": {
     "title": "Messages",
     "empty": "No conversations yet. Tap + to start one.",
@@ -398,8 +437,20 @@
   "employee": {
     "tabs": {
       "home": "Home",
+      "children": "Children",
       "posts": "Posts",
       "settings": "Settings"
+    },
+    "children": {
+      "title": "Children",
+      "searchPlaceholder": "Search children",
+      "empty": "No children in your departments.",
+      "noMatch": "No children match your search.",
+      "detail": {
+        "profile": "Profile",
+        "born": "Born",
+        "years": "{{ years }} years"
+      }
     },
     "home": {
       "title": "Today",

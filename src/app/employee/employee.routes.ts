@@ -12,6 +12,13 @@ export const routes: Routes = [
           import('@app/employee/home/employee-home.page').then((m) => m.EmployeeHomePage),
       },
       {
+        path: 'children',
+        loadComponent: () =>
+          import('@app/employee/children/employee-children.page').then(
+            (m) => m.EmployeeChildrenPage,
+          ),
+      },
+      {
         path: 'posts',
         loadComponent: () =>
           import('@app/employee/posts/employee-posts.page').then((m) => m.EmployeePostsPage),

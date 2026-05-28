@@ -13,6 +13,8 @@ import {
   IonLabel,
   IonList,
   IonListHeader,
+  IonSelect,
+  IonSelectOption,
   IonText,
   IonTitle,
   IonToolbar,
@@ -35,7 +37,7 @@ import { AuthService } from '@app/auth/auth.service';
 import { DateDmyPipe } from '@app/shared/pipes/date-dmy.pipe';
 import { ChildrenService } from '@app/data/children.service';
 import { ParentsService } from '@app/data/parents.service';
-import { Child, Parent } from '@app/data/types';
+import { Child, Parent, ParentGender } from '@app/data/types';
 
 @Component({
   selector: 'app-parent-detail-modal',
@@ -55,6 +57,8 @@ import { Child, Parent } from '@app/data/types';
     IonLabel,
     IonAvatar,
     IonInput,
+    IonSelect,
+    IonSelectOption,
     IonIcon,
     IonText,
     TranslatePipe,
@@ -98,6 +102,7 @@ export class ParentDetailModal implements OnInit {
     lastName: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
     phone: [''],
+    gender: ['' as ParentGender | ''],
   });
 
   readonly saving = signal(false);
@@ -124,6 +129,7 @@ export class ParentDetailModal implements OnInit {
             lastName: p.lastName,
             email: p.email,
             phone: p.phone ?? '',
+            gender: p.gender ?? '',
           },
           { emitEvent: false },
         );
@@ -139,6 +145,7 @@ export class ParentDetailModal implements OnInit {
         lastName: p.lastName,
         email: p.email,
         phone: p.phone ?? '',
+        gender: p.gender ?? '',
       });
       this.form.markAsPristine();
     }
@@ -177,7 +184,8 @@ export class ParentDetailModal implements OnInit {
     }
     this.saving.set(true);
     try {
-      await this.parents.update(p.id, this.form.getRawValue());
+      const { firstName, lastName, email, phone, gender } = this.form.getRawValue();
+      await this.parents.update(p.id, { firstName, lastName, email, phone, gender: gender || null });
       this.form.markAsPristine();
     } finally {
       this.saving.set(false);

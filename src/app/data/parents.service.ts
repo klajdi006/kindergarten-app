@@ -18,7 +18,7 @@ import {
 import { Observable, of, switchMap, map } from 'rxjs';
 import { AuthService } from '@app/auth/auth.service';
 import { ChildrenService } from '@app/data/children.service';
-import { Parent } from '@app/data/types';
+import { Parent, ParentGender } from '@app/data/types';
 
 @Injectable({ providedIn: 'root' })
 export class ParentsService {
@@ -72,6 +72,7 @@ export class ParentsService {
     lastName: string;
     email: string;
     phone: string;
+    gender: ParentGender | null;
   }): Promise<void> {
     const kgId = this.kgId();
     if (!kgId) throw new Error('No kindergarten');
@@ -80,6 +81,7 @@ export class ParentsService {
       lastName: input.lastName.trim(),
       email: input.email.trim().toLowerCase(),
       phone: input.phone.trim() || null,
+      gender: input.gender,
       childIds: [],
       claimedByUid: null,
       kindergartenId: kgId,
@@ -89,13 +91,14 @@ export class ParentsService {
 
   async update(
     id: string,
-    input: { firstName: string; lastName: string; email: string; phone: string },
+    input: { firstName: string; lastName: string; email: string; phone: string; gender: ParentGender | null },
   ): Promise<void> {
     await updateDoc(doc(this.firestore, 'parents', id), {
       firstName: input.firstName.trim(),
       lastName: input.lastName.trim(),
       email: input.email.trim().toLowerCase(),
       phone: input.phone.trim() || null,
+      gender: input.gender,
     });
   }
 

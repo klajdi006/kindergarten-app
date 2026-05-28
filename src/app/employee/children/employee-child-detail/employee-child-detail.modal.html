@@ -1,0 +1,160 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ child.firstName }} {{ child.lastName }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <ion-list-header>
+    <ion-label>{{ 'employee.children.detail.profile' | translate }}</ion-label>
+  </ion-list-header>
+  <ion-list inset="true">
+    <ion-item>
+      <ion-icon
+        slot="start"
+        [name]="child.gender === 'female' ? 'female-outline' : 'male-outline'"
+        color="medium"
+        aria-hidden="true">
+      </ion-icon>
+      <ion-label>{{ 'admin.children.gender.' + child.gender | translate }}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="calendar-outline" color="medium" aria-hidden="true"></ion-icon>
+      <ion-label>
+        <h3>{{ 'employee.children.detail.born' | translate }}</h3>
+        <p>
+          {{ child.birthDate | dateDmy }}
+          @if (childAge !== null) {
+            · {{ 'employee.children.detail.years' | translate: { years: childAge } }}
+          }
+        </p>
+      </ion-label>
+    </ion-item>
+    @if (departmentName) {
+      <ion-item lines="none">
+        <ion-icon slot="start" name="business-outline" color="medium" aria-hidden="true"></ion-icon>
+        <ion-label>{{ departmentName }}</ion-label>
+      </ion-item>
+    }
+  </ion-list>
+
+  <!-- Health (read-only) -->
+  @if (healthProfile(); as h) {
+    @if (h.emergencyContacts.length > 0) {
+      <ion-list-header>
+        <ion-label>{{ 'health.emergencyContacts' | translate }}</ion-label>
+      </ion-list-header>
+      <ion-list inset="true">
+        @for (contact of h.emergencyContacts; track $index) {
+          <ion-item [lines]="$last ? 'none' : 'full'">
+            <ion-icon slot="start" name="people-outline" color="medium" aria-hidden="true"></ion-icon>
+            <ion-label>
+              <h3>{{ contact.name }}</h3>
+              <p>{{ contact.relationship }}@if (contact.relationship && contact.phone) { · }{{ contact.phone }}</p>
+            </ion-label>
+          </ion-item>
+        }
+      </ion-list>
+    }
+    @if (h.allergies.length > 0) {
+      <ion-list-header>
+        <ion-label>{{ 'health.allergies' | translate }}</ion-label>
+      </ion-list-header>
+      <ion-list inset="true">
+        @for (allergy of h.allergies; track $index) {
+          <ion-item [lines]="$last ? 'none' : 'full'">
+            <ion-icon slot="start" name="alert-circle-outline" color="warning" aria-hidden="true"></ion-icon>
+            <ion-label>{{ allergy }}</ion-label>
+          </ion-item>
+        }
+      </ion-list>
+    }
+    @if (h.medications.length > 0) {
+      <ion-list-header>
+        <ion-label>{{ 'health.medications' | translate }}</ion-label>
+      </ion-list-header>
+      <ion-list inset="true">
+        @for (med of h.medications; track $index) {
+          <ion-item [lines]="$last ? 'none' : 'full'">
+            <ion-icon slot="start" name="flask-outline" color="medium" aria-hidden="true"></ion-icon>
+            <ion-label>
+              <h3>{{ med.name }}</h3>
+              <p>{{ med.dosage }}@if (med.dosage && med.frequency) { · }{{ med.frequency }}</p>
+            </ion-label>
+          </ion-item>
+        }
+      </ion-list>
+    }
+    @if (h.bloodType || h.doctorName || h.medicalConditions || h.notes) {
+      <ion-list-header>
+        <ion-label>{{ 'health.medicalInfo' | translate }}</ion-label>
+      </ion-list-header>
+      <ion-list inset="true">
+        @if (h.bloodType) {
+          <ion-item>
+            <ion-icon slot="start" name="medkit-outline" color="medium" aria-hidden="true"></ion-icon>
+            <ion-label>
+              <h3>{{ 'health.bloodType' | translate }}</h3>
+              <p>{{ h.bloodType }}</p>
+            </ion-label>
+          </ion-item>
+        }
+        @if (h.doctorName) {
+          <ion-item>
+            <ion-icon slot="start" name="medkit-outline" color="medium" aria-hidden="true"></ion-icon>
+            <ion-label>
+              <h3>{{ h.doctorName }}</h3>
+              @if (h.doctorPhone) { <p>{{ h.doctorPhone }}</p> }
+            </ion-label>
+          </ion-item>
+        }
+        @if (h.medicalConditions) {
+          <ion-item>
+            <ion-label>
+              <h3>{{ 'health.conditions' | translate }}</h3>
+              <p>{{ h.medicalConditions }}</p>
+            </ion-label>
+          </ion-item>
+        }
+        @if (h.notes) {
+          <ion-item lines="none">
+            <ion-label>
+              <h3>{{ 'health.notes' | translate }}</h3>
+              <p>{{ h.notes }}</p>
+            </ion-label>
+          </ion-item>
+        }
+      </ion-list>
+    }
+    @if (h.emergencyContacts.length === 0 && h.allergies.length === 0 && h.medications.length === 0 && !h.bloodType && !h.doctorName && !h.medicalConditions && !h.notes) {
+      <ion-list-header>
+        <ion-label>{{ 'health.title' | translate }}</ion-label>
+      </ion-list-header>
+      <ion-list inset="true">
+        <ion-item lines="none">
+          <ion-text color="medium">
+            <p><small>{{ 'health.noInfo' | translate }}</small></p>
+          </ion-text>
+        </ion-item>
+      </ion-list>
+    }
+  } @else {
+    <ion-list-header>
+      <ion-label>{{ 'health.title' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-list inset="true">
+      <ion-item lines="none">
+        <ion-text color="medium">
+          <p><small>{{ 'health.noInfo' | translate }}</small></p>
+        </ion-text>
+      </ion-item>
+    </ion-list>
+  }
+
+</ion-content>

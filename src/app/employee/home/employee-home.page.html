@@ -87,7 +87,7 @@
         </ion-item>
       } @else {
         @for (row of todayRoster(); track row.child.id) {
-          <ion-item>
+          <ion-item button="true" detail="false" (click)="openChild(row.child)">
             <ion-icon
               slot="start"
               [name]="iconForStatus(row.status)"

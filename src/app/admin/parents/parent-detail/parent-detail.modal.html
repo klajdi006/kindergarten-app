@@ -62,7 +62,7 @@
           formControlName="email">
         </ion-input>
       </ion-item>
-      <ion-item lines="none">
+      <ion-item>
         <ion-icon slot="start" name="call-outline" color="medium" aria-hidden="true"></ion-icon>
         <ion-input
           type="tel"
@@ -71,6 +71,16 @@
           labelPlacement="stacked"
           formControlName="phone">
         </ion-input>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-select
+          [label]="'admin.parents.fields.gender' | translate"
+          labelPlacement="stacked"
+          formControlName="gender">
+          <ion-select-option value="">—</ion-select-option>
+          <ion-select-option value="male">{{ 'admin.parents.gender.male' | translate }}</ion-select-option>
+          <ion-select-option value="female">{{ 'admin.parents.gender.female' | translate }}</ion-select-option>
+        </ion-select>
       </ion-item>
     </ion-list>
 

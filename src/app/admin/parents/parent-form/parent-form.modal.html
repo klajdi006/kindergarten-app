@@ -42,7 +42,7 @@
           {{ 'login.validation.invalidEmail' | translate }}
         </ion-note>
       }
-      <ion-item lines="none">
+      <ion-item>
         <ion-input
           type="tel"
           inputmode="tel"
@@ -50,6 +50,16 @@
           labelPlacement="floating"
           formControlName="phone">
         </ion-input>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-select
+          [label]="'admin.parents.fields.gender' | translate"
+          labelPlacement="floating"
+          formControlName="gender">
+          <ion-select-option value="">—</ion-select-option>
+          <ion-select-option value="male">{{ 'admin.parents.gender.male' | translate }}</ion-select-option>
+          <ion-select-option value="female">{{ 'admin.parents.gender.female' | translate }}</ion-select-option>
+        </ion-select>
       </ion-item>
     </ion-list>
     <ion-text color="medium">
