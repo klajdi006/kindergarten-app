@@ -36,23 +36,33 @@ messaging.onBackgroundMessage((payload) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const payload = event.notification.data || {};
+  // Encode the payload in a query param so both warm and cold starts use the
+  // same URL-based path. The app reads ?notif= on boot (AppComponent ctor).
+  const encoded = encodeURIComponent(JSON.stringify(payload));
+  const targetUrl = `/?notif=${encoded}`;
 
   event.waitUntil((async () => {
     const wins = await clients.matchAll({ type: 'window', includeUncontrolled: true });
-    // Prefer the most recently focused client. If we have any open client,
-    // post the payload to it and bring it forward — the app handles routing
-    // because only the app knows the user's role + the role-prefixed paths.
     if (wins.length > 0) {
       const target = wins.find((w) => w.focused) ?? wins[0];
-      target.postMessage({ source: 'fcm-click', payload });
-      if ('focus' in target) await target.focus();
+      // On iOS, calling focus() alone on a backgrounded PWA freezes the screen
+      // black — iOS suspends the rendering context and focus() doesn't thaw it.
+      // client.navigate() forces a proper navigation event that unfreezes the
+      // renderer. postMessage is skipped because the message may be dropped if
+      // JS was suspended; the ?notif= URL carries the payload instead.
+      if ('navigate' in target) {
+        const navigated = await target.navigate(targetUrl);
+        if (navigated && 'focus' in navigated) await navigated.focus();
+      } else {
+        // Fallback for browsers without WindowClient.navigate()
+        target.postMessage({ source: 'fcm-click', payload });
+        if ('focus' in target) await target.focus();
+      }
       return;
     }
-    // No client open — cold-start the app at root with the payload encoded
-    // in the query string. AppComponent reads it on boot.
+    // No client open — cold-start the app with the payload in the query string.
     if (clients.openWindow) {
-      const encoded = encodeURIComponent(JSON.stringify(payload));
-      await clients.openWindow(`/?notif=${encoded}`);
+      await clients.openWindow(targetUrl);
     }
   })());
 });
